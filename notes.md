@@ -1,5 +1,8 @@
 # CS 260 Notes
 
+### First notes (From GitHub Reading)
+I already knew a lot about GitHub and Git before reading this, but I did learn that you can create a new repository using another one as a template. This could be helpful for me at some point.
+
 [My startup](https://simon.cs260.click)
 
 ## Helpful links
