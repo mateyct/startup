@@ -1,4 +1,4 @@
-# Your startup name here
+# Cook Collab
 
 [My Notes](notes.md)
 
