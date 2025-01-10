@@ -2,7 +2,7 @@
 
 [My Notes](notes.md)
 
-DrawnLine is an app that allows users to play receive a random word, and then draw it. That image will be transmitted to other players, and those players will have to guess what it is. Think of it like online charades, but drawing! Players will earn points by guessing correctly, and the person that gets the most correct in a session wins. The number of correct guess will be stored and displayed in a leaderboard to see who the best guesser is overall.
+DrawnLine is an app that allows users to play receive a random word, and then draw it. That image will be transmitted to other players, and those players will have to guess what it is. Think of it like online charades, but drawing! Players will earn points by guessing correctly, and the person that gets the most correct in a session wins. The number of wins will be stored per player and displayed in a leaderboard to see who the best guesser is overall.
 
 ## 🚀 Specification Deliverable
 
@@ -16,7 +16,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Do you want to show off your amazing drawing skills to your friends? Want to cure some boredom? DrawnLine is solves both of these problems!  Using DrawnLine, you can easily get together with your friends virtually to play a drawing game together. Just get on the app, connect, and then start drawing away! Each person have turns drawing and guessing the given word. Your friends will know how good you are at drawing, and it'll keep you wanting to back for more!
+Do you want to show off your amazing drawing skills to your friends? Want to cure some boredom? DrawnLine solves both of these problems!  Using DrawnLine, you can easily get together with your friends virtually to play a drawing game together. Just get on the website, connect, and then start drawing away! Each person will have turns drawing and guessing the given word. Your friends will know how good you are at drawing, and it'll keep you wanting to come back for more!
 
 ### Design
 
@@ -37,10 +37,10 @@ sequenceDiagram
 - Users can securely sign in
 - Several users can join together in a game
 - On their turn, drawer will receive a random prompt to draw
-- Other players will guess what it is as the first draws
+- Other players will guess what it is as the first player draws
 - Each player guess is shown as they are made
-- Total player guess counts are stored (overall between sessions)
-- Players can view the leaderboard of most correct guesses overall
+- Player with the most correct guesses wins
+- Players can view the leaderboard of most wins overall
 
 ### Technologies
 
@@ -48,16 +48,16 @@ I am going to use the required technologies in the following ways.
 
 - **HTML** - It uses HTML to define the structure of the webpages. There will be three pages:
     1. The login page.
-    2. The drawing canvas/the input boxes for guessing.
-    3. The leaderboard page to show who has the most correct guesses over all time.
+    2. The drawing canvas/the input box for guessing.
+    3. The leaderboard page to show who has the most wins.
 - **CSS** - CSS will be used to make the the app look appealing, as well as make it fit on multiple screen sizes.
 - **React** - React will make the main functionality of drawing on the canvas and making guesses possible. It will also be used for logging in to the site and page routing.
 - **Service** - There will be multiple service endpoints:
     * Backend service for logging in
     * Submitting guesses and saving correct answers
-    * Organizing the leaderboard to display best guessers
+    * Retrieving the leaderboard to display win counts
     * Using an API like [WordsAPI](https://www.wordsapi.com/docs/) to retrieve a random prompt word to draw
-- **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the number of correct guesses for each user to be ranked on the overall leaderboard.
+- **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the number of wins for each user to be ranked on the leaderboard.
 - **WebSocket** - WebSocket will broadcast the current canvas and player guesses and alert when someone has guessed correctly.
 
 ## 🚀 AWS deliverable
