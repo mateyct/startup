@@ -36,7 +36,7 @@ sequenceDiagram
 
 ### Key features
 
-- Describe your key feature
+- One player (who's turn it is)
 - Describe your key feature
 - Describe your key feature
 
