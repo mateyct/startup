@@ -14,7 +14,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] Proper use of Markdown
 - [x] A concise and compelling elevator pitch
 - [ ] Description of key features
-- [ ] Description of how you will use each technology
+- [x] Description of how you will use each technology
 - [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ### Elevator pitch
@@ -44,12 +44,19 @@ sequenceDiagram
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here (Page Structure)
-- **CSS** - Description here (Page Styles)
-- **React** - Description here (Make the canvas work)
-- **Service** - Description here (Use an API like [WordsAPI](https://www.wordsapi.com/docs/))
-- **DB/Login** - Description here (Store player credentials, leaderboards of correct guesses)
-- **WebSocket** - Description here (Broadcast canvas and player guesses)
+- **HTML** - It uses HTML to define the structure of the webpages. There will be three pages:
+    1. The login page.
+    2. The drawing canvas/the input boxes for guessing.
+    3. The leaderboard page to show who has the most correct guesses over all time.
+- **CSS** - CSS will be used to make the the app look appealing, as well as make it fit on multiple screen sizes.
+- **React** - React will make the main functionality of drawing on the canvas and making guesses possible. It will also be used for logging in to the site and page routing.
+- **Service** - There will be multiple service endpoints:
+    * Backend service for logging in
+    * Submitting guesses and saving correct answers
+    * Organizing the leaderboard to display best guessers
+    * Using an API like [WordsAPI](https://www.wordsapi.com/docs/) to retrieve a random prompt word to draw
+- **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the number of correct guesses for each user to be ranked on the overall leaderboard.
+- **WebSocket** - WebSocket will broadcast the current canvas and player guesses and alert when someone has guessed correctly.
 
 ## 🚀 AWS deliverable
 
