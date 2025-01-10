@@ -16,7 +16,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Do you want to show off your amazing drawing skills to your friends? Want to cure some boredom? DrawnLine solves both of these problems!  Using DrawnLine, you can easily get together with your friends virtually to play a drawing game together. Just get on the website, connect, and then start drawing away! Each person will have turns drawing and guessing the given word. Your friends will know how good you are at drawing, and it'll keep you wanting to come back for more!
+Do you want to show off your amazing drawing skills to your friends? Want to cure some boredom? DrawnLine solves both of these problems! Using DrawnLine, you can easily get together with your friends virtually to play a drawing game together. Just get on the website, connect, and then start drawing away! Each person will have turns drawing and guessing the given word. Your friends will know how good you are at drawing, and it'll keep you coming back for more!
 
 ### Design
 
@@ -37,8 +37,10 @@ sequenceDiagram
 - Users can securely sign in
 - Several users can join together in a game
 - On their turn, drawer will receive a random prompt to draw
+- Drawing will appear on all devices, but only the drawer can draw on it
 - Other players will guess what it is as the first player draws
 - Each player guess is shown as they are made
+- The player chosen to draw will change over multiple rounds
 - Player with the most correct guesses wins
 - Players can view the leaderboard of most wins overall
 
