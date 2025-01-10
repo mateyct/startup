@@ -6,16 +6,13 @@ DrawnLine is an app that allows users to play receive a random word, and then dr
 
 ## 🚀 Specification Deliverable
 
-> [!NOTE]
->  Fill in this sections as the submission artifact for this deliverable. You can refer to this [example](https://github.com/webprogramming260/startup-example/blob/main/README.md) for inspiration.
-
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] Proper use of Markdown
 - [x] A concise and compelling elevator pitch
-- [ ] Description of key features
+- [x] Description of key features
 - [x] Description of how you will use each technology
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ### Elevator pitch
 
@@ -26,18 +23,18 @@ Do you want to show off your amazing drawing skills to your friends? Want to cur
 <img src="readmeImgs/DrawLineLogin.png" alt="Login-Image" style="width:40%; height:auto;">
 <img src="readmeImgs/DrawLineDrawing.png" alt="Login-Image" style="width:40%; height:auto;">
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+These two images are mockups of the site and how it might look. There is a simple login page, and there is the playing page. The playing page has a panel to display the users and their points, a canvas for the drawer to draw on and the guessers to view, and a panel for the guessers to guess in. Dave correctly guessed the drawing was an apple.
 
-```mermaid
+<!--```mermaid
 sequenceDiagram
     actor You
     actor Website
     You->>Website: Replace this with your design
-```
+```-->
 
 ### Key features
 
-- Users can securly sign in
+- Users can securely sign in
 - Several users can join together in a game
 - On their turn, drawer will receive a random prompt to draw
 - Other players will guess what it is as the first draws
