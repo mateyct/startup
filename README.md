@@ -24,6 +24,7 @@ Do you want to show off your amazing drawing skills to your friends? Want to cur
 ### Design
 
 <img src="readmeImgs/DrawLineLogin.png" alt="Login-Image" style="width:40%; height:auto;">
+<img src="readmeImgs/DrawLineDrawing.png" alt="Login-Image" style="width:40%; height:auto;">
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -36,9 +37,13 @@ sequenceDiagram
 
 ### Key features
 
-- One player (who's turn it is)
-- Describe your key feature
-- Describe your key feature
+- Users can securly sign in
+- Several users can join together in a game
+- On their turn, drawer will receive a random prompt to draw
+- Other players will guess what it is as the first draws
+- Each player guess is shown as they are made
+- Total player guess counts are stored (overall between sessions)
+- Players can view the leaderboard of most correct guesses overall
 
 ### Technologies
 
