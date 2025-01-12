@@ -1,0 +1,61 @@
+{
+    "rooms": [
+        {
+            "name": "clinic",
+            "displayName": "Clinic",
+            "posX": 1,
+            "posY": 1,
+            "doors": [
+                {
+                    "x": 5,
+                    "y": 3
+                }
+            ]
+        }, 
+        {
+            "name": "doc-office",
+            "displayName": "Doctor's Office",
+            "posX": 10,
+            "posY": 1
+        },
+        {
+            "name": "dir-office",
+            "displayName": "Director's Office",
+            "posX": 19,
+            "posY": 1
+        },
+        {
+            "name": "lab",
+            "displayName": "Lab",
+            "posX": 1,
+            "posY": 10
+        },
+        {
+            "void": "void"
+        },
+        {
+            "name": "icu",
+            "displayName": "ICU",
+            "posX": 19,
+            "posY": 10
+        },
+        {
+            "name": "operating",
+            "displayName": "Operating Room",
+            "posX": 1,
+            "posY": 19
+        },
+        {
+            "name": "lobby",
+            "displayName": "Lobby",
+            "posX": 10,
+            "posY": 19
+        },
+        {
+            "name": "mri",
+            "displayName": "MRI Room",
+            "posX": 19,
+            "posY": 19
+        }
+    ]
+}
