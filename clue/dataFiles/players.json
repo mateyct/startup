@@ -1,0 +1,14 @@
+{
+    "players": [
+        {
+            "name": "red",
+            "startX": 8,
+            "startY": 0
+        },
+        {
+            "name": "blue",
+            "startX": 0,
+            "startY": 8
+        }
+    ]
+}
