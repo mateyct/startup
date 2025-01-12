@@ -31,7 +31,9 @@
             "posY": 10
         },
         {
-            "void": "void"
+            "void": "void",
+            "posX": 10,
+            "posY": 10
         },
         {
             "name": "icu",

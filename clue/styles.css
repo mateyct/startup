@@ -46,8 +46,6 @@
 }
 */
 .void {
-    grid-column: 10 / 16;
-    grid-row: 10 / 16;
     width: 100%;
     height: 100%;
     background-color: black;
