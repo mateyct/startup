@@ -9,6 +9,10 @@
                 {
                     "x": 5,
                     "y": 3
+                },
+                {
+                    "x": 2,
+                    "y": 5
                 }
             ]
         }, 
@@ -16,19 +20,53 @@
             "name": "doc-office",
             "displayName": "Doctor's Office",
             "posX": 10,
-            "posY": 1
+            "posY": 1,
+            "doors": [
+                {
+                    "x": 5,
+                    "y": 1
+                },
+                {
+                    "x": 2,
+                    "y": 5
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                }
+            ]
         },
         {
             "name": "dir-office",
             "displayName": "Director's Office",
             "posX": 19,
-            "posY": 1
+            "posY": 1,
+            "doors": [
+                {
+                    "x": 0,
+                    "y": 4
+                },
+                {
+                    "x": 3,
+                    "y": 5
+                }
+            ]
         },
         {
             "name": "lab",
             "displayName": "Lab",
             "posX": 1,
-            "posY": 10
+            "posY": 10,
+            "doors": [
+                {
+                    "x": 5,
+                    "y": 1
+                },
+                {
+                    "x": 4,
+                    "y": 5
+                }
+            ]
         },
         {
             "void": "void",
@@ -39,25 +77,69 @@
             "name": "icu",
             "displayName": "ICU",
             "posX": 19,
-            "posY": 10
+            "posY": 10,
+            "doors": [
+                {
+                    "x": 2,
+                    "y": 0
+                },
+                {
+                    "x": 4,
+                    "y": 5
+                },
+                {
+                    "x": 0,
+                    "y": 3
+                }
+            ]
         },
         {
             "name": "operating",
             "displayName": "Operating Room",
             "posX": 1,
-            "posY": 19
+            "posY": 19,
+            "doors": [
+                {
+                    "x": 5,
+                    "y": 3
+                },
+                {
+                    "x": 2,
+                    "y": 0
+                }
+            ]
         },
         {
             "name": "lobby",
             "displayName": "Lobby",
             "posX": 10,
-            "posY": 19
+            "posY": 19,
+            "doors": [
+                {
+                    "x": 2,
+                    "y": 0
+                },
+                {
+                    "x": 3,
+                    "y": 0
+                }
+            ]
         },
         {
             "name": "mri",
             "displayName": "MRI Room",
             "posX": 19,
-            "posY": 19
+            "posY": 19,
+            "doors": [
+                {
+                    "x": 3,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 3
+                }
+            ]
         }
     ]
 }
