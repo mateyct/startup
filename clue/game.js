@@ -5,11 +5,15 @@
 //      - add all the squares to a 2D array
 // 2. calculate remaining area and add squares
 let board = document.getElementById("board");
+let boardArr = new Array(24).fill().map(() => new Array(24).fill(0));
+
+
+// retrieve rooms.json and set up board completely
 fetch("./dataFiles/rooms.json")
     .then((response) => response.json())
     .then((json) => {
         // make a new array filled with 0s. 0s make it easier to fill with blanks later
-        let boardArr = new Array(24).fill().map(() => new Array(24).fill(0));
+        //let boardArr = 
         json.rooms.forEach(element => {
             let room = document.createElement("div");
             if ("void" in element) {
@@ -37,6 +41,15 @@ fetch("./dataFiles/rooms.json")
                     door.style.gridColumn = xPos + " / " + (xPos + 1);
                     door.style.gridRow = yPos + " / " + (yPos + 1);
                     boardArr[yPos - 1][xPos - 1] = door;
+                    door.addEventListener("mousedown", (e) => {
+                        // stop event from propogating
+                        if (door.childElementCount > 0) {
+                            return;
+                        }
+                        let player = document.createElement("div");
+                        player.classList.add("player-red");
+                        e.target.appendChild(player);
+                    });
                     board.appendChild(door);
                 });
             }
@@ -48,10 +61,15 @@ fetch("./dataFiles/rooms.json")
                 if (boardArr[i][j] == 0) {
                     let newCell = document.createElement("div");
                     newCell.classList.add("hall");
+                    newCell.addEventListener("mousedown", (e) => {
+                        let player = document.createElement("div");
+                        player.classList.add("player-red");
+                        e.target.appendChild(player);
+                    });
                     boardArr[i][j] = newCell;
                     board.appendChild(newCell);
                 }
             }
         }
-        console.log(boardArr);
+        
     });
