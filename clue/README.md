@@ -27,14 +27,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Do you want to show off your amazing drawing skills to your friends? Want to cure some boredom? DrawnLine solves both of these problems! Using DrawnLine, you can easily get together with your friends virtually to play a drawing game together. Just get on the website, connect, and then start drawing away! Each person will have turns drawing and guessing the given word. Your friends will know how good you are at drawing, and it'll keep you coming back for more!
+Want to be the best investigator in town? Good at sniffing out yoru suspicious friends? Then Medical Murdery Mystery is the game for you! Take on the role of a medical worker in Provo City Hospital where a mysterious murder has taken place. The Provo police have tasked you and your coworkers with finding the culprit, but you suspect it was one of them, or perhaps even yourself. Come play and find out!
 
 ### Design
 
-<img src="readmeImgs/DrawLineLogin.png" alt="Login-Image" style="width:40%; height:auto;">
-<img src="readmeImgs/DrawLineDrawing.png" alt="Login-Image" style="width:40%; height:auto;">
+<img src="MMM_login.png" alt="Login-Image" style="width:40%; height:auto;">
+<img src="board.png" alt="Login-Image" style="width:30%; height:auto;">
 
-These two images are mockups of the site and how it might look. There is a simple login page, and there is the playing page. The playing page has a panel to display the users and their points, a canvas for the drawer to draw on and the guessers to view, and a panel for the guessers to guess in. Dave correctly guessed the drawing was an apple.
+These two images are mockups of the site and board. There is a simple login page, and there is the playing page, which will include the board. I will probably make the board more visually interesting as well. The playing page will include some player information and display the current suspicions being voiced by other players.
 
 <!--```mermaid
 sequenceDiagram
