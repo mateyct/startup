@@ -53,7 +53,8 @@ I am going to use the required technologies in the following ways.
     2. The drawing canvas/the input box for guessing.
     3. The leaderboard page to show who has the most wins.
 - **CSS** - CSS will be used to make the the app look appealing, as well as make it fit on multiple screen sizes.
-- **React** - React will make the main functionality of drawing on the canvas and making guesses possible. It will also be used for logging in to the site and page routing.
+- **JavaScript** - JavaScript will make the main functionality of drawing on the canvas and making guesses possible.
+- **React** -  React tie together all the HTML, CSS, and JS in a dynamic way. It will also be used for page routing.
 - **Service** - There will be multiple service endpoints:
     * Backend service for logging in
     * Submitting guesses and saving correct answers
