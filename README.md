@@ -1,8 +1,16 @@
-# DrawnLine
+<!--# Medical Murder Mystery
 
-[My Notes](notes.md)
+## dataFiles Info
+Below is important info about the files in dataFiles
 
-DrawnLine is an app that allows users to play receive a random word, and then draw it. That image will be transmitted to other players, and those players will have to guess what it is. Think of it like online charades, but drawing! Players will earn points by guessing correctly, and the person that gets the most correct in a session wins. The number of wins will be stored per player and displayed in a leaderboard to see who the best guesser is overall.
+### rooms.json
+For this file, the positions of the doors array in each room is relative to the position of the room, making it easier to add with code.
+-->
+# Medical Murder Mystery
+
+[My Notes](./notes.md)
+
+Medical Murdery Mystery is a game where players act as characters working in a hospital. Each player will be able to navigate around the simple map, entering rooms one by one. As they do, they will be able to suspect their fellow players of murder by various means in multiple possible locations. It's based off of the popular board game Clue, but with a medical spin on it. Players will also be able to go back and see accusations made against them.
 
 ## 🚀 Specification Deliverable
 
@@ -16,14 +24,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Do you want to show off your amazing drawing skills to your friends? Want to cure some boredom? DrawnLine solves both of these problems! Using DrawnLine, you can easily get together with your friends virtually to play a drawing game together. Just get on the website, connect, and then start drawing away! Each person will have turns drawing and guessing the given word. Your friends will know how good you are at drawing, and it'll keep you coming back for more!
+Want to be the best investigator in town? Good at sniffing out yoru suspicious friends? Then Medical Murdery Mystery is the game for you! Take on the role of a medical worker in Provo City Hospital where a mysterious murder has taken place. The Provo police have tasked you and your coworkers with finding the culprit, but you suspect it was one of them, or perhaps even yourself. Come play and find out!
 
 ### Design
 
-<img src="readmeImgs/DrawLineLogin.png" alt="Login-Image" style="width:40%; height:auto;">
-<img src="readmeImgs/DrawLineDrawing.png" alt="Login-Image" style="width:40%; height:auto;">
+<img src="readmeImgs/MMM_login.png" alt="Login-Image" style="width:40%; height:auto;">
+<img src="readmeImgs/board.png" alt="Board-Image" style="width:30%; height:auto;">
 
-These two images are mockups of the site and how it might look. There is a simple login page, and there is the playing page. The playing page has a panel to display the users and their points, a canvas for the drawer to draw on and the guessers to view, and a panel for the guessers to guess in. Dave correctly guessed the drawing was an apple.
+These two images are mockups of the site and board. There is a simple login page, and there is the playing page, which will include the board. I will probably make the board more visually interesting as well. The playing page will include some player information and display the current suspicions being voiced by other players.
 
 <!--```mermaid
 sequenceDiagram
@@ -36,13 +44,14 @@ sequenceDiagram
 
 - Users can securely sign in
 - Several users can join together in a game
-- On their turn, drawer will receive a random prompt to draw
-- Drawing will appear on all devices, but only the drawer can draw on it
-- Other players will guess what it is as the first player draws
-- Each player guess is shown as they are made
-- The player chosen to draw will change over multiple rounds
-- Player with the most correct guesses wins
-- Players can view the leaderboard of most wins overall
+- On their turn, players will roll dice, move spaces, enter rooms, and submit suspicions
+- The board will update with player movements on every device
+- Players' suspicion submissions will be stored and viewable
+- Player turns will rotate around active players
+- If enough time:
+    - Players will have pieces of information
+    - Players can gather information as they submit suspicions
+    - A player can make a final accusation and win if correct
 
 ### Technologies
 
@@ -50,18 +59,18 @@ I am going to use the required technologies in the following ways.
 
 - **HTML** - It uses HTML to define the structure of the webpages. There will be three pages:
     1. The login page.
-    2. The drawing canvas/the input box for guessing.
-    3. The leaderboard page to show who has the most wins.
+    2. The playing page with the game board.
+    3. The history page to see past suspicions and accusations.
 - **CSS** - CSS will be used to make the the app look appealing, as well as make it fit on multiple screen sizes.
-- **JavaScript** - JavaScript will make the main functionality of drawing on the canvas and making guesses possible.
-- **React** -  React tie together all the HTML, CSS, and JS in a dynamic way. It will also be used for page routing.
+- **JavaScript** - JavaScript will define the main functionality of moving on the board and submitting suspicions.
+- **React** - React will be responsible for tying together the HTML, CSS, and JS. It will also handle the routing.
 - **Service** - There will be multiple service endpoints:
     * Backend service for logging in
-    * Submitting guesses and saving correct answers
-    * Retrieving the leaderboard to display win counts
-    * Using an API like [WordsAPI](https://www.wordsapi.com/docs/) to retrieve a random prompt word to draw
-- **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the number of wins for each user to be ranked on the leaderboard.
-- **WebSocket** - WebSocket will broadcast the current canvas and player guesses and alert when someone has guessed correctly.
+    * Sending board moves and suspicions to the backend
+    * Retrieving history of suspicions to display
+    * Using an API like [RPG Dice Roller](https://rpg-dice-roller-api.djpeacher.com/) to retrieve a random dice roll
+- **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the history of suspicions the player has made.
+- **WebSocket** - WebSocket will broadcast the current board and player suspicions in real-time to other players.
 
 ## 🚀 AWS deliverable
 
