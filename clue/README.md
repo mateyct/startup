@@ -1,14 +1,11 @@
-# (Medical Murder Mystery) Online Clue Clone
-This was a secondary idea I had for my startup that I'm going to work on simultaneously. I'm not sure I want to use it, but to make sure it demonstrates the proper commits if I do use it, I'm going to keep it here in the startup repo.
-
-
+<!--# Medical Murder Mystery
 
 ## dataFiles Info
 Below is important info about the files in dataFiles
 
 ### rooms.json
 For this file, the positions of the doors array in each room is relative to the position of the room, making it easier to add with code.
-
+-->
 # Medical Murder Mystery
 
 [My Notes](../notes.md)
@@ -47,14 +44,14 @@ sequenceDiagram
 
 - Users can securely sign in
 - Several users can join together in a game
-- On their turn, players will roll dice, move spaces, enter rooms, and raise suspicions
-<!--Work from here-->
-- Drawing will appear on all devices, but only the drawer can draw on it
-- Other players will guess what it is as the first player draws
-- Each player guess is shown as they are made
-- The player chosen to draw will change over multiple rounds
-- Player with the most correct guesses wins
-- Players can view the leaderboard of most wins overall
+- On their turn, players will roll dice, move spaces, enter rooms, and submit suspicions
+- Board will update with player movements on every device
+- Players' suspicion submissions will be stored and viewable
+- Player turns will rotate around active players
+- If enough time:
+    - Players will have pieces of information
+    - Players can gather information as they submit suspicions
+    - A player can make a final accusation, and win if correct
 
 ### Technologies
 
@@ -62,17 +59,18 @@ I am going to use the required technologies in the following ways.
 
 - **HTML** - It uses HTML to define the structure of the webpages. There will be three pages:
     1. The login page.
-    2. The drawing canvas/the input box for guessing.
-    3. The leaderboard page to show who has the most wins.
+    2. The playing page with the game board.
+    3. The history page to see past suspicions and accusations.
 - **CSS** - CSS will be used to make the the app look appealing, as well as make it fit on multiple screen sizes.
-- **React** - React will make the main functionality of drawing on the canvas and making guesses possible. It will also be used for logging in to the site and page routing.
+- **JavaScript** - JavaScript will define the main functionality of moving on the board and submitting suspicions.
+- **React** - React will be responsible for tying together the HTML, CSS, and JS. It will also handle the routing.
 - **Service** - There will be multiple service endpoints:
     * Backend service for logging in
-    * Submitting guesses and saving correct answers
-    * Retrieving the leaderboard to display win counts
-    * Using an API like [WordsAPI](https://www.wordsapi.com/docs/) to retrieve a random prompt word to draw
-- **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the number of wins for each user to be ranked on the leaderboard.
-- **WebSocket** - WebSocket will broadcast the current canvas and player guesses and alert when someone has guessed correctly.
+    * Sending board moves and suspicions to the backend
+    * Retrieving history of suspicions to display
+    * Using an API like [RPG Dice Roller](https://rpg-dice-roller-api.djpeacher.com/) to retrieve a random dice roll
+- **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the history of suspicions the player has made.
+- **WebSocket** - WebSocket will broadcast the current board and player suspicions in real-time to other players.
 
 ## 🚀 AWS deliverable
 

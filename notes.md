@@ -3,12 +3,7 @@
 ### First notes (From GitHub Reading)
 I already knew a lot about GitHub and Git before reading this, but I did learn that you can create a new repository using another one as a template. This could be helpful for me at some point.
 
-## Startup Ideas
-- Sharing Cookbook (Not sure if this can include everything)
-- Scripture Chase
-- Pictionary (probably this one!)
-
-[My startup](https://simon.cs260.click)
+[My startup](http://18.233.173.238)
 
 ## Helpful links
 
