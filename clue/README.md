@@ -13,7 +13,7 @@ For this file, the positions of the doors array in each room is relative to the 
 
 [My Notes](../notes.md)
 
-Medical Murdery Mystery is a game where players act as characters working in a hospital. Each player will be able to navigate around the simple map, entering rooms one by one. As they do, they will be able to suspect their fellow players of murder by various means in multiple possible locations. It's based off of the popular board game Clue, but with a medical spin on it.
+Medical Murdery Mystery is a game where players act as characters working in a hospital. Each player will be able to navigate around the simple map, entering rooms one by one. As they do, they will be able to suspect their fellow players of murder by various means in multiple possible locations. It's based off of the popular board game Clue, but with a medical spin on it. Players will also be able to go back and see accusations made against them.
 
 ## 🚀 Specification Deliverable
 
@@ -47,7 +47,8 @@ sequenceDiagram
 
 - Users can securely sign in
 - Several users can join together in a game
-- On their turn, drawer will receive a random prompt to draw
+- On their turn, players will roll dice, move spaces, enter rooms, and raise suspicions
+<!--Work from here-->
 - Drawing will appear on all devices, but only the drawer can draw on it
 - Other players will guess what it is as the first player draws
 - Each player guess is shown as they are made
