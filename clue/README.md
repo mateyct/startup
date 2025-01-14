@@ -29,7 +29,7 @@ Want to be the best investigator in town? Good at sniffing out yoru suspicious f
 ### Design
 
 <img src="MMM_login.png" alt="Login-Image" style="width:40%; height:auto;">
-<img src="board.png" alt="Login-Image" style="width:30%; height:auto;">
+<img src="board.png" alt="Board-Image" style="width:30%; height:auto;">
 
 These two images are mockups of the site and board. There is a simple login page, and there is the playing page, which will include the board. I will probably make the board more visually interesting as well. The playing page will include some player information and display the current suspicions being voiced by other players.
 
@@ -45,13 +45,13 @@ sequenceDiagram
 - Users can securely sign in
 - Several users can join together in a game
 - On their turn, players will roll dice, move spaces, enter rooms, and submit suspicions
-- Board will update with player movements on every device
+- The board will update with player movements on every device
 - Players' suspicion submissions will be stored and viewable
 - Player turns will rotate around active players
 - If enough time:
     - Players will have pieces of information
     - Players can gather information as they submit suspicions
-    - A player can make a final accusation, and win if correct
+    - A player can make a final accusation and win if correct
 
 ### Technologies
 
