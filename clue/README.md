@@ -9,11 +9,11 @@ Below is important info about the files in dataFiles
 ### rooms.json
 For this file, the positions of the doors array in each room is relative to the position of the room, making it easier to add with code.
 
-# DrawnLine
+# Medical Murder Mystery
 
 [My Notes](../notes.md)
 
-DrawnLine is an app that allows users to play receive a random word, and then draw it. That image will be transmitted to other players, and those players will have to guess what it is. Think of it like online charades, but drawing! Players will earn points by guessing correctly, and the person that gets the most correct in a session wins. The number of wins will be stored per player and displayed in a leaderboard to see who the best guesser is overall.
+Medical Murdery Mystery is a game where players act as characters working in a hospital. Each player will be able to navigate around the simple map, entering rooms one by one. As they do, they will be able to suspect their fellow players of murder by various means in multiple possible locations. It's based off of the popular board game Clue, but with a medical spin on it.
 
 ## 🚀 Specification Deliverable
 
