@@ -22,63 +22,69 @@
             </nav>
         </header>
         <hr>
-        <h1>Play</h1>
-        <!--Main playing feature things-->
-        <img src="readmeImgs/board.png" width="30%" height="auto">
-        <button id="dice-roll">Roll Die</button>
-        <p>Moves left: <span id="moves-left"></span></p>
-        <div>
-            <h3>Players</h3>
-            <ul>
-                <li>Dave100</li>
-                <li>You</li>
-                <li>Jeremy</li>
-            </ul>
-        </div>
-        <div>
-            <!--Form for making a guess-->
-            <h3>Make a guess</h3>
-            <form>
-                <div>
-                    <label>Player</label>
-                    <select>
-                        <option>Dave100</option>
-                        <option>You</option>
-                        <option>Jeremy</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Room</label>
-                    <select>
-                        <option>Clinic</option>
-                        <option>Doctor's Office</option>
-                        <option>Director's Office</option>
-                        <option>Lab</option>
-                        <option>ICU</option>
-                        <option>Operating Room</option>
-                        <option>Lobby</option>
-                        <option>MRI Room</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Weapon</label>
-                    <select>
-                        <option>Stethoscope</option>
-                        <option>Syringe</option>
-                        <option>Reflex Hammer</option>
-                        <option>IV Needle</option>
-                        <option>Pulling the Plug</option>
-                        <option>Latex Gloves</option>
-                        <option>Boredom</option>
-                        <option>Defibrilator</option>
-                    </select>
-                </div>
-                <input type="submit">
-            </form>
-        </div>
+        <main>
+            <h1>Play</h1>
+            <!--Main playing feature things-->
+            <img src="readmeImgs/board.png" width="30%" height="auto">
+            <button id="dice-roll">Roll Die</button>
+            <p>Moves left: 4<span id="moves-left"></span></p>
+            <div>
+                <h3>Players</h3>
+                <ul>
+                    <li>Dave100</li>
+                    <li>You</li>
+                    <li>Jeremy</li>
+                </ul>
+            </div>
+            <div>
+                <!--Form for making a guess-->
+                <h3>Make a guess</h3>
+                <form method="dialog" action="play.html">
+                    <div>
+                        <label>Player</label>
+                        <select>
+                            <option>Dave100</option>
+                            <option>You</option>
+                            <option>Jeremy</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Room</label>
+                        <select>
+                            <option>Clinic</option>
+                            <option>Doctor's Office</option>
+                            <option>Director's Office</option>
+                            <option>Lab</option>
+                            <option>ICU</option>
+                            <option>Operating Room</option>
+                            <option>Lobby</option>
+                            <option>MRI Room</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Weapon</label>
+                        <select>
+                            <option>Stethoscope</option>
+                            <option>Syringe</option>
+                            <option>Reflex Hammer</option>
+                            <option>IV Needle</option>
+                            <option>Pulling the Plug</option>
+                            <option>Latex Gloves</option>
+                            <option>Boredom</option>
+                            <option>Defibrilator</option>
+                        </select>
+                    </div>
+                    <input type="submit">
+                </form>
+            </div>
+        </main>
         <!--GitHub link/footer-->
         <hr>
         <footer>
+            <div class="verse">
+                <p class="v-title">3 Nephi 5:13</p>
+                <p class="verse">Behold, I am a disciple of Jesus Christ, the Son of God. I have been called of him to declare his word among his people, that they might have everlasting life.</p>
+            </div>
             <p>Mason Tolley</p>
             <a href="https://github.com/mateyct/startup.git" target="_blank">GitHub</a>
         </footer>

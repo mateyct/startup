@@ -69,6 +69,7 @@ I am going to use the required technologies in the following ways.
     * Sending board moves and suspicions to the backend
     * Retrieving history of suspicions to display
     * Using an API like [RPG Dice Roller](https://rpg-dice-roller-api.djpeacher.com/) to retrieve a random dice roll
+    * Also retrieving a random Book of Mormon verse to display in the footer from [BraydenTW/book-of-mormon-api](https://book-of-mormon-api.vercel.app) ([GitHub](https://github.com/BraydenTW/book-of-mormon-api))
 - **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the history of suspicions the player has made.
 - **WebSocket** - WebSocket will broadcast the current board and player suspicions in real-time to other players.
 
