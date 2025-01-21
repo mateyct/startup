@@ -83,15 +83,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] **HTML pages** - The 3 HTML pages are filled and linked together.
+- [x] **Proper HTML element usage** - Each page contains MAIN, NAV, HEADER, BODY, FOOTER
+- [x] **Links** - Each page contains navigation links in the header.
+- [x] **Text** - Pages have placeholder text that represents what it will be like.
+- [x] **3rd party API placeholder** - There is a button that will eventually call a dice roller API. The footer also shows a placeholder for a random Book of Mormon verse.
+- [x] **Images** - There is a favicon, and it is also used in the header of each page.
+- [x] **Login placeholder** - The login is represented on the index.html page.
+- [x] **DB data placeholder** - The history page shows history data that will be stored in the database.
+- [x] **WebSocket placeholder** - The game board and players will update in realtime.
 
 ## 🚀 CSS deliverable
 

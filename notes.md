@@ -5,6 +5,11 @@ I already knew a lot about GitHub and Git before reading this, but I did learn t
 
 [My startup](http://18.233.173.238)
 
+## To-Do
+- I may need to add a panel for showing the recent guesses
+- I might want to add a place for players to view the info they know
+- Include a way for players to show the info they have?
+
 ## Helpful links
 
 - [Course instruction](https://github.com/webprogramming260)
