@@ -1,0 +1,16 @@
+/*Remove underline and colors*/
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+.header-title a, .header-title a:hover, .header-title a:visited {
+    color: black;
+}
