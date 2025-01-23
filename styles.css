@@ -1,3 +1,13 @@
+* {
+    font-family: "Rubik", serif;
+    font-optical-sizing: auto;
+    margin: 0;
+}
+html {
+    background-image: linear-gradient(#cfd9df, #e2ebf0);
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
 /*Remove underline and colors*/
 a {
     text-decoration: none;
@@ -11,6 +21,50 @@ a:visited {
     text-decoration: none;
 }
 
+/*Title styles*/
 .header-title a, .header-title a:hover, .header-title a:visited {
     color: black;
+}
+
+h1.header-title {
+    font-size: 3em;
+    margin: 10px;
+}
+
+.header-title a {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.header-title a img {
+    width: 50px;
+}
+
+/*Navigation styles*/
+.navigation {
+    width: 100%;
+    margin: 10px 0;
+}
+.navigation ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    
+}
+
+.navigation ul li {
+    list-style: none;
+    width: 10%;
+    background: lightblue;
+    text-align: center;
+    
+    border-radius: 5px;
+}
+
+.navigation ul li a {
+    color: black;
+    padding: 10px 0;
+    width: 100%;
+    display: block;
 }
