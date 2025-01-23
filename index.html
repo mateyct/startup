@@ -15,6 +15,7 @@
     <body>
         <!--Header and nav-->
         <header>
+            <!--TODO: Eventually, have it display the logo left, title middle, and user right-->
             <h1 class="header-title"><a href="/"><img src="images/favicon.ico">Medical Murdery Mystery</a></h1>
             <nav class="navigation">
                 <ul>
@@ -25,29 +26,31 @@
             </nav>
         </header>
         <hr>
-        <main>
-            <h2>Log in to Medical Murdery Mystery</h2>
-            <form>
+        <main class="index-main">
+            <form class="login-form">
+                <h2>Log in to Medical Murdery Mystery</h2>
+                <!--Add div to these to make it easier to organize with CSS-->
                 <div>
-                    <label>Username</label>
-                    <input type="text" id="username" placeholder="Username"/>
+                    <div>
+                        <label>Username</label>
+                        <input type="text" id="username" placeholder="Username"/>
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Password"/>
+                    </div>
+                    <input type="submit" value="Log In">
                 </div>
-                <div>
-                    <label>Password</label>
-                    <input type="password" id="password" placeholder="Password"/>
-                </div>
-                <button id="login-btn">Log in</button>
             </form>
         </main>
         <!--GitHub link/footer-->
-        <hr>
-        <footer>
+        <footer class="footer">
+            <hr>
             <div class="verse">
                 <p class="v-title">3 Nephi 5:13</p>
-                <p class="verse">Behold, I am a disciple of Jesus Christ, the Son of God. I have been called of him to declare his word among his people, that they might have everlasting life.</p>
+                <p class="v-verse">Behold, I am a disciple of Jesus Christ, the Son of God. I have been called of him to declare his word among his people, that they might have everlasting life.</p>
             </div>
-            <p>Mason Tolley</p>
-            <a href="https://github.com/mateyct/startup.git" target="_blank">GitHub</a>
+            <p>Mason Tolley<a href="https://github.com/mateyct/startup.git" target="_blank"> GitHub</a></p>
         </footer>
     </body>
 </html>
