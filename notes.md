@@ -47,3 +47,21 @@ I already knew a lot about GitHub and Git before reading this, but I did learn t
 | submit         | button to trigger form submission |
 
 - It's a smart idea to use a script to deploy to the server
+
+## CSS Notes
+
+| Combinator       | Meaning                    | Example        | Description                                |
+| ---------------- | -------------------------- | -------------- | ------------------------------------------ |
+| Descendant       | A list of descendants      | `body section` | Any section that is a descendant of a body |
+| Child            | A list of direct children  | `section > p`  | Any p that is a direct child of a section  |
+| General sibling  | A list of siblings         | `div ~ p`      | Any p that has a div sibling               |
+| Adjacent sibling | A list of adjacent sibling | `div + p`      | Any p that has an adjacent div sibling     |
+
+There are more combinators than I realized.
+
+Attribute selector:
+```css
+p[class='summary'] {
+  color: red;
+}
+```
