@@ -4,7 +4,7 @@
     margin: 0;
 }
 body {
-    min-height: 100vh;
+    min-height: 90vh;
     display: block;
 }
 /*Remove underline and colors*/
@@ -84,6 +84,7 @@ h1.header-title {
     bottom: 0;
     width: 100%;
     background-color: white;
+    height: 10vh;
 }
 
 .footer > p {

@@ -11,6 +11,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="css/global.css">
+        <link rel="stylesheet" href="css/play.css">
     </head>
     <body>
         <!--Header and nav-->
@@ -30,60 +31,81 @@
         </header>
         <hr>
         <main>
-            <h1>Play</h1>
-            <!--Main playing feature things-->
-            <img src="readmeImgs/board.png" width="30%" height="auto">
-            <button id="dice-roll">Roll Die</button>
-            <p>Moves left: 4<span id="moves-left"></span></p>
-            <div>
-                <h3>Players</h3>
-                <ul>
-                    <li>Dave100</li>
-                    <li>You</li>
-                    <li>Jeremy</li>
-                </ul>
-            </div>
-            <div>
-                <!--Form for making a guess-->
-                <h3>Make a guess</h3>
-                <form method="dialog" action="play.html">
+            <section id="play-page-layout">
+                <!--Section on left for controls/info-->
+                <div class="controls">
+                    <!--Info section-->
+                    <h3>Your Secret Info</h3>
+                    <ul>
+                        <li>Dr. Tyler is innocent</li>
+                        <li>The Syringe was not involved</li>
+                        <li>It didn't happen in the Lobby</li>
+                        <li>The Reflex Hammer was not involved</li>
+                    </ul>
+                    <hr>
+                    <!--Dice section-->
+                    <h3>Roll for movement</h3>
+                    <button id="dice-roll">Roll Die</button>
+                    <p>Moves left: 4<span id="moves-left"></span></p>
+                    <hr>
+                    <!--Form for making a guess-->
+                    <h3>Make a guess</h3>
+                    <form method="dialog" action="play.html">
+                        <div>
+                            <label>Player</label>
+                            <select>
+                                <option>Dave100</option>
+                                <option>You</option>
+                                <option>Jeremy</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Room</label>
+                            <select>
+                                <option>Clinic</option>
+                                <option>Doctor's Office</option>
+                                <option>Director's Office</option>
+                                <option>Lab</option>
+                                <option>ICU</option>
+                                <option>Operating Room</option>
+                                <option>Lobby</option>
+                                <option>MRI Room</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Weapon</label>
+                            <select>
+                                <option>Stethoscope</option>
+                                <option>Syringe</option>
+                                <option>Reflex Hammer</option>
+                                <option>IV Needle</option>
+                                <option>Pulling the Plug</option>
+                                <option>Latex Gloves</option>
+                                <option>Boredom</option>
+                                <option>Defibrilator</option>
+                            </select>
+                        </div>
+                        <input type="submit">
+                    </form>
+                </div>
+                <!--Middle section that's a play area-->
+                <div class="player-area">
+                    <h1>Play</h1>
+                    <!--Main playing feature things-->
+                    <img src="readmeImgs/board.png" width="30%" height="auto">
+                </div>
+                <!--Section on the right, shows live info from others and such-->
+                <div class="chat">
                     <div>
-                        <label>Player</label>
-                        <select>
-                            <option>Dave100</option>
-                            <option>You</option>
-                            <option>Jeremy</option>
-                        </select>
+                        <h3>Players</h3>
+                        <ul>
+                            <li>Dave100</li>
+                            <li>You</li>
+                            <li>Jeremy</li>
+                        </ul>
                     </div>
-                    <div>
-                        <label>Room</label>
-                        <select>
-                            <option>Clinic</option>
-                            <option>Doctor's Office</option>
-                            <option>Director's Office</option>
-                            <option>Lab</option>
-                            <option>ICU</option>
-                            <option>Operating Room</option>
-                            <option>Lobby</option>
-                            <option>MRI Room</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Weapon</label>
-                        <select>
-                            <option>Stethoscope</option>
-                            <option>Syringe</option>
-                            <option>Reflex Hammer</option>
-                            <option>IV Needle</option>
-                            <option>Pulling the Plug</option>
-                            <option>Latex Gloves</option>
-                            <option>Boredom</option>
-                            <option>Defibrilator</option>
-                        </select>
-                    </div>
-                    <input type="submit">
-                </form>
-            </div>
+                </div>
+            </section>
         </main>
         <!--GitHub link/footer-->
         <footer class="footer">
@@ -95,11 +117,5 @@
             <p>Mason Tolley<a href="https://github.com/mateyct/startup.git" target="_blank"> GitHub</a></p>
         </footer>
         <!--Make footer leave room for stuff-->
-        <script>
-            window.onload = () => {
-                let footer = document.getElementsByTagName("footer")[0];
-                document.getElementsByTagName("body")[0].style.paddingBottom = footer.clientHeight + "px";
-            };
-        </script>
     </body>
 </html>
