@@ -2,8 +2,34 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
+    height: 75vh;
 }
 #play-page-layout .controls {
     border-right: 1px solid black;
-    border-bottom: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#play-page-layout .player-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#play-page-layout .chat-box {
+    border-left: 1px solid black;
+    display: grid;
+    grid-template-rows: 1fr 4fr;
+}
+.chat {
+    background-color: rgb(230, 230, 230);
+    height: calc(100% - 1px);
+    border-top: 1px solid black;
+}
+#board {
+    width: 50%;
+}
+main h1 {
+    text-align: center;
 }

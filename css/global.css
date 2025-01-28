@@ -79,9 +79,9 @@ h1.header-title {
 
 /*Footer CSS*/
 .footer {
-    position: fixed;
+    /*position: fixed;
     left: 0;
-    bottom: 0;
+    bottom: 0;*/
     width: 100%;
     background-color: white;
     height: 10vh;

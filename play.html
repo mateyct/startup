@@ -31,77 +31,95 @@
         </header>
         <hr>
         <main>
+            <h1>Play</h1>
+            <hr>
             <section id="play-page-layout">
                 <!--Section on left for controls/info-->
                 <div class="controls">
-                    <!--Info section-->
-                    <h3>Your Secret Info</h3>
-                    <ul>
-                        <li>Dr. Tyler is innocent</li>
-                        <li>The Syringe was not involved</li>
-                        <li>It didn't happen in the Lobby</li>
-                        <li>The Reflex Hammer was not involved</li>
-                    </ul>
+                    <div>
+                        <!--Info section-->
+                        <h3>Your Secret Info</h3>
+                        <ul>
+                            <li>Dr. Tyler is innocent</li>
+                            <li>The Syringe was not involved</li>
+                            <li>It didn't happen in the Lobby</li>
+                            <li>The Reflex Hammer was not involved</li>
+                        </ul>
+                    </div>
                     <hr>
-                    <!--Dice section-->
-                    <h3>Roll for movement</h3>
-                    <button id="dice-roll">Roll Die</button>
-                    <p>Moves left: 4<span id="moves-left"></span></p>
+                    <div>
+                        <!--Dice section-->
+                        <h3>Roll for movement</h3>
+                        <button id="dice-roll">Roll Die</button>
+                        <p>Moves left: 4<span id="moves-left"></span></p>
+                    </div>
                     <hr>
-                    <!--Form for making a guess-->
-                    <h3>Make a guess</h3>
-                    <form method="dialog" action="play.html">
-                        <div>
-                            <label>Player</label>
-                            <select>
-                                <option>Dave100</option>
-                                <option>You</option>
-                                <option>Jeremy</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Room</label>
-                            <select>
-                                <option>Clinic</option>
-                                <option>Doctor's Office</option>
-                                <option>Director's Office</option>
-                                <option>Lab</option>
-                                <option>ICU</option>
-                                <option>Operating Room</option>
-                                <option>Lobby</option>
-                                <option>MRI Room</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Weapon</label>
-                            <select>
-                                <option>Stethoscope</option>
-                                <option>Syringe</option>
-                                <option>Reflex Hammer</option>
-                                <option>IV Needle</option>
-                                <option>Pulling the Plug</option>
-                                <option>Latex Gloves</option>
-                                <option>Boredom</option>
-                                <option>Defibrilator</option>
-                            </select>
-                        </div>
-                        <input type="submit">
-                    </form>
+                    <div>
+                        <!--Form for making a guess-->
+                        <h3>Make a guess</h3>
+                        <form method="dialog" action="play.html">
+                            <div>
+                                <label>Player</label>
+                                <select>
+                                    <option>Dave100</option>
+                                    <option>You</option>
+                                    <option>Jeremy</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Room</label>
+                                <select>
+                                    <option>Clinic</option>
+                                    <option>Doctor's Office</option>
+                                    <option>Director's Office</option>
+                                    <option>Lab</option>
+                                    <option>ICU</option>
+                                    <option>Operating Room</option>
+                                    <option>Lobby</option>
+                                    <option>MRI Room</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Weapon</label>
+                                <select>
+                                    <option>Stethoscope</option>
+                                    <option>Syringe</option>
+                                    <option>Reflex Hammer</option>
+                                    <option>IV Needle</option>
+                                    <option>Pulling the Plug</option>
+                                    <option>Latex Gloves</option>
+                                    <option>Boredom</option>
+                                    <option>Defibrilator</option>
+                                </select>
+                            </div>
+                            <input type="submit">
+                        </form>
+                    </div>
                 </div>
                 <!--Middle section that's a play area-->
                 <div class="player-area">
-                    <h1>Play</h1>
                     <!--Main playing feature things-->
-                    <img src="readmeImgs/board.png" width="30%" height="auto">
+                    <img src="readmeImgs/board.png" id="board">
                 </div>
                 <!--Section on the right, shows live info from others and such-->
-                <div class="chat">
+                <div class="chat-box">
+                    <!--Show the players-->
                     <div>
                         <h3>Players</h3>
                         <ul>
                             <li>Dave100</li>
                             <li>You</li>
                             <li>Jeremy</li>
+                        </ul>
+                    </div>
+                    <!--A place for an info chat-->
+                    <div class="chat">
+                        <p>Jeremy Entered Lobby</p>
+                        <p>Jeremy suspected the murderer was:</p>
+                        <ul>
+                            <li>You</li>
+                            <li>In the Clinic</li>
+                            <li>With the Syringe</li>
                         </ul>
                     </div>
                 </div>
