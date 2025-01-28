@@ -20,14 +20,24 @@
     border-left: 1px solid black;
     display: grid;
     grid-template-rows: 1fr 4fr;
+    height: 100%;
+    max-height: 100%;
 }
+
+#play-page-layout h3 {
+    text-align: center;
+    margin: 5px;
+}
+
 .chat {
     background-color: rgb(230, 230, 230);
     height: calc(100% - 1px);
     border-top: 1px solid black;
+    overflow-y: auto;
 }
 .chat-message {
     margin: 10px 5px;
+    
 }
 #board {
     width: 50%;
@@ -41,6 +51,9 @@
     grid-row: auto / span 6;
     grid-column: auto / span 6;
     border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .void {
     border: 1px solid black;
@@ -87,6 +100,12 @@
 .mri {
     grid-column: 19 / 25;
     grid-row: 19 / 25;
+}
+
+.hall {
+    border: 1px solid black;
+    grid-row: span 1;
+    grid-column: span 1;
 }
 
 main h1 {
