@@ -36,7 +36,7 @@
             <section id="play-page-layout">
                 <!--Section on left for controls/info-->
                 <div class="controls">
-                    <div>
+                    <div class="secret-info">
                         <!--Info section-->
                         <h3>Your Secret Info</h3>
                         <ul>
@@ -47,14 +47,14 @@
                         </ul>
                     </div>
                     <hr>
-                    <div>
+                    <div class="rolling">
                         <!--Dice section-->
                         <h3>Roll for movement</h3>
                         <button id="dice-roll">Roll Die</button>
                         <p>Moves left: 4<span id="moves-left"></span></p>
                     </div>
                     <hr>
-                    <div>
+                    <div class="guessing">
                         <!--Form for making a guess-->
                         <h3>Make a guess</h3>
                         <form method="dialog" action="play.html">
@@ -394,9 +394,10 @@
                         </ul>
                     </div>
                     <!--A place for an info chat-->
-                    <div class="chat">
+                    <div class="chat-header">
                         <h3>Info Chat</h3>
-                        <hr>
+                    </div>
+                    <div id="chat">
                         <div class="chat-message">
                             <p>Jeremy Entered Lobby</p>
                         </div>
@@ -412,6 +413,7 @@
                             </ul>
                         </div>
                     </div>
+                    
                 </div>
             </section>
         </main>
@@ -427,7 +429,7 @@
         <!--Make footer leave room for stuff-->
         <script>
             function resizeChat() {
-                let chat = document.querySelector('.chat');
+                let chat = document.querySelector('#chat');
                 let mainParent = document.getElementById('play-page-layout')
                 chat.style.height = (mainParent.clientHeight * (4 / 5) - 1) + "px";
             }

@@ -19,7 +19,7 @@
 #play-page-layout .chat-box {
     border-left: 1px solid black;
     display: grid;
-    grid-template-rows: 1fr 4fr;
+    grid-template-rows: .75fr .25fr 4fr;
     height: 100%;
     max-height: 100%;
 }
@@ -27,17 +27,22 @@
 #play-page-layout h3 {
     text-align: center;
     margin: 5px;
+    font-size: 1.25em;
 }
 
-.chat {
-    background-color: rgb(230, 230, 230);
+.chat-header {
     height: calc(100% - 1px);
     border-top: 1px solid black;
+    height: 100%;
+}
+#chat {
+    background-color: rgb(230, 230, 230);
     overflow-y: auto;
+    border-top: 1px solid black;
 }
 .chat-message {
     margin: 10px 5px;
-    
+    font-style: italic;
 }
 #board {
     width: 50%;
@@ -114,4 +119,8 @@
 
 main h1 {
     text-align: center;
+}
+
+.controls {
+
 }
