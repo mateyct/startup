@@ -1,0 +1,20 @@
+h1 {
+    text-align: center;
+}
+
+.history-item h3 {
+    font-size: 1.5em;
+    margin-bottom: .5em;
+}
+
+.history-item {
+    margin: 1em;
+}
+
+.history-item p {
+    font-size: 1em;
+}
+
+.history-item ul {
+    font-size: 1em;
+}
