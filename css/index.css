@@ -47,7 +47,22 @@
 .login-form > div > input {
     margin: 10px;
     font-size: 1.5em;
-    background-color: lightblue;
     border: none;
     padding: 5px 10px;
+    border-radius: 5px;
+}
+
+@media only screen and (max-width: 768px){
+    .login-form {
+        height: 75%;
+        width: 90%;
+    }
+    .login-form h2 {
+        text-align: center;
+        font-size: 1.5em;
+        margin: 10px;
+    }
+    .login-form input {
+        padding: 0;
+    }
 }

@@ -390,8 +390,8 @@
                 <!--Section on the right, shows live info from others and such-->
                 <div id="chat-box">
                     <!--Show the players-->
-                    <button id="close-chat" class="large-screen-hidden"></button>
                     <div>
+                        <button id="close-chat" class="large-screen-hidden"></button>
                         <h3>Players</h3>
                         <ul>
                             <li>Dave100</li>
@@ -435,6 +435,8 @@
         <!--Make footer leave room for stuff-->
         <script src="js/modals.js"></script>
         <script>
+            /*
+            I guess I don't really need this anymore...
             function resizeChat() {
                 let chatbox = document.querySelector('#chat-box');
                 let chat = document.querySelector('#chat');
@@ -443,6 +445,7 @@
             }
             window.addEventListener("load", resizeChat);
             window.onresize = resizeChat;
+            */
         </script>
     </body>
 </html>

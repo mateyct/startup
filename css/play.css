@@ -144,21 +144,6 @@ main h1 {
     }
 }
 
-.my-button {
-    background-color: #4A90E2;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 1.5em;
-}
-
-.my-button:hover {
-    background-color: #417fc6;
-}
-.my-button:active {
-    background-color: #386da8;
-}
-
 .guessing {
     border-top: 1px solid black;
 }
