@@ -1,20 +1,29 @@
-h1 {
+/*h1 {
     text-align: center;
 }
 
-.history-item h3 {
-    font-size: 1.5em;
-    margin-bottom: .5em;
+table {
+    width: 75%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    border: 1px solid black;
 }
 
-.history-item {
-    margin: 1em;
+th {
+    font-weight: bold;
+    text-align: left;
+    background-color: #4A90E2;
+    color: white;
 }
 
-.history-item p {
-    font-size: 1em;
+td, th {
+    margin: 0;
+    width: 16.66%;
+    padding: 10px;
+    font-size: 1.25em;
 }
 
-.history-item ul {
-    font-size: 1em;
+tr:nth-child(odd) {
+    background-color: #e7e7e7;
 }
+*/
