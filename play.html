@@ -383,13 +383,14 @@
                         <div class="hall"></div>
                     </div>
                 </div>
-                <div class="large-screen-hidden">
+                <div class="large-screen-hidden modal-buttons">
                     <button type="button" id="open-controls">Open Controls</button>
                     <button type="button" id="open-chat">Open Chat</button>
                 </div>
                 <!--Section on the right, shows live info from others and such-->
-                <div class="chat-box">
+                <div id="chat-box">
                     <!--Show the players-->
+                    <button id="close-chat" class="large-screen-hidden"></button>
                     <div>
                         <h3>Players</h3>
                         <ul>
@@ -435,7 +436,7 @@
         <script src="js/modals.js"></script>
         <script>
             function resizeChat() {
-                let chatbox = document.querySelector('.chat-box');
+                let chatbox = document.querySelector('#chat-box');
                 let chat = document.querySelector('#chat');
                 let mainParent = document.getElementById('play-page-layout')
                 chat.style.height = (mainParent.clientHeight * (4 / 5) - 1) + "px";
