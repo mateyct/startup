@@ -20,6 +20,10 @@ a:visited {
     text-decoration: none;
 }
 
+.large-screen-hidden {
+    display: none;
+}
+
 /*Title styles*/
 .header-row a, .header-row a:hover, .header-row a:visited {
     color: black;
@@ -42,6 +46,9 @@ h1.header-title {
         margin: auto 10px;
         font-size: 1.5em;
         text-align: right;
+    }
+    & p::before{
+        content: "User: ";
     }
     & > span {
         width: 20%;
@@ -104,4 +111,46 @@ h1.header-title {
 }
 .v-title {
     font-size: 1.3em;
+}
+
+@media only screen and (max-width: 600px){
+    .mobile-hidden {
+        display: none;
+    }
+
+    .large-screen-hidden {
+        display: inline;
+    }
+
+    /*Title styles*/
+    h1.header-title {
+        font-size: 2em;
+        margin: 10px;
+    }
+
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        & img {
+            min-width: 50px;
+            margin: auto 10px;
+        }
+        & p {
+            font-size: 1em;
+            
+        }
+        & p::before{
+            content: "";
+        }
+        & > span {
+            width: 20%;
+        }
+    }
+
+    /*Navigation styles*/
+    .navigation ul li {
+        width: 30%;
+    }
+    
 }
