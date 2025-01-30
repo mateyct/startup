@@ -193,3 +193,22 @@ main h1 {
     padding: 10px 0;
     border-radius: .15em;
 }
+
+@media only screen and (max-width: 600px){
+    #play-page-layout {
+        grid-template-columns: 1fr;
+        height: 50vh;
+    }
+
+    #play-page-layout .controls {
+        display: none;
+    }
+
+    #play-page-layout .chat-box {
+        display: none;
+    }
+
+    #board {
+        width: 90%;
+    }
+}
