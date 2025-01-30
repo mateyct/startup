@@ -46,18 +46,16 @@
                             <li>The Reflex Hammer was not involved</li>
                         </ul>
                     </div>
-                    <hr>
                     <div class="rolling">
                         <!--Dice section-->
                         <h3>Roll for movement</h3>
-                        <button id="dice-roll">Roll Die</button>
                         <p>Moves left: 4<span id="moves-left"></span></p>
+                        <button id="dice-roll" class="my-button">Roll Die</button>
                     </div>
-                    <hr>
                     <div class="guessing">
                         <!--Form for making a guess-->
-                        <h3>Make a guess</h3>
                         <form method="dialog" action="play.html">
+                            <h3>Make a guess</h3>
                             <div>
                                 <label>Player</label>
                                 <select>
@@ -92,7 +90,9 @@
                                     <option>Defibrilator</option>
                                 </select>
                             </div>
-                            <input type="submit">
+                            <p>
+                                <input type="submit" class="my-button">
+                            </p>
                         </form>
                     </div>
                 </div>
@@ -429,6 +429,7 @@
         <!--Make footer leave room for stuff-->
         <script>
             function resizeChat() {
+                let chatbox = document.querySelector('.chat-box');
                 let chat = document.querySelector('#chat');
                 let mainParent = document.getElementById('play-page-layout')
                 chat.style.height = (mainParent.clientHeight * (4 / 5) - 1) + "px";

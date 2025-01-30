@@ -7,7 +7,7 @@
 #play-page-layout .controls {
     border-right: 1px solid black;
     display: grid;
-    grid-template-rows: 1fr 1px 1fr 1px 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
 }
 
 #play-page-layout .player-area {
@@ -62,7 +62,7 @@
     z-index: -1;
 }
 .door {
-    border: 3px solid green;
+    border: 3px solid #386da8;
 }
 .void {
     border: 1px solid black;
@@ -121,6 +121,75 @@ main h1 {
     text-align: center;
 }
 
-.controls {
+.controls .secret-info ul {
+    font-size: 1.25em;
+    line-height: 1.25em;
+}
 
+.controls .rolling {
+    border-top: 1px solid black;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    & > button {
+        width: 40%;
+        aspect-ratio: 3 / 1;
+        border-radius: .15em;
+        margin: 20px;
+    }
+    & > p {
+        font-size: 1.5em;
+    }
+}
+
+.my-button {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+.my-button:hover {
+    background-color: #417fc6;
+}
+.my-button:active {
+    background-color: #386da8;
+}
+
+.guessing {
+    border-top: 1px solid black;
+}
+.guessing form {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 95%;
+}
+.guessing form div {
+    font-size: 1.25em;
+    text-align: left;
+}
+.guessing form div label {
+    width: 30%;
+    display: inline-block;
+    margin: 10px 10px 10px 20px;
+}
+.guessing form div select {
+    width: 50%;
+    padding: 10px 0;
+}
+.guessing form p {
+    text-align: center;
+}
+.guessing form input {
+    margin: 10px 0 0 0;
+    text-align: center;
+    width: 40%;
+    padding: 10px 0;
+    border-radius: .15em;
 }

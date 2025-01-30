@@ -65,8 +65,15 @@ h1.header-title {
     width: 10%;
     background: #4A90E2;
     text-align: center;
-    
     border-radius: 5px;
+}
+
+.navigation ul li:hover {
+    background-color: #417fc6;
+}
+
+.navigation ul li:active {
+    background-color: #386da8;
 }
 
 .navigation ul li a {
