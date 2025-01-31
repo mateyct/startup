@@ -97,12 +97,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Header, footer, and main content body** - I did not complete this part of the deliverable.
-- [ ] **Navigation elements** - I did not complete this part of the deliverable.
-- [ ] **Responsive to window resizing** - I did not complete this part of the deliverable.
-- [ ] **Application elements** - I did not complete this part of the deliverable.
-- [ ] **Application text content** - I did not complete this part of the deliverable.
-- [ ] **Application images** - I did not complete this part of the deliverable.
+- [x] **Header, footer, and main content body** - I used CSS to make a simple but appealing design for these elements.
+- [x] **Navigation elements** - I made my navbar work with CSS well, it's simple but effective.
+- [x] **Responsive to window resizing** - The site works well with different screen sizes. It can be a little janky when actively switching between sizes after already loading in, but it doesn't break it.
+- [x] **Application elements** - I used flex and grid all over the place to make the site work. I also used some modals to make functionality possible on mobile.
+- [x] **Application text content** - I found a nice Google font that makes the text look good.
+- [x] **Application images** - I sized my logo image and used it as a link to the home page. It's also the favicon.
 
 ## 🚀 React part 1: Routing deliverable
 

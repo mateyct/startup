@@ -316,3 +316,10 @@ main h1 {
         display: grid;
     }
 }
+
+@media (orientation: landscape) {
+    /*CSS for controls*/
+    #controls {
+        font-size: .75em;
+    }
+}
