@@ -435,17 +435,22 @@
         <!--Make footer leave room for stuff-->
         <script src="js/modals.js"></script>
         <script>
-            /*
-            I guess I don't really need this anymore...
+            
+            //I guess I don't really need this anymore...
             function resizeChat() {
                 let chatbox = document.querySelector('#chat-box');
                 let chat = document.querySelector('#chat');
                 let mainParent = document.getElementById('play-page-layout')
-                chat.style.height = (mainParent.clientHeight * (4 / 5) - 1) + "px";
+                if (window.innerWidth > 1024) {
+                    chat.style.height = (mainParent.clientHeight * (4 / 5) - 1) + "px";
+                }
+                else {
+                    chat.style.height = (window.screen.height * (4 / 5) - 1) + "px";
+                }
             }
             window.addEventListener("load", resizeChat);
             window.onresize = resizeChat;
-            */
+            
         </script>
     </body>
 </html>

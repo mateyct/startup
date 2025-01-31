@@ -2,7 +2,7 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
-    height: 75vh;
+    min-height: 75vh;
 }
 #controls {
     border-top: 1px solid black;
@@ -45,7 +45,7 @@
     font-style: italic;
 }
 #board {
-    width: 50%;
+    width: 60%;
     aspect-ratio: 1/1;
     border: black 1px solid;
     display: grid;
@@ -64,6 +64,11 @@
 .door {
     border: 3px solid #386da8;
 }
+
+.hall:hover, .door:hover {
+    background-color: #eaeaea;
+}
+
 .void {
     border: 1px solid black;
     background-color: black;
@@ -196,7 +201,7 @@ main h1 {
     border-radius: 5px;
 }
 
-@media only screen and (max-width: 768px){
+@media only screen and (max-width: 1024px){
     #play-page-layout {
         grid-template-columns: 3fr;
         grid-template-rows: 1fr;
@@ -220,10 +225,12 @@ main h1 {
     /*CSS for controls*/
     #controls {
         display: none;
-        max-height: 75vh;
+        max-height: 100vh;
         background-color: #ffffffee;
         position: fixed;
         border-bottom: 1px solid black;
+        min-width: 40%;
+        top: 0;
     }
 
     #controls.modal {
@@ -275,7 +282,7 @@ main h1 {
     .guessing form div label {
         width: 30%;
         display: inline-block;
-        margin: 10px 10px 10px 20px;
+        margin: 0 10px 0 20px;
     }
     .guessing form div select {
         width: 50%;
@@ -296,12 +303,14 @@ main h1 {
     /*Chat window*/
     #chat-box {
         display: none;
-        max-height: 75vh;
+        max-height: 100vh;
         background-color: #ffffffee;
         position: fixed;
         border-bottom: 1px solid black;
         right: 0;
+        top: 0;
         border-top: 1px solid black;
+        min-width: 40%;
     }
     #chat-box.modal {
         display: grid;
