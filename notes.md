@@ -65,3 +65,16 @@ p[class='summary'] {
   color: red;
 }
 ```
+
+
+## Node Notes
+Steps: 
+1. Create your project directory
+2. Initialize it for use with NPM by running npm init -y
+3. Make sure .gitignore file contains node_modules
+4. Install any desired packages with npm install <package name here>
+5. Add require('<package name here>') to your application's JavaScript
+6. Use the code the package provides in your JavaScript
+7. Run your code with node index.js
+
+With VS Code you can create a launch configuration that specifies the watch parameter when every you debug with VS Code. In VS Code press CTRL-SHIFT-P (on Windows) or ⌘-SHIFT-P (on Mac) and type the command Debug: Add configuration. Select the Node.js option. This will create a launch configuration named .vscode/launch.json. Modify the configuration so that it includes the --watch parameter. This should look something like the following.
