@@ -6,9 +6,9 @@ export function History() {
         <main>
             {/*Placeholder for displaying history of suspicions*/}
             <h1>History of Suspicions</h1>
-            <div class="table-responsive-mine">
+            <div className="table-responsive-mine">
                 <table id="history-table">
-                    <thead class="thead-dark">
+                    <thead className="thead-dark">
                         <tr>
                             <th>Date</th>
                             <th>Guess #</th>
@@ -19,7 +19,7 @@ export function History() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="history-item">
+                        <tr className="history-item">
                             <td>1/23/2025</td>
                             <td>1</td>
                             <td>You (Mark123)</td>
@@ -27,7 +27,7 @@ export function History() {
                             <td>Lobby</td>
                             <td>Stethoscope</td>
                         </tr>
-                        <tr class="history-item">
+                        <tr className="history-item">
                             <td>1/23/2025</td>
                             <td>2</td>
                             <td>Jeremy</td>
@@ -35,7 +35,7 @@ export function History() {
                             <td>Clinic</td>
                             <td>Syringe</td>
                         </tr>
-                        <tr class="history-item">
+                        <tr className="history-item">
                             <td>1/23/2025</td>
                             <td>3</td>
                             <td>Dave100</td>

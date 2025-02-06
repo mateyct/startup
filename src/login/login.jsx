@@ -3,8 +3,8 @@ import "./login.css"
 
 export function Login() {
     return (
-        <main class="index-main">
-            <form class="login-form" action="play.html">
+        <main className="index-main">
+            <form className="login-form" action="play.html">
                 <h2>Log in to Medical Murdery Mystery</h2>
                 <div>
                     <div>
@@ -15,7 +15,7 @@ export function Login() {
                         <label>Password</label>
                         <input type="password" id="password" placeholder="Password" />
                     </div>
-                    <input type="submit" value="Log In" class="my-button" />
+                    <input type="submit" value="Log In" className="my-button" />
                 </div>
             </form>
         </main>
