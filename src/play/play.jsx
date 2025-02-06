@@ -78,29 +78,29 @@ export function Play() {
                         <div className="door" style={{gridArea: "6 / 3 / 7 / 4"}}></div>
                         <div className="door" style={{gridArea: "4 / 6 / 5 / 7"}}></div>
                         <div className="room dr-office">Dr. Office</div>
-                        <div className="door" gridArea="grid-area: 2 / 15 / 3 / 16;"></div>
-                        <div className="door" style="grid-area: 6 / 12 / 7 / 13;"></div>
-                        <div className="door" style="grid-area: 2 / 10 / 3 / 11;"></div>
+                        <div className="door" style={{gridArea: "2 / 15 / 3 / 16"}}></div>
+                        <div className="door" style={{gridArea: "6 / 12 / 7 / 13"}}></div>
+                        <div className="door" style={{gridArea: "2 / 10 / 3 / 11"}}></div>
                         <div className="room dir-office">Director's Office</div>
-                        <div className="door" style="grid-area: 5 / 19 / 6 / 20;"></div>
-                        <div className="door" style="grid-area: 6 / 22 / 7 / 23;"></div>
+                        <div className="door" style={{gridArea: "5 / 19 / 6 / 20"}}></div>
+                        <div className="door" style={{gridArea: "6 / 22 / 7 / 23"}}></div>
                         <div className="room lab">Lab</div>
-                        <div className="door" style="grid-area: 11 / 6 / 12 / 7;"></div>
-                        <div className="door" style="grid-area: 15 / 5 / 16 / 6;"></div>
+                        <div className="door" style={{gridArea: "11 / 6 / 12 / 7"}}></div>
+                        <div className="door" style={{gridArea: "15 / 5 / 16 / 6"}}></div>
                         <div className="void"></div>
                         <div className="room icu">ICU</div>
-                        <div className="door" style="grid-area: 10 / 21 / 11 / 22;"></div>
-                        <div className="door" style="grid-area: 15 / 23 / 16 / 24;"></div>
-                        <div className="door" style="grid-area: 13 / 19 / 14 / 20;"></div>
+                        <div className="door" style={{gridArea: "10 / 21 / 11 / 22"}}></div>
+                        <div className="door" style={{gridArea: "15 / 23 / 16 / 24"}}></div>
+                        <div className="door" style={{gridArea: "13 / 19 / 14 / 20"}}></div>
                         <div className="room operating">Operating Room</div>
-                        <div className="door" style="grid-area: 22 / 6 / 23 / 7;"></div>
-                        <div className="door" style="grid-area: 19 / 3 / 20 / 4;"></div>
+                        <div className="door" style={{gridArea: "22 / 6 / 23 / 7"}}></div>
+                        <div className="door" style={{gridArea: "19 / 3 / 20 / 4"}}></div>
                         <div className="room lobby">Lobby</div>
-                        <div className="door" style="grid-area: 19 / 12 / 20 / 13;"></div>
-                        <div className="door" style="grid-area: 19 / 13 / 20 / 14;"></div>
+                        <div className="door" style={{gridArea: "19 / 12 / 20 / 13"}}></div>
+                        <div className="door" style={{gridArea: "19 / 13 / 20 / 14"}}></div>
                         <div className="room mri">MRI Room</div>
-                        <div className="door" style="grid-area: 19 / 22 / 20 / 23;"></div>
-                        <div className="door" style="grid-area: 22 / 19 / 23 / 20;"></div>
+                        <div className="door" style={{gridArea: "19 / 22 / 20 / 23"}}></div>
+                        <div className="door" style={{gridArea: "22 / 19 / 23 / 20"}}></div>
                         <div className="hall"></div>
                         <div className="hall"></div>
                         <div className="hall"></div>

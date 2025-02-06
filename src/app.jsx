@@ -23,7 +23,7 @@ const Header = () => {
     return (
         <header>
             <div className="header-row">
-                <span><a href="/"><img src="public/favicon.ico"/></a></span>
+                <span><a href="/"><img src="/favicon.ico"/></a></span>
                 <a href="/"><h1 className="header-title mobile-hidden">Medical Murder Mystery</h1><h1 className="header-title large-screen-hidden">MMM</h1></a>
                 <span><p className="current-user">None</p></span>
             </div>
