@@ -1,9 +1,9 @@
 import React from 'react';
 import './app.css';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { Login } from './login/login'
-import { History } from './history/history'
-import { Play } from './play/play'
+import { Login } from './login/login';
+import { History } from './history/history';
+import { Play } from './play/play';
 
 export default function App() {
     return (
