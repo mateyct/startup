@@ -1,0 +1,25 @@
+{
+  "name": "startup",
+  "version": "1.0.0",
+  "description": "<!--# Medical Murder Mystery",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mateyct/startup.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mateyct/startup/issues"
+  },
+  "homepage": "https://github.com/mateyct/startup#readme",
+  "devDependencies": {
+    "vite": "^6.1.0"
+  }
+}
