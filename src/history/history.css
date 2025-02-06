@@ -1,0 +1,32 @@
+h1 {
+    text-align: center;
+}
+table {
+    width: 75%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+th {
+    font-weight: bold;
+    text-align: left;
+    background-color: #4A90E2;
+    color: white;
+}
+
+td, th {
+    margin: 0;
+    width: 16.66%;
+    padding: 10px;
+    font-size: 1.25em;
+}
+
+tr:nth-child(odd) {
+    background-color: #e7e7e7;
+}
+
+.table-responsive-mine {
+    max-width: 100vw;
+    overflow-x: auto;
+}
