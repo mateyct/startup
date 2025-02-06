@@ -78,3 +78,35 @@ Steps:
 7. Run your code with node index.js
 
 With VS Code you can create a launch configuration that specifies the watch parameter when every you debug with VS Code. In VS Code press CTRL-SHIFT-P (on Windows) or ⌘-SHIFT-P (on Mac) and type the command Debug: Add configuration. Select the Node.js option. This will create a launch configuration named .vscode/launch.json. Modify the configuration so that it includes the --watch parameter. This should look something like the following.
+
+## React notes
+[React Info](https://react.dev/learn)
+
+Curly braces {} allow you to escape back into JavaScript from JSX, allowing you to treat whatever is inside exactly like JS.
+
+JSX can be rendered conditionally like so:
+
+```jsx
+<div>
+  {isLoggedIn ? (
+    <AdminPanel />
+  ) : (
+    <LoginForm />
+  )}
+</div>
+
+// or even like:
+
+<div>
+  {isLoggedIn && <AdminPanel />}
+</div>
+```
+
+### Routing
+[Routing Tutorial](https://blog.webdevsimplified.com/2022-07/react-router/)
+
+Defining routes is as simple as defining a single Route component for each route in your application and then putting all those Route components in a single Routes component. Whenever your URL changes React Router will look at the routes defined in your Routes component and it will render the content in the element prop of the Route that has a path that matches the URL. In the above example if our URL was /books then the BookList component would be rendered.
+
+I can put my header and footer in the main .jsx page, then put `<Routes>` between them. This will keep the same header and footer throughout. I'll need to make some changes to make the user display correctly in the header, though.
+
+`<Route path="*" element={<NotFound />} />` will match any route, good for 404s.
