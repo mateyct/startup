@@ -2,7 +2,7 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
-    min-height: 75vh;
+    height: 75vh;
 }
 #controls {
     border-top: 1px solid black;
@@ -19,8 +19,6 @@
 
 #chat-box {
     border-left: 1px solid black;
-    display: grid;
-    grid-template-rows: .75fr .25fr 4fr;
     height: 100%;
     max-height: 100%;
 }
@@ -33,12 +31,13 @@
 
 .chat-header {
     border-top: 1px solid black;
-    height: 100%;
 }
 #chat {
     background-color: rgb(230, 230, 230);
     overflow-y: auto;
     border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    height: 55vh;
 }
 .chat-message {
     margin: 10px 5px;
@@ -314,7 +313,7 @@ main h1 {
         min-width: 40%;
     }
     #chat-box.modal {
-        display: grid;
+        display: block;
     }
 }
 

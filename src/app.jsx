@@ -34,6 +34,7 @@ const Header = () => {
                     <li><NavLink to="history">History</NavLink></li>
                 </ul>
             </nav>
+            <hr />
         </header>
     );
 };

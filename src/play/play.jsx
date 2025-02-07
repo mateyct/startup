@@ -15,7 +15,7 @@ export function Play() {
                 <div id="controls" className={controlModalOpen ? "modal" : ""}>
                     <div className="secret-info">
                         {/*Info section*/}
-                        <button id="close-controls" className="large-screen-hidden"></button>
+                        <button id="close-controls" className="large-screen-hidden" onClick={() => setControlModal(false)}></button>
                         <h3>Your Secret Info</h3>
                         <ul>
                             <li>Dr. Tyler is innocent</li>
@@ -84,14 +84,14 @@ export function Play() {
                     </div>
                 </div>
                 <div className="large-screen-hidden modal-buttons">
-                    <button type="button" onClick={openControls}>Open Controls</button>
-                    <button type="button" onClick={openChat}>Open Chat</button>
+                    <button type="button" id="open-controls" onClick={() => setControlModal(!controlModalOpen)}>Open Controls</button>
+                    <button type="button" id="open-chat" onClick={() => setChatModal(!chatModalOpen)}>Open Chat</button>
                 </div>
                 {/*Section on the right, shows live info from others and such*/}
                 <div id="chat-box" className={chatModalOpen ? "modal" : ""}>
                     {/*Show the players*/}
                     <div>
-                        <button id="close-chat" className="large-screen-hidden"></button>
+                        <button id="close-chat" className="large-screen-hidden" onClick={() => setChatModal(false)}></button>
                         <h3>Players</h3>
                         <ul>
                             <li>Dave100</li>
