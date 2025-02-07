@@ -158,3 +158,7 @@ function Cells() {
     }
     return cells;
 }
+
+function Doors() {
+    
+}
