@@ -90,5 +90,42 @@
             "x": 22,
             "y": 19
         }
+    ],
+    "rooms": [
+        {
+            "id": "clinic",
+            "name": "Clinic"
+        },
+        {
+            "id": "dr-office",
+            "name": "Dr. Office"
+        },
+        {
+            "id": "dir-office",
+            "name": "Director's Office"
+        },
+        {
+            "id": "lab",
+            "name": "Lab"
+        },
+        {
+            "id": "void"
+        },
+        {
+            "id": "icu",
+            "name": "ICU"
+        },
+        {
+            "id": "op",
+            "name": "Operating Room"
+        },
+        {
+            "id": "lobby",
+            "name": "Lobby"
+        },
+        {
+            "id": "mri",
+            "name": "MRI Room"
+        }
     ]
 }

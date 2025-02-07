@@ -60,6 +60,7 @@
     align-items: center;
     justify-content: center;
     z-index: -1;
+    text-align: center;
 }
 .door {
     border: 3px solid #386da8;
@@ -101,7 +102,7 @@
     grid-row: 10 / 16;
 }
 
-.operating {
+.op {
     grid-column: 1 / 7;
     grid-row: 19 / 25;
 }

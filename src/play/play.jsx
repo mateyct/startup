@@ -1,6 +1,6 @@
 import React from "react";
 import "./play.css";
-import doorFile from "./doors.json";
+import boardFile from "./board.json";
 
 export function Play() {
     return (
@@ -75,18 +75,9 @@ export function Play() {
                 <div className="player-area">
                     {/*Main playing feature things*/}
                     <div id="board">
-                        <div className="room clinic">Clinic</div>
-                        <div className="room dr-office">Dr. Office</div>
-                        <div className="room dir-office">Director's Office</div>
-                        <div className="room lab">Lab</div>
-                        <div className="void"></div>
-                        <div className="room icu">ICU</div>
-                        <div className="room operating">Operating Room</div>
-                        <div className="room lobby">Lobby</div>
-                        <div className="room mri">MRI Room</div>
-                        <div className="door" style={{gridArea: "19 / 22 / 20 / 23"}}></div>
-                        <Doors doorData={doorFile} />
+                        <Rooms roomData={boardFile.rooms} />
                         <Cells />
+                        <Doors doorData={boardFile.doors} />
                     </div>
                 </div>
                 <div className="large-screen-hidden modal-buttons">
@@ -146,10 +137,17 @@ function Cells() {
 
 function Doors({ doorData }) {
     let doors = [];
-    console.log(doorData);
-    doorData.doors.map((door) => {
+    doorData.map((door) => {
         let area = door.x + " / " + door.y + " / " + (door.x + 1) + " / " + (door.y + 1);
         doors.push(<div className="door" key={door.id} style={{gridArea: area}}></div>);
     });
     return doors;
+}
+
+function Rooms({roomData}) {
+    let rooms = [];
+    roomData.map((room) => {
+        rooms.push(<div className={(room.id != "void" ? "room " : "") + room.id} key={room.id}>{room.id != "void" ? room.name : ""}</div>);
+    });
+    return rooms;
 }
