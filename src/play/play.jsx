@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import "./play.css";
 import boardFile from "./board.json";
 
 export function Play() {
+    const [controlModalOpen, setControlModal] = useState(false);
+    const [chatModalOpen, setChatModal] = useState(false);
+
     return (
         <main>
             <h1>Play</h1>
             <hr />
             <section id="play-page-layout">
                 {/*Section on left for controls/info*/}
-                <div id="controls">
+                <div id="controls" className={controlModalOpen ? "modal" : ""}>
                     <div className="secret-info">
                         {/*Info section*/}
                         <button id="close-controls" className="large-screen-hidden"></button>
@@ -81,11 +84,11 @@ export function Play() {
                     </div>
                 </div>
                 <div className="large-screen-hidden modal-buttons">
-                    <button type="button" id="open-controls">Open Controls</button>
-                    <button type="button" id="open-chat">Open Chat</button>
+                    <button type="button" onClick={openControls}>Open Controls</button>
+                    <button type="button" onClick={openChat}>Open Chat</button>
                 </div>
                 {/*Section on the right, shows live info from others and such*/}
-                <div id="chat-box">
+                <div id="chat-box" className={chatModalOpen ? "modal" : ""}>
                     {/*Show the players*/}
                     <div>
                         <button id="close-chat" className="large-screen-hidden"></button>
