@@ -1,5 +1,6 @@
 import React from "react";
-import "./play.css"
+import "./play.css";
+import doorFile from "./doors.json";
 
 export function Play() {
     return (
@@ -75,32 +76,16 @@ export function Play() {
                     {/*Main playing feature things*/}
                     <div id="board">
                         <div className="room clinic">Clinic</div>
-                        <div className="door" style={{gridArea: "6 / 3 / 7 / 4"}}></div>
-                        <div className="door" style={{gridArea: "4 / 6 / 5 / 7"}}></div>
                         <div className="room dr-office">Dr. Office</div>
-                        <div className="door" style={{gridArea: "2 / 15 / 3 / 16"}}></div>
-                        <div className="door" style={{gridArea: "6 / 12 / 7 / 13"}}></div>
-                        <div className="door" style={{gridArea: "2 / 10 / 3 / 11"}}></div>
                         <div className="room dir-office">Director's Office</div>
-                        <div className="door" style={{gridArea: "5 / 19 / 6 / 20"}}></div>
-                        <div className="door" style={{gridArea: "6 / 22 / 7 / 23"}}></div>
                         <div className="room lab">Lab</div>
-                        <div className="door" style={{gridArea: "11 / 6 / 12 / 7"}}></div>
-                        <div className="door" style={{gridArea: "15 / 5 / 16 / 6"}}></div>
                         <div className="void"></div>
                         <div className="room icu">ICU</div>
-                        <div className="door" style={{gridArea: "10 / 21 / 11 / 22"}}></div>
-                        <div className="door" style={{gridArea: "15 / 23 / 16 / 24"}}></div>
-                        <div className="door" style={{gridArea: "13 / 19 / 14 / 20"}}></div>
                         <div className="room operating">Operating Room</div>
-                        <div className="door" style={{gridArea: "22 / 6 / 23 / 7"}}></div>
-                        <div className="door" style={{gridArea: "19 / 3 / 20 / 4"}}></div>
                         <div className="room lobby">Lobby</div>
-                        <div className="door" style={{gridArea: "19 / 12 / 20 / 13"}}></div>
-                        <div className="door" style={{gridArea: "19 / 13 / 20 / 14"}}></div>
                         <div className="room mri">MRI Room</div>
                         <div className="door" style={{gridArea: "19 / 22 / 20 / 23"}}></div>
-                        <div className="door" style={{gridArea: "22 / 19 / 23 / 20"}}></div>
+                        <Doors doorData={doorFile} />
                         <Cells />
                     </div>
                 </div>
@@ -159,6 +144,12 @@ function Cells() {
     return cells;
 }
 
-function Doors() {
-    
+function Doors({ doorData }) {
+    let doors = [];
+    console.log(doorData);
+    doorData.doors.map((door) => {
+        let area = door.x + " / " + door.y + " / " + (door.x + 1) + " / " + (door.y + 1);
+        doors.push(<div className="door" key={door.id} style={{gridArea: area}}></div>);
+    });
+    return doors;
 }

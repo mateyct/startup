@@ -1,74 +1,92 @@
 {
     "doors": [
         {
+            "id": "clinic-bottom",
             "x": 6,
             "y": 3
         },
         {
+            "id": "clinic-right",
             "x": 4,
             "y": 6
         },
         {
+            "id": "dr-office-right",
             "x": 2,
             "y": 15
         },
         {
+            "id": "dr-office-bottom",
             "x": 6,
             "y": 12
         },
         {
+            "id": "dr-office-left",
             "x": 2,
             "y": 10
         },
         {
+            "id": "dir-office-left",
             "x": 5,
             "y": 19
         },
         {
+            "id": "dir-office-bottom",
             "x": 6,
             "y": 22
         },
         {
+            "id": "lab-right",
             "x": 11,
             "y": 6
         },
         {
+            "id": "lab-bottom",
             "x": 15,
             "y": 5
         },
         {
+            "id": "icu-top",
             "x": 10,
             "y": 21
         },
         {
+            "id": "icu-bottom",
             "x": 15,
             "y": 23
         },
         {
+            "id": "icu-left",
             "x": 13,
             "y": 19
         },
         {
+            "id": "op-right",
             "x": 22,
             "y": 6
         },
         {
+            "id": "op-top",
             "x":19,
             "y": 3
         },
         {
+            "id": "lobby-top-left",
             "x": 19,
             "y": 12
         },
         {
+            "id": "lobby-top-right",
             "x": 19,
             "y": 13
         },
         {
+            "id": "mri-top",
             "x": 19,
             "y": 22
         },
         {
+            "id": "mri-left",
             "x": 22,
             "y": 19
         }
