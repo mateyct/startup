@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import "./play.css";
 import boardFile from "./board.json";
 
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
+    const [cellVal, setCellVal] = useState('');
+
+    const grid = new Array(24).fill().map(() => new Array(24).fill(null));
+    
 
     return (
         <main>
@@ -77,11 +81,7 @@ export function Play() {
                 {/*Middle section that's a play area*/}
                 <div className="player-area">
                     {/*Main playing feature things*/}
-                    <div id="board">
-                        <Rooms roomData={boardFile.rooms} />
-                        <Cells />
-                        <Doors doorData={boardFile.doors} />
-                    </div>
+                    <Board grid={grid} />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
                     <button type="button" id="open-controls" onClick={() => setControlModal(!controlModalOpen)}>Open Controls</button>
@@ -126,30 +126,58 @@ export function Play() {
     );
 }
 
+function Board(props) {
+    return (
+    <div id="board">
+        <Rooms roomData={boardFile.rooms} grid={props.grid} />
+        <Cells grid={props.grid} />
+        <Doors doorData={boardFile.doors} grid={props.grid} />
+    </div>
+    );
+}
+
 /**
  * Loops and generates all the cells to use in the grid
  * @returns The list of cells
  */
-function Cells() {
+function Cells({grid}) {
+    const [cellVal, setCellVal] = useState('');
+    function moveGuy(i, j) {
+        grid[i][j] = "something";
+        setCellVal('d');
+    }
     let cells = [];
-    for (let i = 0; i <= 251; i++) {
-        cells.push(<div key={i} className="hall"></div>)
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            if(grid[i][j] == null || grid[i][j] == 'cell') {
+                let cell = <div key={i + '-' + j} className="hall" onClick={() => moveGuy(i, j)}>{cellVal}</div>
+                cells.push(cell);
+                //grid[i][j] = i + '-' + j;
+                grid[i][j] = cell;
+            }
+        }
     }
     return cells;
 }
 
-function Doors({ doorData }) {
+function Doors({ doorData, grid }) {
     let doors = [];
     doorData.map((door) => {
+        grid[door.x - 1][door.y - 1] = door.id;
         let area = door.x + " / " + door.y + " / " + (door.x + 1) + " / " + (door.y + 1);
         doors.push(<div className="door" key={door.id} style={{gridArea: area}}></div>);
     });
     return doors;
 }
 
-function Rooms({roomData}) {
+function Rooms({roomData, grid}) {
     let rooms = [];
     roomData.map((room) => {
+        for(let i = room.x; i < room.x + 6; i++) {
+            for (let j = room.y; j < room.y + 6; j++) {
+                grid[i][j] = room.id;
+            }
+        }
         rooms.push(<div className={(room.id != "void" ? "room " : "") + room.id} key={room.id}>{room.id != "void" ? room.name : ""}</div>);
     });
     return rooms;
