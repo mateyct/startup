@@ -141,23 +141,27 @@ function Board(props) {
  * @returns The list of cells
  */
 function Cells({grid}) {
-    const [cellVal, setCellVal] = useState('');
-    function moveGuy(i, j) {
-        grid[i][j] = "something";
-        setCellVal('d');
-    }
     let cells = [];
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
             if(grid[i][j] == null || grid[i][j] == 'cell') {
-                let cell = <div key={i + '-' + j} className="hall" onClick={() => moveGuy(i, j)}>{cellVal}</div>
+                let cell = <Cell key={i + "-" + j} i={i} j={j} grid={grid} />
                 cells.push(cell);
                 //grid[i][j] = i + '-' + j;
-                grid[i][j] = cell;
+                grid[i][j] = "cell";
             }
         }
     }
     return cells;
+}
+
+function Cell(props) {
+    const [cellVal, setCellVal] = useState('');
+    function moveGuy(i, j) {
+        props.grid[i][j] = "something";
+        setCellVal('d');
+    }
+    return <div className="hall" onClick={() => moveGuy(props.i, props.j)}>{cellVal}</div>
 }
 
 function Doors({ doorData, grid }) {
