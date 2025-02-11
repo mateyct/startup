@@ -5,7 +5,7 @@ import boardFile from "./board.json";
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
-    const [playerPos, setPlayer] = useState({x: 7, y: 7, color: 'green', currentRoom: null});
+    const [playerPos, setPlayer] = useState({x: 7, y: 7, color: 'green', currentRoom: null, moves: 5});
 
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
     
@@ -31,50 +31,57 @@ export function Play() {
                     <div className="rolling">
                         {/*Dice section*/}
                         <h3>Roll for movement</h3>
-                        <p>Moves left: 4<span id="moves-left"></span></p>
-                        <button id="dice-roll" className="my-button">Roll Die</button>
+                        <p>Moves left: {playerPos.moves}</p>
+                        <button id="dice-roll" className="my-button" disabled={playerPos.moves > 0} onClick={() => {
+                            let tempPlayer = {...playerPos};
+                            tempPlayer.moves = Math.ceil(Math.random() * 6);
+                            setPlayer(tempPlayer);
+                            console.log("its clicking");
+                        }} >Roll Die</button>
                     </div>
                     <div className="guessing">
                         {/*Form for making a guess*/}
                         <form method="dialog" action="play.html">
                             <h3>Make a guess</h3>
-                            <div>
-                                <label>Player</label>
-                                <select>
-                                    <option>Dave100</option>
-                                    <option>You</option>
-                                    <option>Jeremy</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label>Room</label>
-                                <select>
-                                    <option>Clinic</option>
-                                    <option>Doctor's Office</option>
-                                    <option>Director's Office</option>
-                                    <option>Lab</option>
-                                    <option>ICU</option>
-                                    <option>Operating Room</option>
-                                    <option>Lobby</option>
-                                    <option>MRI Room</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label>Weapon</label>
-                                <select>
-                                    <option>Stethoscope</option>
-                                    <option>Syringe</option>
-                                    <option>Reflex Hammer</option>
-                                    <option>IV Needle</option>
-                                    <option>Pulling the Plug</option>
-                                    <option>Latex Gloves</option>
-                                    <option>Boredom</option>
-                                    <option>Defibrilator</option>
-                                </select>
-                            </div>
-                            <p>
-                                <input type="submit" className="my-button" />
-                            </p>
+                            <fieldset disabled={playerPos.currentRoom == null}>
+                                <div>
+                                    <label>Player</label>
+                                    <select>
+                                        <option>Dave100</option>
+                                        <option>You</option>
+                                        <option>Jeremy</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Room</label>
+                                    <select>
+                                        <option>Clinic</option>
+                                        <option>Doctor's Office</option>
+                                        <option>Director's Office</option>
+                                        <option>Lab</option>
+                                        <option>ICU</option>
+                                        <option>Operating Room</option>
+                                        <option>Lobby</option>
+                                        <option>MRI Room</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Weapon</label>
+                                    <select>
+                                        <option>Stethoscope</option>
+                                        <option>Syringe</option>
+                                        <option>Reflex Hammer</option>
+                                        <option>IV Needle</option>
+                                        <option>Pulling the Plug</option>
+                                        <option>Latex Gloves</option>
+                                        <option>Boredom</option>
+                                        <option>Defibrilator</option>
+                                    </select>
+                                </div>
+                                <p>
+                                    <input type="submit" className="my-button" />
+                                </p>
+                            </fieldset>
                         </form>
                     </div>
                 </div>
@@ -158,10 +165,11 @@ function Cell(props) {
     //const [cellVal, setCellVal] = useState('');
     function moveGuy(i, j) {
         let tempPlayer = {...props.playerInfo};
-        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1) {
+        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1 && tempPlayer.moves > 0) {
             tempPlayer.x = i;
             tempPlayer.y = j;
             tempPlayer.currentRoom = null;
+            tempPlayer.moves--;
             props.playerUpdate(tempPlayer);
         }
         /*for(let i = 0; i < props.grid.length; i++) {
@@ -194,10 +202,11 @@ function Door(props) {
     function moveGuy(i, j) {
         let tempPlayer = {...props.playerInfo};
         // check that the space is only one away
-        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1) {
+        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1 && tempPlayer.moves > 0) {
             tempPlayer.x = i;
             tempPlayer.y = j;
             tempPlayer.currentRoom = props.doorID;
+            tempPlayer.moves = 0;
             props.playerUpdate(tempPlayer);
         }
     }

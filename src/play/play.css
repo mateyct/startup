@@ -329,3 +329,6 @@ main h1 {
         font-size: .75em;
     }
 }
+fieldset {
+    border: none;
+}
