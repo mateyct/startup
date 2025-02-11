@@ -5,7 +5,7 @@ import boardFile from "./board.json";
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
-    const [playerPos, setPlayer] = useState({x: 7, y: 7});
+    const [playerPos, setPlayer] = useState({x: 7, y: 7, color: 'green', currentRoom: null});
 
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
     
@@ -131,7 +131,7 @@ function Board(props) {
     <div id="board">
         <Rooms roomData={boardFile.rooms} grid={props.grid} />
         <Cells grid={props.grid} playerInfo={props.playerInfo} playerUpdate={props.playerUpdate} />
-        <Doors doorData={boardFile.doors} grid={props.grid} />
+        <Doors doorData={boardFile.doors} grid={props.grid} playerInfo={props.playerInfo} playerUpdate={props.playerUpdate} />
     </div>
     );
 }
@@ -145,7 +145,7 @@ function Cells({grid, playerInfo, playerUpdate}) {
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
             if(grid[i][j] == null) {
-                let cell = <Cell key={i + "-" + j} i={i} j={j} grid={grid} playerInfo={playerInfo} playerUpdate={playerUpdate} />
+                let cell = <Cell key={i + "-" + j} i={i} j={j} playerInfo={playerInfo} playerUpdate={playerUpdate} />
                 cells.push(cell);
                 grid[i][j] = "cell";
             }
@@ -155,10 +155,16 @@ function Cells({grid, playerInfo, playerUpdate}) {
 }
 
 function Cell(props) {
-    const [cellVal, setCellVal] = useState('');
+    //const [cellVal, setCellVal] = useState('');
     function moveGuy(i, j) {
-        props.playerUpdate({x: i, y: j});
-        for(let i = 0; i < props.grid.length; i++) {
+        let tempPlayer = {...props.playerInfo};
+        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1) {
+            tempPlayer.x = i;
+            tempPlayer.y = j;
+            tempPlayer.currentRoom = null;
+            props.playerUpdate(tempPlayer);
+        }
+        /*for(let i = 0; i < props.grid.length; i++) {
             for (let j = 0; j < props.grid[i].length; j++) {
                 if (props.grid[i][j] == "p") {
                     props.grid[i][j] = 'cell';
@@ -166,21 +172,37 @@ function Cell(props) {
                 }
             }
         }
-        props.grid[i][j] = "p";
-        setCellVal('d');
+        props.grid[i][j] = "p";*/
+        //setCellVal('d');
     }
     let onSpace = props.i == props.playerInfo.x && props.j == props.playerInfo.y;
-    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} /*style={{ backgroundColor: (onSpace ? "red" : "white") }}*/ >{ onSpace && <Player color={"red"} /> }</div>
+    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} /> }</div>
 }
 
-function Doors({ doorData, grid }) {
+function Doors({ doorData, grid, playerInfo, playerUpdate }) {
     let doors = [];
     doorData.map((door) => {
         grid[door.x - 1][door.y - 1] = door.id;
         let area = door.x + " / " + door.y + " / " + (door.x + 1) + " / " + (door.y + 1);
-        doors.push(<div className="door" key={door.id} style={{gridArea: area}}></div>);
+        //doors.push(<div className="door" key={door.id} style={{gridArea: area}}></div>);
+        doors.push(<Door key={door.id} doorID={door.id} i={door.x - 1} j={door.y - 1} playerInfo={playerInfo} playerUpdate={playerUpdate} area={{gridArea: area}} />);
     });
     return doors;
+}
+
+function Door(props) {
+    function moveGuy(i, j) {
+        let tempPlayer = {...props.playerInfo};
+        // check that the space is only one away
+        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1) {
+            tempPlayer.x = i;
+            tempPlayer.y = j;
+            tempPlayer.currentRoom = props.doorID;
+            props.playerUpdate(tempPlayer);
+        }
+    }
+    let onSpace = props.i == props.playerInfo.x && props.j == props.playerInfo.y;
+    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} /> }</div>
 }
 
 function Rooms({roomData, grid}) {
