@@ -5,7 +5,7 @@ import boardFile from "./board.json";
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
-    const [playerPos, setPlayer] = useState({x: 7, y: 7, color: 'green', currentRoom: null, moves: 5});
+    const [playerPos, setPlayer] = useState({x: 7, y: 7, color: 'green', currentRoom: null, moves: 0, turn: true, recentArrival: false});
 
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
     
@@ -32,26 +32,33 @@ export function Play() {
                         {/*Dice section*/}
                         <h3>Roll for movement</h3>
                         <p>Moves left: {playerPos.moves}</p>
-                        <button id="dice-roll" className="my-button" disabled={playerPos.moves > 0} onClick={() => {
+                        <button id="dice-roll" className="my-button" disabled={playerPos.recentArrival || !playerPos.turn || playerPos.moves > 0} onClick={() => {
                             let tempPlayer = {...playerPos};
                             tempPlayer.moves = Math.ceil(Math.random() * 6);
                             setPlayer(tempPlayer);
-                            console.log("its clicking");
                         }} >Roll Die</button>
                     </div>
                     <div className="guessing">
                         {/*Form for making a guess*/}
-                        <form method="dialog" action="play.html">
+                        <form method="dialog" action="play.html" onSubmit={(event) => {
+                            console.log(event.target.playerChoice.value);
+                            console.log(event.target.weaponChoice.value);
+                            let tempPlayer = {...playerPos};
+                            tempPlayer.recentArrival = false;
+                            tempPlayer.turn = false;
+                            setPlayer(tempPlayer);
+                        }}>
                             <h3>Make a guess</h3>
-                            <fieldset disabled={playerPos.currentRoom == null}>
+                            <fieldset disabled={!playerPos.turn || playerPos.currentRoom == null || !playerPos.recentArrival}>
                                 <div>
                                     <label>Player</label>
-                                    <select>
+                                    <select name="playerChoice">
                                         <option>Dave100</option>
                                         <option>You</option>
                                         <option>Jeremy</option>
                                     </select>
                                 </div>
+                                {/* I realized I needed to remove this because that's not how clue works.
                                 <div>
                                     <label>Room</label>
                                     <select>
@@ -64,10 +71,10 @@ export function Play() {
                                         <option>Lobby</option>
                                         <option>MRI Room</option>
                                     </select>
-                                </div>
+                                </div>*/}
                                 <div>
                                     <label>Weapon</label>
-                                    <select>
+                                    <select name="weaponChoice">
                                         <option>Stethoscope</option>
                                         <option>Syringe</option>
                                         <option>Reflex Hammer</option>
@@ -79,7 +86,7 @@ export function Play() {
                                     </select>
                                 </div>
                                 <p>
-                                    <input type="submit" className="my-button" />
+                                    <input type="submit" className="my-button"/>
                                 </p>
                             </fieldset>
                         </form>
@@ -137,8 +144,17 @@ function Board(props) {
     return (
     <div id="board">
         <Rooms roomData={boardFile.rooms} grid={props.grid} />
-        <Cells grid={props.grid} playerInfo={props.playerInfo} playerUpdate={props.playerUpdate} />
-        <Doors doorData={boardFile.doors} grid={props.grid} playerInfo={props.playerInfo} playerUpdate={props.playerUpdate} />
+        <Cells 
+            grid={props.grid}
+            playerInfo={props.playerInfo}
+            playerUpdate={props.playerUpdate}
+        />
+        <Doors
+            doorData={boardFile.doors}
+            grid={props.grid}
+            playerInfo={props.playerInfo}
+            playerUpdate={props.playerUpdate}
+        />
     </div>
     );
 }
@@ -165,11 +181,15 @@ function Cell(props) {
     //const [cellVal, setCellVal] = useState('');
     function moveGuy(i, j) {
         let tempPlayer = {...props.playerInfo};
-        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1 && tempPlayer.moves > 0) {
+        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) == 1 && tempPlayer.moves > 0 && tempPlayer.turn) {
             tempPlayer.x = i;
             tempPlayer.y = j;
             tempPlayer.currentRoom = null;
             tempPlayer.moves--;
+            // end turn if no more moves
+            if(tempPlayer.moves < 1) {
+                tempPlayer.turn = false;
+            }
             props.playerUpdate(tempPlayer);
         }
         /*for(let i = 0; i < props.grid.length; i++) {
@@ -184,7 +204,7 @@ function Cell(props) {
         //setCellVal('d');
     }
     let onSpace = props.i == props.playerInfo.x && props.j == props.playerInfo.y;
-    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} /> }</div>
+    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} player={props.playerInfo} setPlayer={props.playerUpdate} /> }</div>
 }
 
 function Doors({ doorData, grid, playerInfo, playerUpdate }) {
@@ -192,7 +212,6 @@ function Doors({ doorData, grid, playerInfo, playerUpdate }) {
     doorData.map((door) => {
         grid[door.x - 1][door.y - 1] = door.id;
         let area = door.x + " / " + door.y + " / " + (door.x + 1) + " / " + (door.y + 1);
-        //doors.push(<div className="door" key={door.id} style={{gridArea: area}}></div>);
         doors.push(<Door key={door.id} doorID={door.id} i={door.x - 1} j={door.y - 1} playerInfo={playerInfo} playerUpdate={playerUpdate} area={{gridArea: area}} />);
     });
     return doors;
@@ -202,16 +221,17 @@ function Door(props) {
     function moveGuy(i, j) {
         let tempPlayer = {...props.playerInfo};
         // check that the space is only one away
-        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) <= 1 && tempPlayer.moves > 0) {
+        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) == 1 && tempPlayer.moves > 0 && tempPlayer.turn) {
             tempPlayer.x = i;
             tempPlayer.y = j;
             tempPlayer.currentRoom = props.doorID;
             tempPlayer.moves = 0;
+            tempPlayer.recentArrival = true;
             props.playerUpdate(tempPlayer);
         }
     }
     let onSpace = props.i == props.playerInfo.x && props.j == props.playerInfo.y;
-    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} /> }</div>
+    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} player={props.playerInfo} setPlayer={props.playerUpdate} /> }</div>
 }
 
 function Rooms({roomData, grid}) {
@@ -227,8 +247,17 @@ function Rooms({roomData, grid}) {
     return rooms;
 }
 
-function Player({color}) {
+function Player({color, player, setPlayer}) {
+    /**
+     * This function is purely for debugging
+     */
+    function handleClick() {
+        let temp = {...player};
+        temp.turn = true;
+        temp.recentArrival = false;
+        setPlayer(temp);
+    }
     return (
-        <div className="player" style={{backgroundColor: color}}></div>
+        <div className="player" style={{backgroundColor: color}} onClick={handleClick}></div>
     );
 }
