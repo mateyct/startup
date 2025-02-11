@@ -5,7 +5,7 @@ import boardFile from "./board.json";
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
-    const [cellVal, setCellVal] = useState('');
+    const [playerPos, setPlayer] = useState({x: 7, y: 7});
 
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
     
@@ -81,7 +81,7 @@ export function Play() {
                 {/*Middle section that's a play area*/}
                 <div className="player-area">
                     {/*Main playing feature things*/}
-                    <Board grid={grid} />
+                    <Board grid={grid} playerInfo={playerPos} playerUpdate={setPlayer} />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
                     <button type="button" id="open-controls" onClick={() => setControlModal(!controlModalOpen)}>Open Controls</button>
@@ -130,7 +130,7 @@ function Board(props) {
     return (
     <div id="board">
         <Rooms roomData={boardFile.rooms} grid={props.grid} />
-        <Cells grid={props.grid} />
+        <Cells grid={props.grid} playerInfo={props.playerInfo} playerUpdate={props.playerUpdate} />
         <Doors doorData={boardFile.doors} grid={props.grid} />
     </div>
     );
@@ -140,14 +140,13 @@ function Board(props) {
  * Loops and generates all the cells to use in the grid
  * @returns The list of cells
  */
-function Cells({grid}) {
+function Cells({grid, playerInfo, playerUpdate}) {
     let cells = [];
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
-            if(grid[i][j] == null || grid[i][j] == 'cell') {
-                let cell = <Cell key={i + "-" + j} i={i} j={j} grid={grid} />
+            if(grid[i][j] == null) {
+                let cell = <Cell key={i + "-" + j} i={i} j={j} grid={grid} playerInfo={playerInfo} playerUpdate={playerUpdate} />
                 cells.push(cell);
-                //grid[i][j] = i + '-' + j;
                 grid[i][j] = "cell";
             }
         }
@@ -158,10 +157,20 @@ function Cells({grid}) {
 function Cell(props) {
     const [cellVal, setCellVal] = useState('');
     function moveGuy(i, j) {
-        props.grid[i][j] = "something";
+        props.playerUpdate({x: i, y: j});
+        for(let i = 0; i < props.grid.length; i++) {
+            for (let j = 0; j < props.grid[i].length; j++) {
+                if (props.grid[i][j] == "p") {
+                    props.grid[i][j] = 'cell';
+                    break;
+                }
+            }
+        }
+        props.grid[i][j] = "p";
         setCellVal('d');
     }
-    return <div className="hall" onClick={() => moveGuy(props.i, props.j)}>{cellVal}</div>
+    let onSpace = props.i == props.playerInfo.x && props.j == props.playerInfo.y;
+    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} /*style={{ backgroundColor: (onSpace ? "red" : "white") }}*/ >{ onSpace && <Player color={"red"} /> }</div>
 }
 
 function Doors({ doorData, grid }) {
@@ -185,4 +194,10 @@ function Rooms({roomData, grid}) {
         rooms.push(<div className={(room.id != "void" ? "room " : "") + room.id} key={room.id}>{room.id != "void" ? room.name : ""}</div>);
     });
     return rooms;
+}
+
+function Player({color}) {
+    return (
+        <div className="player" style={{backgroundColor: color}}></div>
+    );
 }
