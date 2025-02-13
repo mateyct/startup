@@ -6,6 +6,36 @@ export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
     const [playerPos, setPlayer] = useState({x: 7, y: 7, color: 'green', currentRoom: null, moves: 0, turn: true, recentArrival: false});
+    const [players, setPlayers] = useState([
+        {
+            x: 7,
+            y: 7, 
+            color: 'green', 
+            currentRoom: null, 
+            moves: 0, 
+            turn: true, 
+            recentArrival: false
+        },
+        {
+            x: 18,
+            y: 7, 
+            color: 'blue', 
+            currentRoom: null, 
+            moves: 0, 
+            turn: true, 
+            recentArrival: false
+        },
+        {
+            x: 7,
+            y: 18, 
+            color: 'red', 
+            currentRoom: null, 
+            moves: 0, 
+            turn: true, 
+            recentArrival: false
+        }
+    ]);
+    const [playerTurn, setTurn] = useState(0);
 
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
     
@@ -31,11 +61,11 @@ export function Play() {
                     <div className="rolling">
                         {/*Dice section*/}
                         <h3>Roll for movement</h3>
-                        <p>Moves left: {playerPos.moves}</p>
-                        <button id="dice-roll" className="my-button" disabled={playerPos.recentArrival || !playerPos.turn || playerPos.moves > 0} onClick={() => {
-                            let tempPlayer = {...playerPos};
-                            tempPlayer.moves = Math.ceil(Math.random() * 6);
-                            setPlayer(tempPlayer);
+                        <p>Moves left: {players[playerTurn].moves}</p>
+                        <button id="dice-roll" className="my-button" disabled={players[playerTurn].recentArrival || players[playerTurn].moves > 0} onClick={() => {
+                            let tempPlayers = JSON.parse(JSON.stringify(players));
+                            tempPlayers[playerTurn].moves = Math.ceil(Math.random() * 6);
+                            setPlayers(tempPlayers);
                         }} >Roll Die</button>
                     </div>
                     <div className="guessing">
@@ -43,13 +73,14 @@ export function Play() {
                         <form method="dialog" action="play.html" onSubmit={(event) => {
                             console.log(event.target.playerChoice.value);
                             console.log(event.target.weaponChoice.value);
-                            let tempPlayer = {...playerPos};
-                            tempPlayer.recentArrival = false;
-                            tempPlayer.turn = false;
-                            setPlayer(tempPlayer);
+                            let tempPlayers = JSON.parse(JSON.stringify(players));
+                            tempPlayers[playerTurn].recentArrival = false;
+                            tempPlayers[playerTurn].turn = false;
+                            setTurn((playerTurn + 1) % players.length);
+                            setPlayer(tempPlayers);
                         }}>
                             <h3>Make a guess</h3>
-                            <fieldset disabled={!playerPos.turn || playerPos.currentRoom == null || !playerPos.recentArrival}>
+                            <fieldset disabled={players[playerTurn].currentRoom == null || !players[playerTurn].recentArrival}>
                                 <div>
                                     <label>Player</label>
                                     <select name="playerChoice">
@@ -95,7 +126,13 @@ export function Play() {
                 {/*Middle section that's a play area*/}
                 <div className="player-area">
                     {/*Main playing feature things*/}
-                    <Board grid={grid} playerInfo={playerPos} playerUpdate={setPlayer} />
+                    <Board 
+                        grid={grid}
+                        playerInfo={players}
+                        playerUpdate={setPlayers}
+                        turn={playerTurn}
+                        setTurn={setTurn}
+                    />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
                     <button type="button" id="open-controls" onClick={() => setControlModal(!controlModalOpen)}>Open Controls</button>
@@ -148,12 +185,16 @@ function Board(props) {
             grid={props.grid}
             playerInfo={props.playerInfo}
             playerUpdate={props.playerUpdate}
+            turn={props.turn}
+            setTurn={props.setTurn}
         />
         <Doors
             doorData={boardFile.doors}
             grid={props.grid}
             playerInfo={props.playerInfo}
             playerUpdate={props.playerUpdate}
+            turn={props.turn}
+            setTurn={props.setTurn}
         />
     </div>
     );
@@ -163,12 +204,12 @@ function Board(props) {
  * Loops and generates all the cells to use in the grid
  * @returns The list of cells
  */
-function Cells({grid, playerInfo, playerUpdate}) {
+function Cells({grid, playerInfo, playerUpdate, turn, setTurn}) {
     let cells = [];
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
             if(grid[i][j] == null) {
-                let cell = <Cell key={i + "-" + j} i={i} j={j} playerInfo={playerInfo} playerUpdate={playerUpdate} />
+                let cell = <Cell key={i + "-" + j} i={i} j={j} playerInfo={playerInfo} playerUpdate={playerUpdate} turn={turn} setTurn={setTurn} />
                 cells.push(cell);
                 grid[i][j] = "cell";
             }
@@ -178,60 +219,71 @@ function Cells({grid, playerInfo, playerUpdate}) {
 }
 
 function Cell(props) {
-    //const [cellVal, setCellVal] = useState('');
     function moveGuy(i, j) {
-        let tempPlayer = {...props.playerInfo};
-        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) == 1 && tempPlayer.moves > 0 && tempPlayer.turn) {
-            tempPlayer.x = i;
-            tempPlayer.y = j;
-            tempPlayer.currentRoom = null;
-            tempPlayer.moves--;
+        let tempPlayers = JSON.parse(JSON.stringify(props.playerInfo));
+        if(Math.abs(i - tempPlayers[props.turn].x) + Math.abs(j - tempPlayers[props.turn].y) == 1 && tempPlayers[props.turn].moves > 0) {
+            
+            tempPlayers[props.turn].x = i;
+            tempPlayers[props.turn].y = j;
+            tempPlayers[props.turn].currentRoom = null;
+            tempPlayers[props.turn].moves--;
             // end turn if no more moves
-            if(tempPlayer.moves < 1) {
-                tempPlayer.turn = false;
+            if(tempPlayers[props.turn].moves < 1) {
+                tempPlayers[props.turn].turn = false;
+                props.setTurn((props.turn + 1) % tempPlayers.length);
             }
-            props.playerUpdate(tempPlayer);
+            props.playerUpdate(tempPlayers);
         }
-        /*for(let i = 0; i < props.grid.length; i++) {
-            for (let j = 0; j < props.grid[i].length; j++) {
-                if (props.grid[i][j] == "p") {
-                    props.grid[i][j] = 'cell';
-                    break;
-                }
-            }
-        }
-        props.grid[i][j] = "p";*/
-        //setCellVal('d');
     }
-    let onSpace = props.i == props.playerInfo.x && props.j == props.playerInfo.y;
-    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} player={props.playerInfo} setPlayer={props.playerUpdate} /> }</div>
+    let playerOn = -1;
+    for (let i = 0; i < props.playerInfo.length; i++) {
+        if(props.playerInfo[i].x == props.i && props.playerInfo[i].y == props.j) {
+            playerOn = i;
+        }
+    }
+    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >{ playerOn >= 0 && <Player color={props.playerInfo[playerOn].color} player={props.playerInfo[playerOn]} setPlayer={props.playerUpdate} /> }</div>
 }
 
-function Doors({ doorData, grid, playerInfo, playerUpdate }) {
+function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn }) {
     let doors = [];
     doorData.map((door) => {
         grid[door.x - 1][door.y - 1] = door.id;
         let area = door.x + " / " + door.y + " / " + (door.x + 1) + " / " + (door.y + 1);
-        doors.push(<Door key={door.id} doorID={door.id} i={door.x - 1} j={door.y - 1} playerInfo={playerInfo} playerUpdate={playerUpdate} area={{gridArea: area}} />);
+        doors.push(<Door 
+            key={door.id} 
+            doorID={door.id} 
+            i={door.x - 1} 
+            j={door.y - 1} 
+            playerInfo={playerInfo} 
+            playerUpdate={playerUpdate} 
+            area={{gridArea: area}} 
+            turn={turn}
+            setTurn={setTurn}
+        />);
     });
     return doors;
 }
 
 function Door(props) {
     function moveGuy(i, j) {
-        let tempPlayer = {...props.playerInfo};
+        let tempPlayers = JSON.parse(JSON.stringify(props.playerInfo));
         // check that the space is only one away
-        if(Math.abs(i - tempPlayer.x) + Math.abs(j - tempPlayer.y) == 1 && tempPlayer.moves > 0 && tempPlayer.turn) {
-            tempPlayer.x = i;
-            tempPlayer.y = j;
-            tempPlayer.currentRoom = props.doorID;
-            tempPlayer.moves = 0;
-            tempPlayer.recentArrival = true;
-            props.playerUpdate(tempPlayer);
+        if(Math.abs(i - tempPlayers[props.turn].x) + Math.abs(j - tempPlayers[props.turn].y) == 1 && tempPlayers[props.turn].moves > 0) {
+            tempPlayers[props.turn].x = i;
+            tempPlayers[props.turn].y = j;
+            tempPlayers[props.turn].currentRoom = props.doorID;
+            tempPlayers[props.turn].moves = 0;
+            tempPlayers[props.turn].recentArrival = true;
+            props.playerUpdate(tempPlayers);
         }
     }
-    let onSpace = props.i == props.playerInfo.x && props.j == props.playerInfo.y;
-    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ onSpace && <Player color={props.playerInfo.color} player={props.playerInfo} setPlayer={props.playerUpdate} /> }</div>
+    let playerOn = -1;
+    for (let i = 0; i < props.playerInfo.length; i++) {
+        if(props.playerInfo[i].x == props.i && props.playerInfo[i].y == props.j) {
+            playerOn = i;
+        }
+    }
+    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ playerOn >= 0 && <Player color={props.playerInfo[props.turn].color} player={props.playerInfo[playerOn]} setPlayer={props.playerUpdate} /> }</div>
 }
 
 function Rooms({roomData, grid}) {
