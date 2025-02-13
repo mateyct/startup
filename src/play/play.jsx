@@ -5,7 +5,6 @@ import boardFile from "./board.json";
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
-    const [playerPos, setPlayer] = useState({x: 7, y: 7, color: 'green', currentRoom: null, moves: 0, turn: true, recentArrival: false});
     const [players, setPlayers] = useState([
         {
             x: 7,
@@ -77,7 +76,7 @@ export function Play() {
                             tempPlayers[playerTurn].recentArrival = false;
                             tempPlayers[playerTurn].turn = false;
                             setTurn((playerTurn + 1) % players.length);
-                            setPlayer(tempPlayers);
+                            setPlayers(tempPlayers);
                         }}>
                             <h3>Make a guess</h3>
                             <fieldset disabled={players[playerTurn].currentRoom == null || !players[playerTurn].recentArrival}>
@@ -283,7 +282,9 @@ function Door(props) {
             playerOn = i;
         }
     }
-    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ playerOn >= 0 && <Player color={props.playerInfo[props.turn].color} player={props.playerInfo[playerOn]} setPlayer={props.playerUpdate} /> }</div>
+    if (playerOn >= 0)
+        console.log(props.playerInfo[props.turn]);
+    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ playerOn >= 0 && <Player color={props.playerInfo[playerOn].color} player={props.playerInfo[playerOn]} setPlayer={props.playerUpdate} /> }</div>
 }
 
 function Rooms({roomData, grid}) {
