@@ -9,32 +9,51 @@ export function Play() {
         {
             x: 7,
             y: 7, 
-            color: 'green', 
+            color: 'green',
+            disabled: '#c4ffc4',
             currentRoom: null, 
             moves: 0, 
             turn: true, 
-            recentArrival: false
+            recentArrival: false,
+            name: "You"
         },
         {
             x: 18,
             y: 7, 
             color: 'blue', 
+            disabled: '#c7c7ff',
             currentRoom: null, 
             moves: 0, 
             turn: true, 
-            recentArrival: false
+            recentArrival: false,
+            name: "Jeremy"
         },
         {
             x: 7,
             y: 18, 
-            color: 'red', 
+            color: 'red',
+            disabled: '#ffa8a8',
             currentRoom: null, 
             moves: 0, 
             turn: true, 
-            recentArrival: false
+            recentArrival: false,
+            name: "Dave100"
         }
     ]);
     const [playerTurn, setTurn] = useState(0);
+    const [chatlog, setChat] = useState([
+        {
+            type: "line",
+            message: "Welcome to Medical Murder Mystery!",
+        },
+        {
+            type: "guess",
+            guesser: "You",
+            person: "Jeremy",
+            room: "Clinic",
+            weapon: "Syringe"
+        }
+    ]);
 
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
     
@@ -153,23 +172,7 @@ export function Play() {
                     <div className="chat-header">
                         <h3>Info Chat</h3>
                     </div>
-                    <div id="chat">
-                        <div className="chat-message">
-                            <p>Jeremy Entered Lobby</p>
-                        </div>
-                        <div className="chat-message">
-                            <p>Dave100 Entered Clinic</p>
-                        </div>
-                        <div className="chat-message">
-                            <p>Jeremy suspected the murderer was:</p>
-                            <ul>
-                                <li>You</li>
-                                <li>In the Clinic</li>
-                                <li>With the Syringe</li>
-                            </ul>
-                        </div>
-                    </div>
-
+                    <Chat chatlog={chatlog} />
                 </div>
             </section>
         </main>
@@ -240,7 +243,9 @@ function Cell(props) {
             playerOn = i;
         }
     }
-    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >{ playerOn >= 0 && <Player color={props.playerInfo[playerOn].color} player={props.playerInfo[playerOn]} setPlayer={props.playerUpdate} /> }</div>
+    return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >
+        { playerOn >= 0 && <Player color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
+    </div>
 }
 
 function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn }) {
@@ -284,7 +289,9 @@ function Door(props) {
     }
     if (playerOn >= 0)
         console.log(props.playerInfo[props.turn]);
-    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >{ playerOn >= 0 && <Player color={props.playerInfo[playerOn].color} player={props.playerInfo[playerOn]} setPlayer={props.playerUpdate} /> }</div>
+    return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >
+            { playerOn >= 0 && <Player color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
+        </div>
 }
 
 function Rooms({roomData, grid}) {
@@ -300,17 +307,40 @@ function Rooms({roomData, grid}) {
     return rooms;
 }
 
-function Player({color, player, setPlayer}) {
-    /**
-     * This function is purely for debugging
-     */
-    function handleClick() {
-        let temp = {...player};
-        temp.turn = true;
-        temp.recentArrival = false;
-        setPlayer(temp);
-    }
+function Player({color}) {
     return (
-        <div className="player" style={{backgroundColor: color}} onClick={handleClick}></div>
+        <div className="player" style={{backgroundColor: color}} ></div>
     );
+}
+
+function Chat({chatlog}) {
+    console.log(chatlog);
+    return (
+        <div id="chat">
+        {chatlog.map((msg, index) => {
+            return (<div key={index} className="chat-message">
+                <Message msg={msg} />
+            </div>)
+        })}
+        </div>
+    
+    );
+}
+
+function Message({msg}) {
+    if(msg.type == "line") {
+        return <p>{msg.message}</p>
+    }
+    else if (msg.type == "guess") {
+        return (
+        <>
+            <p>{msg.guesser + " guessed:"}</p>
+            <ul>
+                <li>{"It was " + msg.person}</li>
+                <li>{"In " + msg.room}</li>
+                <li>{"With the " + msg.weapon}</li>
+            </ul>
+        </>
+        );
+    }
 }
