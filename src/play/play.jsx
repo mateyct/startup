@@ -91,10 +91,19 @@ export function Play() {
                         <form method="dialog" action="play.html" onSubmit={(event) => {
                             console.log(event.target.playerChoice.value);
                             console.log(event.target.weaponChoice.value);
+                            setChat(old => [...old, {
+                                type: "guess",
+                                guesser: players[playerTurn].name,
+                                person: event.target.playerChoice.value,
+                                room: players[playerTurn].currentRoom,
+                                weapon: event.target.weaponChoice.value
+                            }])
                             let tempPlayers = JSON.parse(JSON.stringify(players));
                             tempPlayers[playerTurn].recentArrival = false;
                             tempPlayers[playerTurn].turn = false;
-                            setTurn((playerTurn + 1) % players.length);
+                            let nextTurn = (playerTurn + 1) % players.length;
+                            setTurn(nextTurn);
+                            setChat(old => [...old, {type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}]);
                             setPlayers(tempPlayers);
                         }}>
                             <h3>Make a guess</h3>
@@ -150,6 +159,8 @@ export function Play() {
                         playerUpdate={setPlayers}
                         turn={playerTurn}
                         setTurn={setTurn}
+                        chatlog={chatlog}
+                        setChat={setChat}
                     />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
@@ -189,6 +200,8 @@ function Board(props) {
             playerUpdate={props.playerUpdate}
             turn={props.turn}
             setTurn={props.setTurn}
+            chatlog={props.chatlog}
+            setChat={props.setChat}
         />
         <Doors
             doorData={boardFile.doors}
@@ -197,6 +210,8 @@ function Board(props) {
             playerUpdate={props.playerUpdate}
             turn={props.turn}
             setTurn={props.setTurn}
+            chatlog={props.chatlog}
+            setChat={props.setChat}
         />
     </div>
     );
@@ -206,12 +221,22 @@ function Board(props) {
  * Loops and generates all the cells to use in the grid
  * @returns The list of cells
  */
-function Cells({grid, playerInfo, playerUpdate, turn, setTurn}) {
+function Cells({grid, playerInfo, playerUpdate, turn, setTurn, chatlog, setChat}) {
     let cells = [];
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
             if(grid[i][j] == null) {
-                let cell = <Cell key={i + "-" + j} i={i} j={j} playerInfo={playerInfo} playerUpdate={playerUpdate} turn={turn} setTurn={setTurn} />
+                let cell = <Cell
+                    key={i + "-" + j}
+                    i={i}
+                    j={j}
+                    playerInfo={playerInfo}
+                    playerUpdate={playerUpdate}
+                    turn={turn}
+                    setTurn={setTurn}
+                    chatlog={chatlog}
+                    setChat={setChat}
+                />
                 cells.push(cell);
                 grid[i][j] = "cell";
             }
@@ -232,7 +257,9 @@ function Cell(props) {
             // end turn if no more moves
             if(tempPlayers[props.turn].moves < 1) {
                 tempPlayers[props.turn].turn = false;
-                props.setTurn((props.turn + 1) % tempPlayers.length);
+                let nextTurn = (props.turn + 1) % tempPlayers.length;
+                props.setTurn(nextTurn);
+                props.setChat(old => [...old, {type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}]);
             }
             props.playerUpdate(tempPlayers);
         }
@@ -248,7 +275,7 @@ function Cell(props) {
     </div>
 }
 
-function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn }) {
+function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn, chatlog, setChat }) {
     let doors = [];
     doorData.map((door) => {
         grid[door.x - 1][door.y - 1] = door.id;
@@ -263,6 +290,8 @@ function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn }) {
             area={{gridArea: area}} 
             turn={turn}
             setTurn={setTurn}
+            chatlog={chatlog}
+            setChat={setChat}
         />);
     });
     return doors;
@@ -278,6 +307,7 @@ function Door(props) {
             tempPlayers[props.turn].currentRoom = props.doorID;
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
+            props.setChat(old => [...old, {type: "line", message: (tempPlayers[props.turn].name) + " just entered " + props.doorID}]);
             props.playerUpdate(tempPlayers);
         }
     }
