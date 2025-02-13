@@ -45,13 +45,6 @@ export function Play() {
         {
             type: "line",
             message: "Welcome to Medical Murder Mystery!",
-        },
-        {
-            type: "guess",
-            guesser: "You",
-            person: "Jeremy",
-            room: "Clinic",
-            weapon: "Syringe"
         }
     ]);
 
@@ -91,19 +84,19 @@ export function Play() {
                         <form method="dialog" action="play.html" onSubmit={(event) => {
                             console.log(event.target.playerChoice.value);
                             console.log(event.target.weaponChoice.value);
-                            setChat(old => [...old, {
+                            setChat(old => [{
                                 type: "guess",
                                 guesser: players[playerTurn].name,
                                 person: event.target.playerChoice.value,
                                 room: players[playerTurn].currentRoom,
                                 weapon: event.target.weaponChoice.value
-                            }])
+                            }, ...old])
                             let tempPlayers = JSON.parse(JSON.stringify(players));
                             tempPlayers[playerTurn].recentArrival = false;
                             tempPlayers[playerTurn].turn = false;
                             let nextTurn = (playerTurn + 1) % players.length;
                             setTurn(nextTurn);
-                            setChat(old => [...old, {type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}]);
+                            setChat(old => [{type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}, ...old]);
                             setPlayers(tempPlayers);
                         }}>
                             <h3>Make a guess</h3>
@@ -259,7 +252,7 @@ function Cell(props) {
                 tempPlayers[props.turn].turn = false;
                 let nextTurn = (props.turn + 1) % tempPlayers.length;
                 props.setTurn(nextTurn);
-                props.setChat(old => [...old, {type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}]);
+                props.setChat(old => [{type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}, ...old]);
             }
             props.playerUpdate(tempPlayers);
         }
@@ -307,7 +300,7 @@ function Door(props) {
             tempPlayers[props.turn].currentRoom = props.doorID;
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
-            props.setChat(old => [...old, {type: "line", message: (tempPlayers[props.turn].name) + " just entered " + props.doorID}]);
+            props.setChat(old => [{type: "line", message: (tempPlayers[props.turn].name) + " just entered " + props.doorID}, ...old]);
             props.playerUpdate(tempPlayers);
         }
     }
