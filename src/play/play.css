@@ -44,7 +44,7 @@
     font-style: italic;
 }
 #board {
-    width: 60%;
+    width: 55%;
     aspect-ratio: 1/1;
     border: black 1px solid;
     display: grid;

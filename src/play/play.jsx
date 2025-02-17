@@ -49,6 +49,16 @@ export function Play() {
     ]);
 
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
+    const roomIdNames = {
+        "clinic": "Clinic",
+        "dr-office": "Dr. Office",
+        "dir-office": "Director's Office",
+        "lab": "Lab",
+        "icu": "ICU",
+        "op": "Operating Room",
+        "lobby": "Lobby",
+        "mri": "MRI Room"
+    }
     
 
     return (
@@ -82,8 +92,6 @@ export function Play() {
                     <div className="guessing">
                         {/*Form for making a guess*/}
                         <form method="dialog" action="play.html" onSubmit={(event) => {
-                            console.log(event.target.playerChoice.value);
-                            console.log(event.target.weaponChoice.value);
                             setChat(old => [{
                                 type: "guess",
                                 guesser: players[playerTurn].name,
@@ -154,6 +162,7 @@ export function Play() {
                         setTurn={setTurn}
                         chatlog={chatlog}
                         setChat={setChat}
+                        roomIdNames={roomIdNames}
                     />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
@@ -176,7 +185,7 @@ export function Play() {
                     <div className="chat-header">
                         <h3>Info Chat</h3>
                     </div>
-                    <Chat chatlog={chatlog} />
+                    <Chat chatlog={chatlog} roomIdNames={roomIdNames} />
                 </div>
             </section>
         </main>
@@ -205,6 +214,7 @@ function Board(props) {
             setTurn={props.setTurn}
             chatlog={props.chatlog}
             setChat={props.setChat}
+            roomIdNames={props.roomIdNames}
         />
     </div>
     );
@@ -268,7 +278,7 @@ function Cell(props) {
     </div>
 }
 
-function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn, chatlog, setChat }) {
+function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn, chatlog, setChat, roomIdNames }) {
     let doors = [];
     doorData.map((door) => {
         grid[door.x - 1][door.y - 1] = door.id;
@@ -285,6 +295,8 @@ function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn, chatlo
             setTurn={setTurn}
             chatlog={chatlog}
             setChat={setChat}
+            roomId={door.roomId}
+            roomIdNames={roomIdNames}
         />);
     });
     return doors;
@@ -297,10 +309,10 @@ function Door(props) {
         if(Math.abs(i - tempPlayers[props.turn].x) + Math.abs(j - tempPlayers[props.turn].y) == 1 && tempPlayers[props.turn].moves > 0) {
             tempPlayers[props.turn].x = i;
             tempPlayers[props.turn].y = j;
-            tempPlayers[props.turn].currentRoom = props.doorID;
+            tempPlayers[props.turn].currentRoom = props.roomId;
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
-            props.setChat(old => [{type: "line", message: (tempPlayers[props.turn].name) + " just entered " + props.doorID}, ...old]);
+            props.setChat(old => [{type: "line", message: (tempPlayers[props.turn].name) + " just entered " + props.roomIdNames[props.roomId]}, ...old]);
             props.playerUpdate(tempPlayers);
         }
     }
@@ -310,8 +322,6 @@ function Door(props) {
             playerOn = i;
         }
     }
-    if (playerOn >= 0)
-        console.log(props.playerInfo[props.turn]);
     return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >
             { playerOn >= 0 && <Player color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
         </div>
@@ -336,13 +346,12 @@ function Player({color}) {
     );
 }
 
-function Chat({chatlog}) {
-    console.log(chatlog);
+function Chat({chatlog, roomIdNames}) {
     return (
         <div id="chat">
         {chatlog.map((msg, index) => {
             return (<div key={index} className="chat-message">
-                <Message msg={msg} />
+                <Message msg={msg} roomIdNames={roomIdNames} />
             </div>)
         })}
         </div>
@@ -350,7 +359,7 @@ function Chat({chatlog}) {
     );
 }
 
-function Message({msg}) {
+function Message({msg, roomIdNames}) {
     if(msg.type == "line") {
         return <p>{msg.message}</p>
     }
@@ -360,7 +369,7 @@ function Message({msg}) {
             <p>{msg.guesser + " guessed:"}</p>
             <ul>
                 <li>{"It was " + msg.person}</li>
-                <li>{"In " + msg.room}</li>
+                <li>{"In " + roomIdNames[msg.room]}</li>
                 <li>{"With the " + msg.weapon}</li>
             </ul>
         </>
