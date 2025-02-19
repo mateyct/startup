@@ -6,20 +6,23 @@ import { Player } from "./player";
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
+    // set up players, will be automatically based on number of players connected
     const [players, setPlayers] = useState([
         new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "You"),
         new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, "Jeremy"),
         new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
     ]);
-    const [playerTurn, setTurn] = useState(0);
+    const [turn, setTurn] = useState(0);
+    // set up the chat for displaying info
     const [chatlog, setChat] = useState([
         {
             type: "line",
             message: "Welcome to Medical Murder Mystery!",
         }
     ]);
-
+    // the grid to track what each place on the map should be, a little messy
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
+    // a map for referencing room full names based on IDs
     const roomIdNames = {
         "clinic": "Clinic",
         "dr-office": "Dr. Office",
@@ -53,33 +56,35 @@ export function Play() {
                     <div className="rolling">
                         {/*Dice section*/}
                         <h3>Roll for movement</h3>
-                        <p>Moves left: {players[playerTurn].moves}</p>
-                        <button id="dice-roll" className="my-button" disabled={players[playerTurn].recentArrival || players[playerTurn].moves > 0} onClick={() => {
+                        <p>Moves left: {players[turn].moves}</p>
+                        <button id="dice-roll" className="my-button" disabled={players[turn].recentArrival || players[turn].moves > 0} onClick={() => {
                             let tempPlayers = JSON.parse(JSON.stringify(players));
-                            tempPlayers[playerTurn].moves = Math.ceil(Math.random() * 6);
+                            tempPlayers[turn].moves = Math.ceil(Math.random() * 6);
                             setPlayers(tempPlayers);
                         }} >Roll Die</button>
                     </div>
                     <div className="guessing">
                         {/*Form for making a guess*/}
                         <form method="dialog" action="play.html" onSubmit={(event) => {
+                            // add the guess to the chat
                             setChat(old => [{
                                 type: "guess",
-                                guesser: players[playerTurn].name,
+                                guesser: players[turn].name,
                                 person: event.target.playerChoice.value,
-                                room: players[playerTurn].currentRoom,
+                                room: players[turn].currentRoom,
                                 weapon: event.target.weaponChoice.value
                             }, ...old])
+                            // switch the players to the next turn
                             let tempPlayers = JSON.parse(JSON.stringify(players));
-                            tempPlayers[playerTurn].recentArrival = false;
-                            tempPlayers[playerTurn].turn = false;
-                            let nextTurn = (playerTurn + 1) % players.length;
+                            tempPlayers[turn].recentArrival = false; // this for tracking when a player recently entered a room
+                            tempPlayers[turn].turn = false;
+                            let nextTurn = (turn + 1) % players.length;
                             setTurn(nextTurn);
                             setChat(old => [{type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}, ...old]);
                             setPlayers(tempPlayers);
                         }}>
                             <h3>Make a guess</h3>
-                            <fieldset disabled={players[playerTurn].currentRoom == null || !players[playerTurn].recentArrival}>
+                            <fieldset disabled={players[turn].currentRoom == null || !players[turn].recentArrival}>
                                 <div>
                                     <label>Player</label>
                                     <select name="playerChoice">
@@ -88,31 +93,17 @@ export function Play() {
                                         <option>Jeremy</option>
                                     </select>
                                 </div>
-                                {/* I realized I needed to remove this because that's not how clue works.
-                                <div>
-                                    <label>Room</label>
-                                    <select>
-                                        <option>Clinic</option>
-                                        <option>Doctor's Office</option>
-                                        <option>Director's Office</option>
-                                        <option>Lab</option>
-                                        <option>ICU</option>
-                                        <option>Operating Room</option>
-                                        <option>Lobby</option>
-                                        <option>MRI Room</option>
-                                    </select>
-                                </div>*/}
                                 <div>
                                     <label>Weapon</label>
                                     <select name="weaponChoice">
-                                        <option>Stethoscope</option>
-                                        <option>Syringe</option>
-                                        <option>Reflex Hammer</option>
-                                        <option>IV Needle</option>
-                                        <option>Pulling the Plug</option>
-                                        <option>Latex Gloves</option>
-                                        <option>Boredom</option>
-                                        <option>Defibrilator</option>
+                                        <option value={"stethoscope"}>Stethoscope</option>
+                                        <option value={"syringe"}>Syringe</option>
+                                        <option value={"hammer"}>Reflex Hammer</option>
+                                        <option value={"iv"}>IV Needle</option>
+                                        <option value={"plug"}>Pulling the Plug</option>
+                                        <option value={"gloves"}>Latex Gloves</option>
+                                        <option value={"boredom"}>Boredom</option>
+                                        <option value={"defib"}>Defibrilator</option>
                                     </select>
                                 </div>
                                 <p>
@@ -127,9 +118,9 @@ export function Play() {
                     {/*Main playing feature things*/}
                     <Board 
                         grid={grid}
-                        playerInfo={players}
-                        playerUpdate={setPlayers}
-                        turn={playerTurn}
+                        players={players}
+                        setPlayers={setPlayers}
+                        turn={turn}
                         setTurn={setTurn}
                         chatlog={chatlog}
                         setChat={setChat}
@@ -169,8 +160,8 @@ function Board(props) {
         <Rooms roomData={boardFile.rooms} grid={props.grid} />
         <Cells 
             grid={props.grid}
-            playerInfo={props.playerInfo}
-            playerUpdate={props.playerUpdate}
+            players={props.players}
+            setPlayers={props.setPlayers}
             turn={props.turn}
             setTurn={props.setTurn}
             chatlog={props.chatlog}
@@ -179,8 +170,8 @@ function Board(props) {
         <Doors
             doorData={boardFile.doors}
             grid={props.grid}
-            playerInfo={props.playerInfo}
-            playerUpdate={props.playerUpdate}
+            players={props.players}
+            setPlayers={props.setPlayers}
             turn={props.turn}
             setTurn={props.setTurn}
             chatlog={props.chatlog}
@@ -195,24 +186,26 @@ function Board(props) {
  * Loops and generates all the cells to use in the grid
  * @returns The list of cells
  */
-function Cells({grid, playerInfo, playerUpdate, turn, setTurn, chatlog, setChat}) {
+function Cells(props) {
     let cells = [];
-    for (let i = 0; i < grid.length; i++) {
-        for (let j = 0; j < grid[i].length; j++) {
-            if(grid[i][j] == null) {
+    // loop and add cells with correct coordinates
+    for (let i = 0; i < props.grid.length; i++) {
+        for (let j = 0; j < props.grid[i].length; j++) {
+            if(props.grid[i][j] == null) {
                 let cell = <Cell
                     key={i + "-" + j}
                     i={i}
                     j={j}
-                    playerInfo={playerInfo}
-                    playerUpdate={playerUpdate}
-                    turn={turn}
-                    setTurn={setTurn}
-                    chatlog={chatlog}
-                    setChat={setChat}
+                    players={props.players}
+                    setPlayers={props.setPlayers}
+                    turn={props.turn}
+                    setTurn={props.setTurn}
+                    chatlog={props.chatlog}
+                    setChat={props.setChat}
                 />
+                // now grid displays
                 cells.push(cell);
-                grid[i][j] = "cell";
+                props.grid[i][j] = "cell";
             }
         }
     }
@@ -221,9 +214,10 @@ function Cells({grid, playerInfo, playerUpdate, turn, setTurn, chatlog, setChat}
 
 function Cell(props) {
     function moveGuy(i, j) {
-        let tempPlayers = JSON.parse(JSON.stringify(props.playerInfo));
+        let tempPlayers = JSON.parse(JSON.stringify(props.players));
+        // if selected spot within one step, move there
         if(Math.abs(i - tempPlayers[props.turn].x) + Math.abs(j - tempPlayers[props.turn].y) == 1 && tempPlayers[props.turn].moves > 0) {
-            
+            // set everything to new position
             tempPlayers[props.turn].x = i;
             tempPlayers[props.turn].y = j;
             tempPlayers[props.turn].currentRoom = null;
@@ -235,39 +229,42 @@ function Cell(props) {
                 props.setTurn(nextTurn);
                 props.setChat(old => [{type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}, ...old]);
             }
-            props.playerUpdate(tempPlayers);
+            props.setPlayers(tempPlayers);
         }
     }
+    // figure out if there is a player on this square
     let playerOn = -1;
-    for (let i = 0; i < props.playerInfo.length; i++) {
-        if(props.playerInfo[i].x == props.i && props.playerInfo[i].y == props.j) {
+    for (let i = 0; i < props.players.length; i++) {
+        if(props.players[i].x == props.i && props.players[i].y == props.j) {
             playerOn = i;
         }
     }
     return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >
-        { playerOn >= 0 && <PlayerDisplay color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
+        { playerOn >= 0 && <PlayerDisplay color={playerOn == props.turn ? props.players[playerOn].color : props.players[playerOn].disabled} /> }
     </div>
 }
 
-function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn, chatlog, setChat, roomIdNames }) {
+function Doors(props) {
     let doors = [];
-    doorData.map((door) => {
-        grid[door.x - 1][door.y - 1] = door.id;
+    // loop through door data and add to grid/render
+    props.doorData.map((door) => {
+        props.grid[door.x - 1][door.y - 1] = door.id;
+        // define the correct spot for the door to reside
         let area = door.x + " / " + door.y + " / " + (door.x + 1) + " / " + (door.y + 1);
         doors.push(<Door 
             key={door.id} 
             doorID={door.id} 
             i={door.x - 1} 
             j={door.y - 1} 
-            playerInfo={playerInfo} 
-            playerUpdate={playerUpdate} 
+            players={props.players} 
+            setPlayers={props.setPlayers} 
             area={{gridArea: area}} 
-            turn={turn}
-            setTurn={setTurn}
-            chatlog={chatlog}
-            setChat={setChat}
+            turn={props.turn}
+            setTurn={props.setTurn}
+            chatlog={props.chatlog}
+            setChat={props.setChat}
             roomId={door.roomId}
-            roomIdNames={roomIdNames}
+            roomIdNames={props.roomIdNames}
         />);
     });
     return doors;
@@ -275,30 +272,33 @@ function Doors({ doorData, grid, playerInfo, playerUpdate, turn, setTurn, chatlo
 
 function Door(props) {
     function moveGuy(i, j) {
-        let tempPlayers = JSON.parse(JSON.stringify(props.playerInfo));
+        let tempPlayers = JSON.parse(JSON.stringify(props.players));
         // check that the space is only one away
         if(Math.abs(i - tempPlayers[props.turn].x) + Math.abs(j - tempPlayers[props.turn].y) == 1 && tempPlayers[props.turn].moves > 0) {
+            // set player to new position
             tempPlayers[props.turn].x = i;
             tempPlayers[props.turn].y = j;
             tempPlayers[props.turn].currentRoom = props.roomId;
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
             props.setChat(old => [{type: "line", message: (tempPlayers[props.turn].name) + " just entered " + props.roomIdNames[props.roomId]}, ...old]);
-            props.playerUpdate(tempPlayers);
+            props.setPlayers(tempPlayers);
         }
     }
+    // determine if a player is on this door
     let playerOn = -1;
-    for (let i = 0; i < props.playerInfo.length; i++) {
-        if(props.playerInfo[i].x == props.i && props.playerInfo[i].y == props.j) {
+    for (let i = 0; i < props.players.length; i++) {
+        if(props.players[i].x == props.i && props.players[i].y == props.j) {
             playerOn = i;
         }
     }
     return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >
-            { playerOn >= 0 && <PlayerDisplay color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
+            { playerOn >= 0 && <PlayerDisplay color={playerOn == props.turn ? props.players[playerOn].color : props.players[playerOn].disabled} /> }
         </div>
 }
 
 function Rooms({roomData, grid}) {
+    // use the room data render these rooms
     let rooms = [];
     roomData.map((room) => {
         for(let i = room.x; i < room.x + 6; i++) {
@@ -311,12 +311,14 @@ function Rooms({roomData, grid}) {
     return rooms;
 }
 
+/// Renders a player with a certain color
 function PlayerDisplay({color}) {
     return (
         <div className="player" style={{backgroundColor: color}} ></div>
     );
 }
 
+// Dynamically renders a the chat with the chatlog
 function Chat({chatlog, roomIdNames}) {
     return (
         <div id="chat">
@@ -330,6 +332,7 @@ function Chat({chatlog, roomIdNames}) {
     );
 }
 
+// Renders a single message for the chat
 function Message({msg, roomIdNames}) {
     if(msg.type == "line") {
         return <p>{msg.message}</p>
