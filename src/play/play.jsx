@@ -1,44 +1,15 @@
 import React, { use, useState } from "react";
 import "./play.css";
 import boardFile from "./board.json";
+import { Player } from "./player";
 
 export function Play() {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
     const [players, setPlayers] = useState([
-        {
-            x: 7,
-            y: 7, 
-            color: 'green',
-            disabled: '#c4ffc4',
-            currentRoom: null, 
-            moves: 0, 
-            turn: true, 
-            recentArrival: false,
-            name: "You"
-        },
-        {
-            x: 18,
-            y: 7, 
-            color: 'blue', 
-            disabled: '#c7c7ff',
-            currentRoom: null, 
-            moves: 0, 
-            turn: true, 
-            recentArrival: false,
-            name: "Jeremy"
-        },
-        {
-            x: 7,
-            y: 18, 
-            color: 'red',
-            disabled: '#ffa8a8',
-            currentRoom: null, 
-            moves: 0, 
-            turn: true, 
-            recentArrival: false,
-            name: "Dave100"
-        }
+        new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "You"),
+        new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, "Jeremy"),
+        new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
     ]);
     const [playerTurn, setTurn] = useState(0);
     const [chatlog, setChat] = useState([
@@ -274,7 +245,7 @@ function Cell(props) {
         }
     }
     return <div className="hall" onClick={() => moveGuy(props.i, props.j)} >
-        { playerOn >= 0 && <Player color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
+        { playerOn >= 0 && <PlayerDisplay color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
     </div>
 }
 
@@ -323,7 +294,7 @@ function Door(props) {
         }
     }
     return <div className="door" style={props.area} onClick={() => moveGuy(props.i, props.j)} >
-            { playerOn >= 0 && <Player color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
+            { playerOn >= 0 && <PlayerDisplay color={playerOn == props.turn ? props.playerInfo[playerOn].color : props.playerInfo[playerOn].disabled} /> }
         </div>
 }
 
@@ -340,7 +311,7 @@ function Rooms({roomData, grid}) {
     return rooms;
 }
 
-function Player({color}) {
+function PlayerDisplay({color}) {
     return (
         <div className="player" style={{backgroundColor: color}} ></div>
     );
