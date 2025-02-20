@@ -1,7 +1,5 @@
 .join-room {
-    width: 75%;
-    border: solid black 1px;
-    border-radius: 15px;
+    width: 60%;
     height: 50vh;
     margin: 30px auto;
     text-align: center;
@@ -9,12 +7,30 @@
 
 .available-rooms {
     width: 75%;
-    height: 70%;
+    height: 80%;
     background-color: #dddddd;
     margin: 30px auto;
     border-radius: 10px;
+    text-align: left;
+    padding: 5px;
 }
 
 .join-room button {
     border-radius: 5px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2em;
+}
+
+.room-join-option {
+    font-size: 1.25em;
+    background-color: #a7a7a7;
+    padding: 5px;
+    border-radius: 3px;
+    width: fit-content;
+    margin: 10px;
+    display: inline-block;
+    cursor: pointer;
 }
