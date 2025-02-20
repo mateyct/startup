@@ -8,6 +8,8 @@ export function Play(props) {
     const [inGame, setInGame] = useState(false);
     // rooms here represents different instances of the game
     const [rooms, setRooms] = useState([13232]);
+    // players that are used
+    const [players, setPlayers] = useState([new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, props.userName)]);
     /*
     order of making a game
         - one page displaying "Create room" or "Join room" (look into setInterval for rooms being created)
@@ -19,8 +21,8 @@ export function Play(props) {
     return (
         <main>
             {!gameID && <Join gameID={gameID} setGameID={setGameID} rooms={rooms} setRooms={setRooms} />}
-            {gameID && !inGame && <GameLobby gameID={gameID} setInGame={setInGame} userName={props.userName} />}
-            {gameID && inGame && <Game gameID={gameID} />}
+            {gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
+            {gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} />}
         </main>
     );
 }
@@ -64,8 +66,8 @@ function Join(props) {
 }
 
 function GameLobby(props) {
-    const [players, setPlayers] = useState([new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, props.userName)]);
     const [intervalSet, setIntervalSet] = useState(false); // this is pretty temporary
+    const [counter, setCounter] = useState(0); // also should be temporary
     // also have player options
     const playerOptions = [
         new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "Hal"),
@@ -73,13 +75,12 @@ function GameLobby(props) {
         new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
     ]
     // use a set interval to represent a WebSocket
-    let interv;
     if (!intervalSet) {
-        let counter = 0;
-        interv = setInterval(() => {
-            setPlayers((prev) => [...prev, playerOptions[counter]])
-            counter++;
-            if (counter >= playerOptions.length) {
+        let interv = setInterval(() => { 
+            let tempCounter = counter;
+            props.setPlayers((prev) => [...prev, playerOptions[tempCounter]])
+            setCounter(counter + 1);
+            if (counter >= playerOptions.length || props.inGame) {
                 clearInterval(interv);
             }
         }, 5000);
@@ -87,7 +88,7 @@ function GameLobby(props) {
     }
     // remove interval when starting game
     function startGame() {
-        clearInterval(interv);
+        setCounter(100);
         props.setInGame(true);
     }
     return (
@@ -95,7 +96,7 @@ function GameLobby(props) {
             <h2>Game Lobby</h2>
             <div className="start-game">
                 <div className="game-players">
-                    {players.map(player => (
+                    {props.players.map(player => (
                         <div className="player-opt" key={player.name}><span style={{backgroundColor: player.color}} className="small-circle"></span> {player.name}</div>
                     ))}
                 </div>
