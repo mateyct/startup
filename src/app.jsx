@@ -15,7 +15,7 @@ export default function App() {
             <Header userName={userName} userAuth={userAuth} />
             <Routes>
                 <Route path='/' element={<Login userName={userName} setUserName={setUserName} userAuth={userAuth} setUserAuth={setUserAuth} />} exact />
-                <Route path='/play' element={<Play />} />
+                <Route path='/play' element={<Play userName={userName} />} />
                 <Route path='/history' element={<History />} />
             </Routes>
             <Footer />

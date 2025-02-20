@@ -1,8 +1,9 @@
 import React, { use, useState } from "react";
 import { Game } from "./game";
 import './play.css';
+import { Player } from "./player";
 
-export function Play() {
+export function Play(props) {
     const [gameID, setGameID] = useState('');
     const [inGame, setInGame] = useState(false);
     // rooms here represents different instances of the game
@@ -18,6 +19,7 @@ export function Play() {
     return (
         <main>
             {!gameID && <Join gameID={gameID} setGameID={setGameID} rooms={rooms} setRooms={setRooms} />}
+            {gameID && !inGame && <GameLobby gameID={gameID} setInGame={setInGame} userName={props.userName} />}
             {gameID && inGame && <Game gameID={gameID} />}
         </main>
     );
@@ -26,12 +28,12 @@ export function Play() {
 function Join(props) {
     const [intervalSet, setIntervalSet] = useState(false); // this is pretty temporary
     // use a set interval to represent a WebSocket
-    if(!intervalSet) {
+    if (!intervalSet) {
         let counter = 0;
         let interv = setInterval(() => {
             counter++;
             props.setRooms((prev) => [...prev, Math.round(Math.random() * 100000)])
-            if(counter >= 5) {
+            if (counter >= 5) {
                 clearInterval(interv);
             }
         }, 5000);
@@ -50,12 +52,54 @@ function Join(props) {
         <>
             <h2>Join a game</h2>
             <div className="join-room">
-            <button className="my-button" onClick={createRoom}>Create Room</button>
+                <button className="my-button" onClick={createRoom}>Create Room</button>
                 <div className="available-rooms">
                     {props.rooms.map(room => (
                         <div key={room} className="room-join-option" onClick={() => joinRoom(room)}>{room}</div>
                     ))}
                 </div>
+            </div>
+        </>
+    )
+}
+
+function GameLobby(props) {
+    const [players, setPlayers] = useState([new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, props.userName)]);
+    const [intervalSet, setIntervalSet] = useState(false); // this is pretty temporary
+    // also have player options
+    const playerOptions = [
+        new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "Hal"),
+        new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, "Jeremy"),
+        new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
+    ]
+    // use a set interval to represent a WebSocket
+    let interv;
+    if (!intervalSet) {
+        let counter = 0;
+        interv = setInterval(() => {
+            setPlayers((prev) => [...prev, playerOptions[counter]])
+            counter++;
+            if (counter >= playerOptions.length) {
+                clearInterval(interv);
+            }
+        }, 5000);
+        setIntervalSet(true);
+    }
+    // remove interval when starting game
+    function startGame() {
+        clearInterval(interv);
+        props.setInGame(true);
+    }
+    return (
+        <>
+            <h2>Game Lobby</h2>
+            <div className="start-game">
+                <div className="game-players">
+                    {players.map(player => (
+                        <div className="player-opt" key={player.name}><span style={{backgroundColor: player.color}} className="small-circle"></span> {player.name}</div>
+                    ))}
+                </div>
+                <button className="my-button" onClick={startGame}>Start Game</button>
             </div>
         </>
     )
