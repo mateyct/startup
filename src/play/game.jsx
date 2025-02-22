@@ -1,8 +1,9 @@
-import React, { use, useState } from "react";
+import React, { use, useRef, useState } from "react";
 import "./game.css";
 import boardFile from "./datafiles/board.json";
 import { Player } from "./player";
 import GuessingForm from "./guessing";
+import clueData from "./datafiles/clueData.json";
 
 export function Game(props) {
     const [controlModalOpen, setControlModal] = useState(false);
@@ -21,30 +22,28 @@ export function Game(props) {
             message: "Welcome to Medical Murder Mystery!",
         }
     ]);
+    // set up secret data...
+    const answers = useRef(chooseSecrets());
+
+    // choose all the secret data
+    function chooseSecrets() {
+        // player
+        let player = players[Math.floor(Math.random() * players.length)];
+        // room
+        let roomKeys = Object.keys(clueData.roomIdNames);
+        let room = roomKeys[Math.floor(Math.random() * roomKeys.length)];
+        // weapon
+        let weaponKeys = Object.keys(clueData.weaponIdNames);
+        let weapon = weaponKeys[Math.floor(Math.random() * weaponKeys.length)];
+        return {
+            player: player.name,
+            room: room,
+            weapon: weapon
+        };
+    }
+
     // the grid to track what each place on the map should be, a little messy
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
-    // a map for referencing room full names based on IDs
-    const roomIdNames = {
-        "clinic": "Clinic",
-        "dr-office": "Dr. Office",
-        "dir-office": "Director's Office",
-        "lab": "Lab",
-        "icu": "ICU",
-        "op": "Operating Room",
-        "lobby": "Lobby",
-        "mri": "MRI Room"
-    }
-    // a map for referencing weapon names
-    const weaponIdNames = {
-        "stethoscope": "Stethoscope",
-        "syringe": "Syringe",
-        "hammer": "Reflex Hammer",
-        "iv": "IV Needle",
-        "plug": "Pulling the Plug",
-        "gloves": "Latex Gloves",
-        "boredom": "Boredom",
-        "defib": "Defibrilator"
-    }
 
     return (
         <>
@@ -70,7 +69,7 @@ export function Game(props) {
                         <p>Moves left: {players[turn].moves}</p>
                         <button id="dice-roll" className="my-button" disabled={players[turn].recentArrival || players[turn].moves > 0} onClick={() => {
                             let tempPlayers = JSON.parse(JSON.stringify(players));
-                            tempPlayers[turn].moves = Math.ceil(Math.random() * 6);
+                            tempPlayers[turn].moves = Math.ceil(Math.random() * 12);
                             setPlayers(tempPlayers);
                         }} >Roll Die</button>
                     </div>
@@ -83,6 +82,7 @@ export function Game(props) {
                         chatlog={chatlog}
                         setChat={setChat}
                         setPlayers={setPlayers}
+                        answers={answers}
                         />
                     </div>
                 </div>
@@ -97,7 +97,6 @@ export function Game(props) {
                         setTurn={setTurn}
                         chatlog={chatlog}
                         setChat={setChat}
-                        roomIdNames={roomIdNames}
                     />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
@@ -120,7 +119,7 @@ export function Game(props) {
                     <div className="chat-header">
                         <h3>Info Chat</h3>
                     </div>
-                    <Chat chatlog={chatlog} roomIdNames={roomIdNames} weaponIdNames={weaponIdNames} />
+                    <Chat chatlog={chatlog}  />
                 </div>
             </section>
         </>
@@ -149,7 +148,6 @@ function Board(props) {
             setTurn={props.setTurn}
             chatlog={props.chatlog}
             setChat={props.setChat}
-            roomIdNames={props.roomIdNames}
         />
     </div>
     );
@@ -236,7 +234,6 @@ function Doors(props) {
             chatlog={props.chatlog}
             setChat={props.setChat}
             roomId={door.roomId}
-            roomIdNames={props.roomIdNames}
         />);
     });
     return doors;
@@ -253,7 +250,7 @@ function Door(props) {
             tempPlayers[props.turn].currentRoom = props.roomId;
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
-            props.setChat(old => [{type: "line", message: (tempPlayers[props.turn].name) + " just entered " + props.roomIdNames[props.roomId]}, ...old]);
+            props.setChat(old => [{type: "line", message: (tempPlayers[props.turn].name) + " just entered " + clueData.roomIdNames[props.roomId]}, ...old]);
             props.setPlayers(tempPlayers);
         }
     }
@@ -291,12 +288,12 @@ function PlayerDisplay({color}) {
 }
 
 // Dynamically renders a the chat with the chatlog
-function Chat({chatlog, roomIdNames, weaponIdNames}) {
+function Chat({chatlog}) {
     return (
         <div id="chat">
         {chatlog.map((msg, index) => {
             return (<div key={index} className="chat-message">
-                <Message msg={msg} roomIdNames={roomIdNames} weaponIdNames={weaponIdNames} />
+                <Message msg={msg} />
             </div>)
         })}
         </div>
@@ -305,7 +302,7 @@ function Chat({chatlog, roomIdNames, weaponIdNames}) {
 }
 
 // Renders a single message for the chat
-function Message({msg, roomIdNames, weaponIdNames}) {
+function Message({msg}) {
     if(msg.type == "line") {
         return <p>{msg.message}</p>
     }
@@ -315,8 +312,8 @@ function Message({msg, roomIdNames, weaponIdNames}) {
             <p>{msg.guesser + " guessed:"}</p>
             <ul>
                 <li>{"It was " + msg.person}</li>
-                <li>{"In " + roomIdNames[msg.room]}</li>
-                <li>{"With the " + weaponIdNames[msg.weapon]}</li>
+                <li>{"In " + clueData.roomIdNames[msg.room]}</li>
+                <li>{"With the " + clueData.weaponIdNames[msg.weapon]}</li>
             </ul>
         </>
         );

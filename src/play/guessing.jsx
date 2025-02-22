@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import clueData from "./datafiles/clueData.json";
 
 export default function GuessingForm(props) {
-    const [chosenWeapon, setChosenWeapon] = useState('');
-    const [chosenPlayer, setChosenPlayer] = useState('');
+    // set up initial values, since they are automatic in the HTML
+    const [chosenWeapon, setChosenWeapon] = useState(Object.keys(clueData.weaponIdNames)[0]);
+    const [chosenPlayer, setChosenPlayer] = useState(props.players[0].name);
     const players = props.players;
     const turn = props.turn;
+    const answers = props.answers.current;
 
     // submit the guessing form and change values
     function handleSubmit() {
@@ -37,6 +39,12 @@ export default function GuessingForm(props) {
         props.setTurn(nextTurn);
         props.setPlayers(tempPlayers);
         props.setChat(old => [{ type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" }, ...old]);
+        // check if guess is a winning one
+        console.log("correct: ", answers.player, answers.room, answers.weapon);
+        console.log("guess: ", chosenPlayer, players[turn].currentRoom, chosenWeapon);
+        if (answers.player === chosenPlayer && answers.room === players[turn].currentRoom && answers.weapon === chosenWeapon) {
+            props.setChat(old => [{ type: "line", message: (tempPlayers[turn].name + " guessed correctly and wins!")}, ...old]);
+        }
     }
 
     return (
