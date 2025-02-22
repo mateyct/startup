@@ -80,6 +80,7 @@ export function Game(props) {
                         players={players}
                         turn={turn}
                         setTurn={setTurn}
+                        chatlog={chatlog}
                         setChat={setChat}
                         setPlayers={setPlayers}
                         />
@@ -320,15 +321,4 @@ function Message({msg, roomIdNames, weaponIdNames}) {
         </>
         );
     }
-}
-
-// function for displaying weapon choice
-function WeaponChoice(props) {
-    const choices = [];
-    let keys = Object.keys(props.weaponIdNames);
-    // loop and return choices
-    keys.map(weaponID => {
-        choices.push(<option key={weaponID} value={weaponID}>{props.weaponIdNames[weaponID]}</option>)
-    });
-    return choices;
 }
