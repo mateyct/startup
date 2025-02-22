@@ -152,7 +152,7 @@ main h1 {
 .guessing {
     border-top: 1px solid black;
 }
-.guessing form {
+.guessing > div {
     margin: 0;
     padding: 0;
     display: flex;
@@ -160,23 +160,23 @@ main h1 {
     justify-content: space-between;
     height: 95%;
 }
-.guessing form div {
+.guessing > div div {
     font-size: 1.25em;
     text-align: left;
 }
-.guessing form div label {
+.guessing > div div label {
     width: 30%;
     display: inline-block;
     margin: 10px 10px 10px 20px;
 }
-.guessing form div select {
+.guessing > div div select {
     width: 50%;
     padding: 10px 0;
 }
-.guessing form p {
+.guessing > div p {
     text-align: center;
 }
-.guessing form input {
+.guessing > div input {
     margin: 10px 0 0 0;
     text-align: center;
     width: 40%;
@@ -282,19 +282,19 @@ main h1 {
             font-size: 1em;
         }
     }
-    .guessing form div {
+    .guessing > div div {
         font-size: 1em;
     }
-    .guessing form div label {
+    .guessing > div div label {
         width: 30%;
         display: inline-block;
         margin: 0 10px 0 20px;
     }
-    .guessing form div select {
+    .guessing > div div select {
         width: 50%;
         padding: 2px 0;
     }
-    .guessing form input {
+    .guessing > div input {
         margin: 5px 0 ;
         text-align: center;
         width: 40%;

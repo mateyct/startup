@@ -1,7 +1,8 @@
 import React, { use, useState } from "react";
 import "./game.css";
-import boardFile from "./board.json";
+import boardFile from "./datafiles/board.json";
 import { Player } from "./player";
+import GuessingForm from "./guessing";
 
 export function Game(props) {
     const [controlModalOpen, setControlModal] = useState(false);
@@ -33,7 +34,17 @@ export function Game(props) {
         "lobby": "Lobby",
         "mri": "MRI Room"
     }
-    
+    // a map for referencing weapon names
+    const weaponIdNames = {
+        "stethoscope": "Stethoscope",
+        "syringe": "Syringe",
+        "hammer": "Reflex Hammer",
+        "iv": "IV Needle",
+        "plug": "Pulling the Plug",
+        "gloves": "Latex Gloves",
+        "boredom": "Boredom",
+        "defib": "Defibrilator"
+    }
 
     return (
         <>
@@ -65,52 +76,13 @@ export function Game(props) {
                     </div>
                     <div className="guessing">
                         {/*Form for making a guess*/}
-                        <form method="dialog" action="play.html" onSubmit={(event) => {
-                            // add the guess to the chat
-                            setChat(old => [{
-                                type: "guess",
-                                guesser: players[turn].name,
-                                person: event.target.playerChoice.value,
-                                room: players[turn].currentRoom,
-                                weapon: event.target.weaponChoice.value
-                            }, ...old])
-                            // switch the players to the next turn
-                            let tempPlayers = JSON.parse(JSON.stringify(players));
-                            tempPlayers[turn].recentArrival = false; // this for tracking when a player recently entered a room
-                            tempPlayers[turn].turn = false;
-                            let nextTurn = (turn + 1) % players.length;
-                            setTurn(nextTurn);
-                            setChat(old => [{type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}, ...old]);
-                            setPlayers(tempPlayers);
-                        }}>
-                            <h3>Make a guess</h3>
-                            <fieldset disabled={players[turn].currentRoom == null || !players[turn].recentArrival}>
-                                <div>
-                                    <label>Player</label>
-                                    <select name="playerChoice">
-                                        <option>Dave100</option>
-                                        <option>You</option>
-                                        <option>Jeremy</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label>Weapon</label>
-                                    <select name="weaponChoice">
-                                        <option value={"stethoscope"}>Stethoscope</option>
-                                        <option value={"syringe"}>Syringe</option>
-                                        <option value={"hammer"}>Reflex Hammer</option>
-                                        <option value={"iv"}>IV Needle</option>
-                                        <option value={"plug"}>Pulling the Plug</option>
-                                        <option value={"gloves"}>Latex Gloves</option>
-                                        <option value={"boredom"}>Boredom</option>
-                                        <option value={"defib"}>Defibrilator</option>
-                                    </select>
-                                </div>
-                                <p>
-                                    <input type="submit" className="my-button"/>
-                                </p>
-                            </fieldset>
-                        </form>
+                        <GuessingForm 
+                        players={players}
+                        turn={turn}
+                        setTurn={setTurn}
+                        setChat={setChat}
+                        setPlayers={setPlayers}
+                        />
                     </div>
                 </div>
                 {/*Middle section that's a play area*/}
@@ -147,7 +119,7 @@ export function Game(props) {
                     <div className="chat-header">
                         <h3>Info Chat</h3>
                     </div>
-                    <Chat chatlog={chatlog} roomIdNames={roomIdNames} />
+                    <Chat chatlog={chatlog} roomIdNames={roomIdNames} weaponIdNames={weaponIdNames} />
                 </div>
             </section>
         </>
@@ -318,12 +290,12 @@ function PlayerDisplay({color}) {
 }
 
 // Dynamically renders a the chat with the chatlog
-function Chat({chatlog, roomIdNames}) {
+function Chat({chatlog, roomIdNames, weaponIdNames}) {
     return (
         <div id="chat">
         {chatlog.map((msg, index) => {
             return (<div key={index} className="chat-message">
-                <Message msg={msg} roomIdNames={roomIdNames} />
+                <Message msg={msg} roomIdNames={roomIdNames} weaponIdNames={weaponIdNames} />
             </div>)
         })}
         </div>
@@ -332,7 +304,7 @@ function Chat({chatlog, roomIdNames}) {
 }
 
 // Renders a single message for the chat
-function Message({msg, roomIdNames}) {
+function Message({msg, roomIdNames, weaponIdNames}) {
     if(msg.type == "line") {
         return <p>{msg.message}</p>
     }
@@ -343,9 +315,20 @@ function Message({msg, roomIdNames}) {
             <ul>
                 <li>{"It was " + msg.person}</li>
                 <li>{"In " + roomIdNames[msg.room]}</li>
-                <li>{"With the " + msg.weapon}</li>
+                <li>{"With the " + weaponIdNames[msg.weapon]}</li>
             </ul>
         </>
         );
     }
+}
+
+// function for displaying weapon choice
+function WeaponChoice(props) {
+    const choices = [];
+    let keys = Object.keys(props.weaponIdNames);
+    // loop and return choices
+    keys.map(weaponID => {
+        choices.push(<option key={weaponID} value={weaponID}>{props.weaponIdNames[weaponID]}</option>)
+    });
+    return choices;
 }

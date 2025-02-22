@@ -114,7 +114,7 @@ function GameLobby(props) {
                         <div className="player-opt" key={player.name}><span style={{backgroundColor: player.color}} className="small-circle"></span> {player.name}</div>
                     ))}
                 </div>
-                <button className="my-button" onClick={startGame}>Start Game</button>
+                <button className="my-button" onClick={startGame} disabled={props.players.length < 2}>Start Game</button>
             </div>
         </>
     )
