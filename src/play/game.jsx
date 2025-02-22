@@ -25,6 +25,15 @@ export function Game(props) {
     // set up secret data...
     const answers = useRef(chooseSecrets());
 
+    const [intel, setIntel] = useState([""]);
+
+    // use this to add to intel to prevent duplication
+    function addIntel(info) {
+        if(!intel.includes(info)) {
+            setIntel(old => [...old, info]);
+        }
+    }
+
     // choose all the secret data
     function chooseSecrets() {
         // player
@@ -57,10 +66,9 @@ export function Game(props) {
                         <button id="close-controls" className="large-screen-hidden" onClick={() => setControlModal(false)}></button>
                         <h3>Your Secret Info</h3>
                         <ul>
-                            <li>Dr. Tyler is innocent</li>
-                            <li>The Syringe was not involved</li>
-                            <li>It didn't happen in the Lobby</li>
-                            <li>The Reflex Hammer was not involved</li>
+                            {intel.map((info, index) => (
+                                <li key={index}>{info}</li>
+                            ))}
                         </ul>
                     </div>
                     <div className="rolling">
@@ -83,6 +91,7 @@ export function Game(props) {
                         setChat={setChat}
                         setPlayers={setPlayers}
                         answers={answers}
+                        addIntel={addIntel}
                         />
                     </div>
                 </div>

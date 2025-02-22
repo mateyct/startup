@@ -40,9 +40,33 @@ export default function GuessingForm(props) {
         props.setPlayers(tempPlayers);
         props.setChat(old => [{ type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" }, ...old]);
         // check if guess is a winning one
-        console.log("correct: ", answers.player, answers.room, answers.weapon);
+        console.log("correct: ", answers.player, answers.room, answers.weapon); // keep for debugging purposes
         console.log("guess: ", chosenPlayer, players[turn].currentRoom, chosenWeapon);
-        if (answers.player === chosenPlayer && answers.room === players[turn].currentRoom && answers.weapon === chosenWeapon) {
+        let correctFlags = 0; // 3 flags is a winner
+        // determine player
+        if (answers.player == chosenPlayer) {
+            props.addIntel("Correct: " + chosenPlayer);
+            correctFlags++;
+        }
+        else {
+            props.addIntel("Incorrect: " + chosenPlayer);
+        }
+        // determine player
+        if (answers.room == players[turn].currentRoom) {
+            props.addIntel("Correct: " + clueData.roomIdNames[players[turn].currentRoom]);
+            correctFlags++;
+        }
+        else {
+            props.addIntel("Incorrect: " + clueData.roomIdNames[players[turn].currentRoom]);
+        }
+        if (answers.weapon == chosenWeapon) {
+            props.addIntel("Correct: " + clueData.weaponIdNames[chosenWeapon]);
+            correctFlags++;
+        }
+        else {
+            props.addIntel("Incorrect: " + clueData.weaponIdNames[chosenWeapon]);
+        }
+        if (correctFlags >= 3) {
             props.setChat(old => [{ type: "line", message: (tempPlayers[turn].name + " guessed correctly and wins!")}, ...old]);
         }
     }
