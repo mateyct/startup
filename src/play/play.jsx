@@ -6,21 +6,12 @@ import { Player } from "./player";
 export function Play(props) {
     const [gameID, setGameID] = useState('');
     const [inGame, setInGame] = useState(false);
-    // rooms here represents different instances of the game
-    const [rooms, setRooms] = useState([13232]);
     // players that are used
-    const [players, setPlayers] = useState([new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, props.userName)]);
-    /*
-    order of making a game
-        - one page displaying "Create room" or "Join room" (look into setInterval for rooms being created)
-            - shows rooms that can be joined
-        - lobby or waiting room once joined
-            - has "start game option"
-        - goes to the game once clicked
-    */
+    const [players, setPlayers] = useState([]);
+
     return (
         <main>
-            {!gameID && <Join gameID={gameID} setGameID={setGameID} rooms={rooms} setRooms={setRooms} />}
+            {!gameID && <Join gameID={gameID} setGameID={setGameID} />}
             {gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
             {gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} />}
         </main>
@@ -28,26 +19,33 @@ export function Play(props) {
 }
 
 function Join(props) {
-    const [intervalSet, setIntervalSet] = useState(false); // this is pretty temporary
-    // use a set interval to represent a WebSocket
-    if (!intervalSet) {
-        let counter = 0;
-        let interv = setInterval(() => {
-            counter++;
-            props.setRooms((prev) => [...prev, Math.round(Math.random() * 100000)])
-            if (counter >= 5) {
-                clearInterval(interv);
+    // rooms here represents different instances of the game
+    const [lobbies, setLobbies] = useState([13232]);
+    const intervalID = useRef(null);
+    // set and unset interval with Effect, represents WebSockete stuff
+    useEffect(() => {
+        // stop setting interval if too much
+        if (lobbies.length > 5) return;
+        // set the interval
+        intervalID.current = setInterval(() => {
+            setLobbies((prev) => [...prev, Math.round(Math.random() * 100000)])
+            if (lobbies.length > 5) {
+                clearInterval(intervalID.current);
             }
         }, 5000);
-        setIntervalSet(true);
-    }
+
+        // return function to clear interval
+        return () => {
+            clearInterval(intervalID.current);
+        }
+    }, [lobbies]);
     // function that creates a new room
     function createRoom() {
         let randomID = Math.round(Math.random() * 100000);
         props.setGameID(randomID);
     }
     // function to join a game
-    function joinRoom(id) {
+    function joinLobby(id) {
         props.setGameID(id);
     }
     return (
@@ -56,8 +54,8 @@ function Join(props) {
             <div className="join-room">
                 <button className="my-button" onClick={createRoom}>Create Room</button>
                 <div className="available-rooms">
-                    {props.rooms.map(room => (
-                        <div key={room} className="room-join-option" onClick={() => joinRoom(room)}>{room}</div>
+                    {lobbies.map(lobby => (
+                        <div key={lobby} className="room-join-option" onClick={() => joinLobby(lobby)}>{lobby}</div>
                     ))}
                 </div>
             </div>
@@ -70,6 +68,7 @@ function GameLobby(props) {
     const intervalID = useRef(null);
     // also have player options
     const playerOptions = [
+        new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, props.userName),
         new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "Hal"),
         new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, "Jeremy"),
         new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
@@ -81,43 +80,29 @@ function GameLobby(props) {
             setCounter(oldCount => {
                 if (oldCount >= playerOptions.length) {
                     clearInterval(intervalID.current);
-                    return oldCount + 1;
+                    return oldCount;
                 }
-                // make temp players to save
-                let tempPlayers = JSON.parse(JSON.stringify(props.players));
-                tempPlayers.push(playerOptions[oldCount]);
-                props.setPlayers(tempPlayers);
                 // return new count
                 return oldCount + 1;
             });
         }, 3000);
-
+        // return to clear interval
         return () => {
             clearInterval(intervalID.current);
         }
-    }, [props.players, props.inGame, playerOptions]);
-    /*if (!intervalSet) {
-        let interv = setInterval(() => { 
-            if (counter >= playerOptions.length || props.inGame) {
-                clearInterval(interv);
-                console.log("Does this even happen?");
-                return;
-            }
-            let tempCounter = counter;
+    }, []);
+    // for updating the player
+    useEffect(() => {
+        if (counter < playerOptions.length) {
             // make temp players to save
             let tempPlayers = JSON.parse(JSON.stringify(props.players));
-            tempPlayers.push(JSON.parse(JSON.stringify(playerOptions[tempCounter])));
+            tempPlayers.push(playerOptions[counter]);
             props.setPlayers(tempPlayers);
-            setCounter(counter + 1);
-            if (counter >= playerOptions.length || props.inGame) {
-                clearInterval(interv);
-            }
-        }, 5000);
-        setIntervalSet(true);
-    }*/
-    // remove interval when starting game
+        }
+    }, [counter, props.setPlayers]);
+
+    // button clicked to start the game
     function startGame() {
-        //setCounter(100);
         props.setInGame(true);
     }
     return (

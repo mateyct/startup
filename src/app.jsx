@@ -11,15 +11,17 @@ export default function App() {
     const [userAuth, setUserAuth] = useState(userName ? Auth.Authenticated : Auth.Unauthenticated);
 
     return (
-        <BrowserRouter>
-            <Header userName={userName} userAuth={userAuth} />
-            <Routes>
-                <Route path='/' element={<Login userName={userName} setUserName={setUserName} userAuth={userAuth} setUserAuth={setUserAuth} />} exact />
-                <Route path='/play' element={<Play userName={userName} />} />
-                <Route path='/history' element={<History />} />
-            </Routes>
-            <Footer />
-        </BrowserRouter>
+        <React.StrictMode>
+            <BrowserRouter>
+                <Header userName={userName} userAuth={userAuth} />
+                <Routes>
+                    <Route path='/' element={<Login userName={userName} setUserName={setUserName} userAuth={userAuth} setUserAuth={setUserAuth} />} exact />
+                    <Route path='/play' element={<Play userName={userName} />} />
+                    <Route path='/history' element={<History />} />
+                </Routes>
+                <Footer />
+            </BrowserRouter>
+        </React.StrictMode>
     )
 }
 

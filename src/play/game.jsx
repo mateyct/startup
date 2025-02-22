@@ -7,11 +7,6 @@ export function Game(props) {
     const [controlModalOpen, setControlModal] = useState(false);
     const [chatModalOpen, setChatModal] = useState(false);
     // set up players, will be automatically based on number of players connected
-    /*const [players, setPlayers] = useState([
-        new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "You"),
-        new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, "Jeremy"),
-        new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
-    ]);*/
     const players = props.players;
     // set up function
     function setPlayers(val) {
@@ -210,7 +205,6 @@ function Cells(props) {
                 />
                 // now grid displays
                 cells.push(cell);
-                props.grid[i][j] = "cell";
             }
         }
     }
