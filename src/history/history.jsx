@@ -1,8 +1,9 @@
 import React, {useState} from "react";
-import "./history.css"
+import "./history.css";
+import clueData from "../play/datafiles/clueData.json";
 
 export function History() {
-    const [history, setHistory] = useState(JSON.parse(localStorage.getItem("history")));
+    const [history, _] = useState(JSON.parse(localStorage.getItem("history")));
     return (
         <main>
             {/*Placeholder for displaying history of suspicions*/}
@@ -30,8 +31,8 @@ export function History() {
                                 </td>
                                 <td>{guess.guesser}</td>
                                 <td>{guess.person}</td>
-                                <td>{guess.room}</td>
-                                <td>{guess.weapon}</td>
+                                <td>{clueData.roomIdNames[guess.room]}</td>
+                                <td>{clueData.weaponIdNames[guess.weapon]}</td>
                             </tr>
                         ))}
                     </tbody>

@@ -48,14 +48,23 @@ const Header = (props) => {
 };
 
 const Footer = () => {
+    let verse = getVerse();
     return (
         <footer className="footer">
             <hr/>
             <div className="verse">
-                <p className="v-title">3 Nephi 5:13</p>
-                <p className="v-verse">Behold, I am a disciple of Jesus Christ, the Son of God. I have been called of him to declare his word among his people, that they might have everlasting life.</p>
+                <p className="v-title">{ verse.reference }</p>
+                <p className="v-verse">{verse.text}</p>
             </div>
             <p>Mason Tolley<a href="https://github.com/mateyct/startup.git" target="_blank"> GitHub</a></p>
         </footer>
     );
 };
+
+// represents a 3rd party API
+function getVerse() {
+    return {
+        reference: "3 Nephi 5:13",
+        text: "Behold, I am a disciple of Jesus Christ, the Son of God. I have been called of him to declare his word among his people, that they might have everlasting life."
+    };
+}

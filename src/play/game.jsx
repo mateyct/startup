@@ -77,7 +77,7 @@ export function Game(props) {
                         <p>Moves left: {players[turn].moves}</p>
                         <button id="dice-roll" className="my-button" disabled={players[turn].recentArrival || players[turn].moves > 0} onClick={() => {
                             let tempPlayers = JSON.parse(JSON.stringify(players));
-                            tempPlayers[turn].moves = Math.ceil(Math.random() * 12);
+                            tempPlayers[turn].moves = rollDice();
                             setPlayers(tempPlayers);
                         }} >Roll Die</button>
                     </div>
@@ -328,4 +328,9 @@ function Message({msg}) {
         </>
         );
     }
+}
+
+// represents a 3rd party API (if I end up actually using it)
+function rollDice() {
+    return Math.ceil(Math.random() * 6) + Math.ceil(Math.random() * 6);
 }
