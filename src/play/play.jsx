@@ -9,7 +9,7 @@ export function Play(props) {
     const [inGame, setInGame] = useState(false);
     // players that are used
     const [players, setPlayers] = useState([]);
-    const [winner, setWinner] = useState(/* new Player(4, 4, "red", false, null, 4, false, false, "Test winner") */);
+    const [winner, setWinner] = useState( new Player(4, 4, "red", false, null, 4, false, false, "Test winner") );
 
     return (
         <main>

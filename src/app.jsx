@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './app.css';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { Login } from './login/login';
@@ -48,13 +48,20 @@ const Header = (props) => {
 };
 
 const Footer = () => {
-    let verse = getVerse();
+    // set up state for verse stuff
+    const [reference, setReference] = useState("Loading...");
+    const [text, setText] = useState("Loading...");
+    useEffect(() => {
+        let verse = getVerse();
+        setReference(verse.reference);
+        setText(verse.text);
+    }, []);
     return (
         <footer className="footer">
             <hr/>
             <div className="verse">
-                <p className="v-title">{ verse.reference }</p>
-                <p className="v-verse">{verse.text}</p>
+                <p className="v-title">{ reference }</p>
+                <p className="v-verse">{ text }</p>
             </div>
             <p>Mason Tolley<a href="https://github.com/mateyct/startup.git" target="_blank"> GitHub</a></p>
         </footer>
