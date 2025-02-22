@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { use, useEffect, useReducer, useRef, useState } from "react";
 import { Game } from "./game";
 import './play.css';
 import { Player } from "./player";
@@ -66,29 +66,58 @@ function Join(props) {
 }
 
 function GameLobby(props) {
-    const [intervalSet, setIntervalSet] = useState(false); // this is pretty temporary
     const [counter, setCounter] = useState(0); // also should be temporary
+    const intervalID = useRef(null);
     // also have player options
     const playerOptions = [
         new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "Hal"),
         new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, "Jeremy"),
         new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
     ]
-    // use a set interval to represent a WebSocket
-    if (!intervalSet) {
+    // use a set interval and useEffect to represent a WebSocket
+    useEffect(() => {
+        intervalID.current = setInterval(() => {
+            // use functional method to get accurate count
+            setCounter(oldCount => {
+                if (oldCount >= playerOptions.length) {
+                    clearInterval(intervalID.current);
+                    return oldCount + 1;
+                }
+                // make temp players to save
+                let tempPlayers = JSON.parse(JSON.stringify(props.players));
+                tempPlayers.push(playerOptions[oldCount]);
+                props.setPlayers(tempPlayers);
+                // return new count
+                return oldCount + 1;
+            });
+        }, 3000);
+
+        return () => {
+            clearInterval(intervalID.current);
+        }
+    }, [props.players, props.inGame, playerOptions]);
+    /*if (!intervalSet) {
         let interv = setInterval(() => { 
+            if (counter >= playerOptions.length || props.inGame) {
+                clearInterval(interv);
+                console.log("Does this even happen?");
+                return;
+            }
             let tempCounter = counter;
-            props.setPlayers((prev) => [...prev, playerOptions[tempCounter]])
+            // make temp players to save
+            let tempPlayers = JSON.parse(JSON.stringify(props.players));
+            tempPlayers.push(JSON.parse(JSON.stringify(playerOptions[tempCounter])));
+            props.setPlayers(tempPlayers);
             setCounter(counter + 1);
             if (counter >= playerOptions.length || props.inGame) {
                 clearInterval(interv);
             }
         }, 5000);
         setIntervalSet(true);
-    }
+    }*/
     // remove interval when starting game
     function startGame() {
-        setCounter(100);
+        //setCounter(100);
         props.setInGame(true);
     }
     return (
