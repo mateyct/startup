@@ -2,18 +2,21 @@ import React, { use, useEffect, useReducer, useRef, useState } from "react";
 import { Game } from "./game";
 import './play.css';
 import { Player } from "./player";
+import { Link } from "react-router-dom";
 
 export function Play(props) {
     const [gameID, setGameID] = useState('');
     const [inGame, setInGame] = useState(false);
     // players that are used
     const [players, setPlayers] = useState([]);
+    const [winner, setWinner] = useState(/* new Player(4, 4, "red", false, null, 4, false, false, "Test winner") */);
 
     return (
         <main>
-            {!gameID && <Join gameID={gameID} setGameID={setGameID} />}
-            {gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
-            {gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} />}
+            {winner && <WinScreen winner={winner} /> }
+            {!winner && !gameID && <Join gameID={gameID} setGameID={setGameID} />}
+            {!winner && gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
+            {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} />}
         </main>
     );
 }
@@ -116,6 +119,15 @@ function GameLobby(props) {
                 </div>
                 <button className="my-button" onClick={startGame} disabled={props.players.length < 2}>Start Game</button>
             </div>
+        </>
+    )
+}
+
+function WinScreen(props) {
+    return (
+        <>
+            <marquee scrollamount="15" direction="right" style={{color:props.winner.color}}>{props.winner.name + " Wins!"}</marquee>
+            <Link className="middle-link my-button" to="/history">Go to History</Link>
         </>
     )
 }

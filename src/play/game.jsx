@@ -25,7 +25,7 @@ export function Game(props) {
     // set up secret data...
     const answers = useRef(chooseSecrets());
 
-    const [intel, setIntel] = useState([""]);
+    const [intel, setIntel] = useState([]);
 
     // use this to add to intel to prevent duplication
     function addIntel(info) {
@@ -92,6 +92,7 @@ export function Game(props) {
                         setPlayers={setPlayers}
                         answers={answers}
                         addIntel={addIntel}
+                        setWinner={props.setWinner}
                         />
                     </div>
                 </div>

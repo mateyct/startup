@@ -68,6 +68,7 @@ export default function GuessingForm(props) {
         }
         if (correctFlags >= 3) {
             props.setChat(old => [{ type: "line", message: (tempPlayers[turn].name + " guessed correctly and wins!")}, ...old]);
+            props.setWinner(tempPlayers[turn]);
         }
     }
 
