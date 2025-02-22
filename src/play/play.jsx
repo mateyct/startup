@@ -1,4 +1,4 @@
-import React, { use, useEffect, useReducer, useRef, useState } from "react";
+import React, {useEffect, useRef, useState } from "react";
 import { Game } from "./game";
 import './play.css';
 import { Player } from "./player";
@@ -25,7 +25,7 @@ function Join(props) {
     // rooms here represents different instances of the game
     const [lobbies, setLobbies] = useState([13232]);
     const intervalID = useRef(null);
-    // set and unset interval with Effect, represents WebSockete stuff
+    // set and unset interval with Effect, represents WebSocket stuff
     useEffect(() => {
         // stop setting interval if too much
         if (lobbies.length > 5) return;

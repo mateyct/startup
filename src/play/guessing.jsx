@@ -23,12 +23,19 @@ export default function GuessingForm(props) {
         props.setChat([newGuess, ...oldGuess]);
         // sets the local storage of guess history
         let history = localStorage.getItem("history");
+        let storeGuess = {
+            date: Date.now(),
+            guesser: players[turn].name,
+            person: chosenPlayer,
+            room: players[turn].currentRoom,
+            weapon: chosenWeapon
+        };
         if (!history) {
-            localStorage.setItem("history", JSON.stringify([newGuess]));
+            localStorage.setItem("history", JSON.stringify([storeGuess]));
         }
         else {
             let parsedHistory = JSON.parse(history);
-            parsedHistory.push(newGuess);
+            parsedHistory.push(storeGuess);
             localStorage.setItem("history", JSON.stringify(parsedHistory));
         }
         // change turns now
