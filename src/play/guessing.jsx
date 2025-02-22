@@ -77,12 +77,16 @@ export default function GuessingForm(props) {
             props.setChat(old => [{ type: "line", message: (tempPlayers[turn].name + " guessed correctly and wins!")}, ...old]);
             props.setWinner(tempPlayers[turn]);
         }
+        // condition for mocking up other players moving
+        else {
+            setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
+        }
     }
 
     return (
         <div>
             <h3>Make a guess</h3>
-            <fieldset disabled={players[turn].currentRoom == null || !players[turn].recentArrival}>
+            <fieldset disabled={props.playerTurn != turn || players[turn].currentRoom == null || !players[turn].recentArrival}>
                 <div>
                     <label>Player</label>
                     <select name="playerChoice" onChange={(event) => setChosenPlayer(event.target.value)}>

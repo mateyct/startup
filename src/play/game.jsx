@@ -27,6 +27,9 @@ export function Game(props) {
 
     const [intel, setIntel] = useState([]);
 
+    // this represents which index of the players array the user of this device is
+    const [playerTurn, _] = useState(0);
+
     // use this to add to intel to prevent duplication
     function addIntel(info) {
         if(!intel.includes(info)) {
@@ -49,6 +52,24 @@ export function Game(props) {
             room: room,
             weapon: weapon
         };
+    }
+
+    // a mock function to cause other players to move between this players turn
+    function mockPlayer(index, last, movesLeft) {
+        setPlayers((old) => {
+            let tempPlayers = JSON.parse(JSON.stringify(old));
+            tempPlayers[index].x += -last;
+            return tempPlayers;
+        });
+        if(movesLeft > 0) {
+            setTimeout(() => mockPlayer(index, -last, movesLeft - 1), 300);
+        }
+        else {
+            setTurn(oldTurn => (oldTurn + 1) % players.length);
+            if ((index + 1) % players.length != playerTurn) {
+                mockPlayer(index + 1, -last, 3);
+            }
+        }
     }
 
     // the grid to track what each place on the map should be, a little messy
@@ -75,7 +96,7 @@ export function Game(props) {
                         {/*Dice section*/}
                         <h3>Roll for movement</h3>
                         <p>Moves left: {players[turn].moves}</p>
-                        <button id="dice-roll" className="my-button" disabled={players[turn].recentArrival || players[turn].moves > 0} onClick={() => {
+                        <button id="dice-roll" className="my-button" disabled={playerTurn != turn || players[turn].recentArrival || players[turn].moves > 0} onClick={() => {
                             let tempPlayers = JSON.parse(JSON.stringify(players));
                             tempPlayers[turn].moves = rollDice();
                             setPlayers(tempPlayers);
@@ -85,6 +106,7 @@ export function Game(props) {
                         {/*Form for making a guess*/}
                         <GuessingForm 
                         players={players}
+                        playerTurn={playerTurn}
                         turn={turn}
                         setTurn={setTurn}
                         chatlog={chatlog}
@@ -93,6 +115,7 @@ export function Game(props) {
                         answers={answers}
                         addIntel={addIntel}
                         setWinner={props.setWinner}
+                        mockPlayer={mockPlayer}
                         />
                     </div>
                 </div>
@@ -107,6 +130,7 @@ export function Game(props) {
                         setTurn={setTurn}
                         chatlog={chatlog}
                         setChat={setChat}
+                        mockPlayer={mockPlayer}
                     />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
@@ -148,6 +172,7 @@ function Board(props) {
             setTurn={props.setTurn}
             chatlog={props.chatlog}
             setChat={props.setChat}
+            mockPlayer={props.mockPlayer}
         />
         <Doors
             doorData={boardFile.doors}
@@ -183,6 +208,7 @@ function Cells(props) {
                     setTurn={props.setTurn}
                     chatlog={props.chatlog}
                     setChat={props.setChat}
+                    mockPlayer={props.mockPlayer}
                 />
                 // now grid displays
                 cells.push(cell);
@@ -207,6 +233,7 @@ function Cell(props) {
                 tempPlayers[props.turn].turn = false;
                 let nextTurn = (props.turn + 1) % tempPlayers.length;
                 props.setTurn(nextTurn);
+                setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
                 props.setChat(old => [{type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}, ...old]);
             }
             props.setPlayers(tempPlayers);
