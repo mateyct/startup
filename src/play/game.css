@@ -207,6 +207,14 @@ main h1 {
     border-radius: 100%;
 }
 
+.player-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    display: inline-block;
+    margin-left: 5px;
+}
+
 @media only screen and (max-width: 1024px){
     #play-page-layout {
         grid-template-columns: 3fr;

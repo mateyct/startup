@@ -144,9 +144,9 @@ export function Game(props) {
                         <button id="close-chat" className="large-screen-hidden" onClick={() => setChatModal(false)}></button>
                         <h3>Players</h3>
                         <ul>
-                            <li>Dave100</li>
-                            <li>You</li>
-                            <li>Jeremy</li>
+                            {players.map(player => (
+                                <li key={player.name}>{player.name}<span className="player-dot" style={{backgroundColor: player.color}}></span></li>
+                            ))}
                         </ul>
                     </div>
                     {/*A place for an info chat*/}

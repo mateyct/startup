@@ -10,7 +10,7 @@ For this file, the positions of the doors array in each room is relative to the 
 
 [My Notes](./notes.md)
 
-Medical Murdery Mystery is a game where players act as characters working in a hospital. Each player will be able to navigate around the simple map, entering rooms one by one. As they do, they will be able to suspect their fellow players of murder by various means in multiple possible locations. It's based off of the popular board game Clue, but with a medical spin on it. Players will also be able to go back and see accusations made against them.
+Medical Murdery Mystery is a game where players act as characters working in a hospital. Each player will be able to navigate around the simple map, entering rooms one by one. As they do, they will be able to suspect their fellow players of murder by various means in multiple possible locations. It's based off of the popular board game Clue, but with a medical spin on it. Players will also be able to go back and see accusations they have made.
 
 ## 🚀 Specification Deliverable
 
@@ -28,17 +28,10 @@ Want to be the best investigator in town? Good at sniffing out yoru suspicious f
 
 ### Design
 
-<img src="readmeImgs/MMM_login.png" alt="Login-Image" style="width:40%; height:auto;">
+<img src="readmeImgs/DrawLineLogin.png" alt="Login-Image" style="width:40%; height:auto;">
 <img src="readmeImgs/board.png" alt="Board-Image" style="width:30%; height:auto;">
 
 These two images are mockups of the site and board. There is a simple login page, and there is the playing page, which will include the board. I will probably make the board more visually interesting as well. The playing page will include some player information and display the current suspicions being voiced by other players.
-
-<!--```mermaid
-sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
-```-->
 
 ### Key features
 
@@ -46,12 +39,10 @@ sequenceDiagram
 - Several users can join together in a game
 - On their turn, players will roll dice, move spaces, enter rooms, and submit suspicions
 - The board will update with player movements on every device
-- Players' suspicion submissions will be stored and viewable
+- Players' suspicion submissions will be stored and viewable on a separate page after the game
 - Player turns will rotate around active players
-- If enough time:
-    - Players will have pieces of information
-    - Players can gather information as they submit suspicions
-    - A player can make a final accusation and win if correct
+- Players will gather info automatically when they make a guess
+- When a player submits a correct guess, they win
 
 ### Technologies
 
@@ -116,8 +107,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [x] **All functionality implemented or mocked out** - Everything is working as intended.
+    * Players login and username is saved to `localStorage`
+    * Players join a lobby and start game. `setInterval`s were used to make it seem other players are joining and creating games.
+    * Player can roll dice, move around the board, and make guesses. Other players are simply mocked with `setTimeout` called recursively.
+    * Chat displays important information about what is happening in the game.
+    * First player to guess the correct combination wins.
+    * Players can see past guesses on the History page, which is stored in `localStorage`
+- [x] **Hooks** - I've implemented `useState`, `useEffect`, and even `useRef` all over the place.
 
 ## 🚀 Service deliverable
 
