@@ -66,6 +66,7 @@ export function Game(props) {
         }
         else {
             setTurn(oldTurn => (oldTurn + 1) % players.length);
+            setChat(old => [{type: "line", message: players[(index + 1) % players.length].name + "'s turn"}, ...old]);
             if ((index + 1) % players.length != playerTurn) {
                 mockPlayer(index + 1, -last, 3);
             }
