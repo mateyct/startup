@@ -129,6 +129,8 @@ main h1 {
 #controls .secret-info ul {
     font-size: 1.25em;
     line-height: 1.25em;
+    overflow-y: auto;
+    max-height: 20vh;
 }
 
 #controls .rolling {
