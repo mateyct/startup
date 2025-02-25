@@ -5,6 +5,7 @@ import { Login } from './login/login';
 import { History } from './history/history';
 import { Play } from './play/play';
 import { Auth } from './login/auth';
+import Unauthorized from './unauthorized';
 
 export default function App() {
     const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
@@ -16,8 +17,8 @@ export default function App() {
                 <Header userName={userName} userAuth={userAuth} />
                 <Routes>
                     <Route path='/' element={<Login userName={userName} setUserName={setUserName} userAuth={userAuth} setUserAuth={setUserAuth} />} exact />
-                    <Route path='/play' element={<Play userName={userName} />} />
-                    <Route path='/history' element={<History />} />
+                    <Route path='/play' element={ userAuth == Auth.Authenticated ? <Play userName={userName} /> : <Unauthorized /> } />
+                    <Route path='/history' element={ userAuth == Auth.Authenticated ? <History /> :  <Unauthorized />}/>
                 </Routes>
                 <Footer />
             </BrowserRouter>
