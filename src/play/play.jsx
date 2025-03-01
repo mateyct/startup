@@ -23,12 +23,12 @@ export function Play(props) {
 
 function Join(props) {
     // rooms here represents different instances of the game
-    const [lobbies, setLobbies] = useState([13232]);
+    const [lobbies, setLobbies] = useState([]);
     const intervalID = useRef(null);
     // set and unset interval with Effect, represents WebSocket stuff
     useEffect(() => {
         // stop setting interval if too much
-        if (lobbies.length > 5) return;
+        /*if (lobbies.length > 5) return;
         // set the interval
         intervalID.current = setInterval(() => {
             setLobbies((prev) => [...prev, Math.round(Math.random() * 100000)])
@@ -40,8 +40,19 @@ function Join(props) {
         // return function to clear interval
         return () => {
             clearInterval(intervalID.current);
-        }
-    }, [lobbies]);
+        }*/
+        fetch("/api/lobbies")
+        .then(response => response.json())
+        .then(json => {
+            setLobbies(lobbies => {
+                let tempLobbies = [];
+                json.lobbies.forEach(element => {
+                    tempLobbies.push(element);
+                });
+                return tempLobbies;
+            })
+        });
+    }, []);
     // function that creates a new room
     function createRoom() {
         let randomID = Math.round(Math.random() * 100000);

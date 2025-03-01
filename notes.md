@@ -110,3 +110,15 @@ Defining routes is as simple as defining a single Route component for each route
 I can put my header and footer in the main .jsx page, then put `<Routes>` between them. This will keep the same header and footer throughout. I'll need to make some changes to make the user display correctly in the header, though.
 
 `<Route path="*" element={<NotFound />} />` will match any route, good for 404s.
+
+## Backend Stuff
+HTTP methods:
+- POST: create a resource
+- GET: get a resource
+- PUT: update a reserouce
+- DELETE: delete a resource
+
+## Express
+See the `first-express` to see examples of how to use Express
+
+It took forever to learn this, but because the front end code and the backend are running on different ports, I had to set up Vite to proxy requests to the correct port, then set up the API router in my service.
