@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Game } from "./game";
 import './play.css';
 import { Player } from "./player";
@@ -13,7 +13,7 @@ export function Play(props) {
 
     return (
         <main>
-            {winner && <WinScreen winner={winner} /> }
+            {winner && <WinScreen winner={winner} />}
             {!winner && !gameID && <Join gameID={gameID} setGameID={setGameID} />}
             {!winner && gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
             {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} />}
@@ -42,21 +42,28 @@ function Join(props) {
             clearInterval(intervalID.current);
         }*/
         fetch("/api/lobbies")
-        .then(response => response.json())
-        .then(json => {
-            setLobbies(lobbies => {
-                let tempLobbies = [];
-                json.lobbies.forEach(element => {
-                    tempLobbies.push(element);
-                });
-                return tempLobbies;
-            })
-        });
+            .then(response => response.json())
+            .then(json => {
+                setLobbies(lobbies => {
+                    let tempLobbies = [];
+                    json.lobbies.forEach(element => {
+                        tempLobbies.push(element);
+                    });
+                    return tempLobbies;
+                })
+            });
     }, []);
     // function that creates a new room
-    function createRoom() {
-        let randomID = Math.round(Math.random() * 100000);
-        props.setGameID(randomID);
+    async function createRoom() {
+        // call the method, it will return the lobby ID
+        fetch("/api/lobbies", {
+            method: "POST",
+        })
+            .then(res => res.json())
+            .then(json => {
+                props.setGameID(json.lobbyID);
+            });
+
     }
     // function to join a game
     function joinLobby(id) {
@@ -125,7 +132,7 @@ function GameLobby(props) {
             <div className="start-game">
                 <div className="game-players">
                     {props.players.map(player => (
-                        <div className="player-opt" key={player.name}><span style={{backgroundColor: player.color}} className="small-circle"></span> {player.name}</div>
+                        <div className="player-opt" key={player.name}><span style={{ backgroundColor: player.color }} className="small-circle"></span> {player.name}</div>
                     ))}
                 </div>
                 <button className="my-button" onClick={startGame} disabled={props.players.length < 2}>Start Game</button>
@@ -137,7 +144,7 @@ function GameLobby(props) {
 function WinScreen(props) {
     return (
         <>
-            <marquee scrollamount="15" direction="right" style={{color:props.winner.color}}>{props.winner.name + " Wins!"}</marquee>
+            <marquee scrollamount="15" direction="right" style={{ color: props.winner.color }}>{props.winner.name + " Wins!"}</marquee>
             <Link className="middle-link my-button" to="/history">Go to History</Link>
         </>
     )

@@ -3,7 +3,7 @@ const app = express();
 
 app.use(express.json());
 
-let lobbies = [27543];
+const lobbies = [];
 
 // api router
 var apiRouter = express.Router();
@@ -11,17 +11,15 @@ app.use(`/api`, apiRouter);
 
 // add the list of game lobby IDs
 apiRouter.get("/lobbies", (req, res) => {
-    console.log(req.originalUrl);
     let jsonstuff = JSON.stringify(lobbies);
-    console.log(jsonstuff);
     res.status(200).json({lobbies: lobbies});
 });
 
-// add an ID to the lobby
+// add a new room, but this should definitely be implemented here and not in front end
 apiRouter.post("/lobbies", (req, res) => {
-    let data = req.body;
-    lobbies.push(data);
-    res.sendStatus(200);
+    let randomID = Math.round(Math.random() * 100000);
+    lobbies.push(randomID);
+    res.status(200).json({lobbyID: randomID});
 });
 
 apiRouter.use("*", (req, res) => {
