@@ -47,7 +47,7 @@ function Join(props) {
                 setLobbies(lobbies => {
                     let tempLobbies = [];
                     json.lobbies.forEach(element => {
-                        tempLobbies.push(element);
+                        tempLobbies.push(element.lobbyID);
                     });
                     return tempLobbies;
                 })
