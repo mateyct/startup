@@ -9,7 +9,7 @@ app.use(cookieParser());
 
 const lobbies = [];
 
-const passwords = {};
+const users = [];
 
 // api router
 var apiRouter = express.Router();
@@ -17,26 +17,76 @@ app.use(`/api`, apiRouter);
 
 ///////////// Authentication stuff ///////////////
 
-// register a new user
-apiRouter.post('/register', async (req, res) => {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const token = uuid.v4();
-    res.cookie('token', token, { secure: true, httpOnly: true, sameSite: 'strict'});
-    passwords[req.body.user] = hashedPassword;
-    res.json({user: req.body.user});
+// endpoint for creating a new user
+apiRouter.post("/auth", async (req, res) => {
+    if (await getUser('username', req.body.username)) {
+        res.send(409, {msg: "User already exists"});
+    }
+    else {
+        const user = createUser(req.body.username, req.body.password);
+        setAuthCookie(res, user);
+
+        res.json({username: req.body.username});
+    }
 });
 
 // login an existing user
-apiRouter.put("/login", async (req, res) => {
-    const hashedPassword = passwords[req.body.user]
-    if (hashedPassword && (await bcrypt.compare(req.body.password, hashedPassword))) {
-        res.cookie('token', token, { secure: true, httpOnly: true, sameSite: 'strict'});
-        res.json({user: req.body.user});
+apiRouter.put("/auth", async (req, res) => {
+    const user = await getUser('username', req.body.username);
+    if (user && (await bcrypt.compare(req.body.password, user.password))) {
+        setAuthCookie(res, user);
+        res.json({username: req.body.username});
     }
     else {
-        res.send(401, {msg: 'Invalid user or password'});
+        res.send(401, {msg: 'Unauthorized'});
     }
 });
+
+// logout a user
+apiRouter.delete("/auth", async (req, res) => {
+    const token = req.cookies['token'];
+    const user = getUser('token', token);
+    if(user) {
+        clearAuthCookie(res, user);
+    }
+
+    res.json({msg: 'Logged out'});
+});
+
+// creates a new user
+async function createUser(username, password) {
+    // set up hashed password with user
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = {
+        username: username,
+        password: passwordHash
+    }
+
+    users.push(user);
+    return user;
+}
+
+// check if the user exists
+async function getUser(field, value) {
+    if (value) {
+        return users.find((user) => user[field] === value);
+    }
+    return null;
+}
+
+// sets the auth cookie
+function setAuthCookie(res, user) {
+    user.token = uuid.v4();
+    res.cookie('token', user.token, { secure: true, httpOnly: true, sameSite: 'strict'});
+}
+
+// clears the auth cookie
+function clearAuthCookie(res, user) {
+    delete user.token;
+    res.clearCookie('token');
+}
+
+
 
 //////////// Gameplay stuff ////////////////
 
