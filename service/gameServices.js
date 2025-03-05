@@ -7,8 +7,6 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const lobbies = [];
-
 const users = [];
 
 // api router
@@ -90,25 +88,36 @@ function clearAuthCookie(res, user) {
 
 //////////// Gameplay stuff ////////////////
 
+const lobbies = {};
+
 // add the list of game lobby IDs
 apiRouter.get("/lobbies", (req, res) => {
-    res.status(200).json({lobbies: lobbies});
+    // convert lobbies object to array of game IDs
+    let lobbyArray = Object.keys(lobbies);
+    res.status(200).json({lobbies: lobbyArray});
 });
 
 // add a new room, but this should definitely be implemented here and not in front end
 apiRouter.post("/lobbies", (req, res) => {
     let randomID = Math.round(Math.random() * 100000);
     let newLobby = {
-        lobbyID: randomID,
-        players: []
+        players: [req.cookies?.token]
     };
-    lobbies.push(newLobby);
-    res.status(200).json(newLobby);
+    lobbies[randomID] = newLobby;
+    //lobbies.push(newLobby);
+    res.status(200).json({lobbyID: randomID});
+});
+
+// get the list of players in a lobby
+apiRouter.get('/lobby/players/:lobbyID', (req, res) => {
+    let currentLobby = lobbies[req.params.lobbyID];
+    console.log(currentLobby);
+    res.json({players: currentLobby.players});
 });
 
 apiRouter.use("*", (req, res) => {
     console.log(req.originalUrl);
-    res.send("What the heck just happened?");
+    res.send({msg: "What the heck just happened?"});
 });
 
 app.use(function (err, req, res, next) {

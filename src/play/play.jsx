@@ -27,31 +27,24 @@ function Join(props) {
     const intervalID = useRef(null);
     // set and unset interval with Effect, represents WebSocket stuff
     useEffect(() => {
-        // stop setting interval if too much
-        /*if (lobbies.length > 5) return;
-        // set the interval
+        // set interval to show new lobbies automatically
         intervalID.current = setInterval(() => {
-            setLobbies((prev) => [...prev, Math.round(Math.random() * 100000)])
-            if (lobbies.length > 5) {
-                clearInterval(intervalID.current);
-            }
-        }, 5000);
-
-        // return function to clear interval
+            fetch("/api/lobbies")
+                .then(response => response.json())
+                .then(json => {
+                    setLobbies(lobbies => {
+                        let tempLobbies = [];
+                        json.lobbies.forEach(element => {
+                            tempLobbies.push(element);
+                        });
+                        return tempLobbies;
+                    })
+                });
+        }, 1000);
+        // cleanup
         return () => {
             clearInterval(intervalID.current);
-        }*/
-        fetch("/api/lobbies")
-            .then(response => response.json())
-            .then(json => {
-                setLobbies(lobbies => {
-                    let tempLobbies = [];
-                    json.lobbies.forEach(element => {
-                        tempLobbies.push(element.lobbyID);
-                    });
-                    return tempLobbies;
-                })
-            });
+        };
     }, []);
     // function that creates a new room
     async function createRoom() {
@@ -95,8 +88,8 @@ function GameLobby(props) {
         new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
     ]
     // use a set interval and useEffect to represent a WebSocket
-    useEffect(() => {
-        intervalID.current = setInterval(() => {
+    useEffect( () => {
+        /*intervalID.current = setInterval(() => {
             // use functional method to get accurate count
             setCounter(oldCount => {
                 if (oldCount >= playerOptions.length) {
@@ -110,17 +103,29 @@ function GameLobby(props) {
         // return to clear interval
         return () => {
             clearInterval(intervalID.current);
-        }
+        }*/
+        fetch(`/api/lobby/players/${props.gameID}`)
+            .then(result => result.json())
+            .then(json => {
+                const playerIDs = json.players;
+                const players = [];
+                if (playerIDs) {
+                    playerIDs.forEach(playerID => {
+                        players.push(new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, playerID));
+                    });
+                    props.setPlayers(players);
+                }
+            })
     }, []);
     // for updating the player
-    useEffect(() => {
+    /*useEffect(() => {
         if (counter < playerOptions.length) {
             // make temp players to save
             let tempPlayers = JSON.parse(JSON.stringify(props.players));
             tempPlayers.push(playerOptions[counter]);
             props.setPlayers(tempPlayers);
         }
-    }, [counter, props.setPlayers]);
+    }, [counter, props.setPlayers]);*/
 
     // button clicked to start the game
     function startGame() {
