@@ -99,6 +99,33 @@ const verifyUser = async (req, res, next) => {
 
 const lobbies = {};
 
+// Check if the user is already in a lobby/game, return its info if so
+apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
+    // get if in lobby
+    const lobbyKey = checkUserInLobby(req.cookies.token);
+    // send needed lobby info if in game, if not, don't
+    if (lobbyKey) {
+        res.json({found: true, lobbyID: lobbyKey, inGame: lobbies[lobbyKey].inGame});
+    }
+    else {
+        res.json({found: false});
+    }
+});
+
+// check if a user is in a lobby and return it's info
+function checkUserInLobby(token) {
+    let correctKey = null;
+    let keys = Object.keys(lobbies);
+    keys.forEach(key => {
+        lobbies[key].players.forEach(player => {
+            if(player.token == token) {
+                correctKey = key;
+            }
+        })
+    });
+    return correctKey;
+}
+
 // add the list of game lobby IDs
 apiRouter.get("/lobbies", verifyUser, (req, res) => {
     // send a partial object to avoid giving user's secret info
@@ -118,7 +145,8 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let user = await getUser('token', req.cookies.token);
     let newLobby = {
         lobbyName: user.username + "'s Game",
-        players: [user]
+        players: [user],
+        inGame: false
     };
     lobbies[randomID] = newLobby;
     res.status(200).json({lobbyID: randomID});

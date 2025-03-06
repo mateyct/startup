@@ -11,6 +11,20 @@ export function Play(props) {
     const [players, setPlayers] = useState([]);
     const [winner, setWinner] = useState(/* new Player(4, 4, "red", false, null, 4, false, false, "Test winner") */);
 
+    // fetch if this user is in a game
+    useEffect(() => {
+        console.log("it's fetching")
+        fetch("/api/lobby/player/status")
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if(data.found) {
+                    setGameID(data.lobbyID);
+                    setInGame(data.inGame);
+                }
+            });
+    });
+
     return (
         <main>
             {winner && <WinScreen winner={winner} />}
