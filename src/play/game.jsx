@@ -28,7 +28,7 @@ export function Game(props) {
     const [intel, setIntel] = useState([]);
 
     // this represents which index of the players array the user of this device is
-    const [playerTurn, _] = useState(0);
+    const [playerTurn, _] = useState(props.playerIndex);
 
     // use this to add to intel to prevent duplication
     function addIntel(info) {
@@ -40,7 +40,8 @@ export function Game(props) {
     // choose all the secret data
     function chooseSecrets() {
         // player
-        let player = players[Math.floor(Math.random() * players.length)];
+        let choice = Math.floor(Math.random() * players.length);
+        let player = players[choice];
         // room
         let roomKeys = Object.keys(clueData.roomIdNames);
         let room = roomKeys[Math.floor(Math.random() * roomKeys.length)];
@@ -55,7 +56,7 @@ export function Game(props) {
     }
 
     // a mock function to cause other players to move between this players turn
-    function mockPlayer(index, last, movesLeft) {
+    /*function mockPlayer(index, last, movesLeft) {
         setPlayers((old) => {
             let tempPlayers = JSON.parse(JSON.stringify(old));
             tempPlayers[index].x += -last;
@@ -71,7 +72,7 @@ export function Game(props) {
                 mockPlayer(index + 1, -last, 3);
             }
         }
-    }
+    }*/
 
     // the grid to track what each place on the map should be, a little messy
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
@@ -116,7 +117,7 @@ export function Game(props) {
                         answers={answers}
                         addIntel={addIntel}
                         setWinner={props.setWinner}
-                        mockPlayer={mockPlayer}
+                       // mockPlayer={mockPlayer}
                         />
                     </div>
                 </div>
@@ -131,7 +132,7 @@ export function Game(props) {
                         setTurn={setTurn}
                         chatlog={chatlog}
                         setChat={setChat}
-                        mockPlayer={mockPlayer}
+                        //mockPlayer={mockPlayer}
                     />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
@@ -173,7 +174,7 @@ function Board(props) {
             setTurn={props.setTurn}
             chatlog={props.chatlog}
             setChat={props.setChat}
-            mockPlayer={props.mockPlayer}
+            //mockPlayer={props.mockPlayer}
         />
         <Doors
             doorData={boardFile.doors}
@@ -209,7 +210,7 @@ function Cells(props) {
                     setTurn={props.setTurn}
                     chatlog={props.chatlog}
                     setChat={props.setChat}
-                    mockPlayer={props.mockPlayer}
+                    //mockPlayer={props.mockPlayer}
                 />
                 // now grid displays
                 cells.push(cell);
@@ -234,7 +235,7 @@ function Cell(props) {
                 tempPlayers[props.turn].turn = false;
                 let nextTurn = (props.turn + 1) % tempPlayers.length;
                 props.setTurn(nextTurn);
-                setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
+                //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
                 props.setChat(old => [{type: "line", message: (tempPlayers[nextTurn].name) + "'s turn"}, ...old]);
             }
             props.setPlayers(tempPlayers);

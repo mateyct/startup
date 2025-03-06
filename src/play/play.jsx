@@ -10,17 +10,19 @@ export function Play(props) {
     // players that are used
     const [players, setPlayers] = useState([]);
     const [winner, setWinner] = useState(/* new Player(4, 4, "red", false, null, 4, false, false, "Test winner") */);
+    // define which player's turn
+    const [playerTurn, setPlayerTurn] = useState(null);
 
     // fetch if this user is in a game
     useEffect(() => {
-        console.log("it's fetching")
         fetch("/api/lobby/player/status")
             .then(response => response.json())
             .then(data => {
-                console.log(data)
+                // if they are in a game, set all the relevant things
                 if(data.found) {
                     setGameID(data.lobbyID);
                     setInGame(data.inGame);
+                    setPlayerTurn(data.playerIndex);
                 }
             });
     });
@@ -30,7 +32,7 @@ export function Play(props) {
             {winner && <WinScreen winner={winner} />}
             {!winner && !gameID && <Join gameID={gameID} setGameID={setGameID} />}
             {!winner && gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
-            {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} />}
+            {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} playerIndex={playerTurn} />}
         </main>
     );
 }
@@ -126,6 +128,7 @@ function GameLobby(props) {
     }, []);
     // button clicked to start the game
     function startGame() {
+        fetch(`/api/lobby/activate/${props.gameID}`, {method: 'PUT'});
         props.setInGame(true);
     }
     return (

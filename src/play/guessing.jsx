@@ -79,7 +79,7 @@ export default function GuessingForm(props) {
         }
         // condition for mocking up other players moving
         else {
-            setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
+            //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
         }
     }
 

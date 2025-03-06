@@ -101,11 +101,12 @@ const lobbies = {};
 
 // Check if the user is already in a lobby/game, return its info if so
 apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
+    // TODO: Make this function return the list of players too
     // get if in lobby
-    const lobbyKey = checkUserInLobby(req.cookies.token);
+    const lobbyInfo = checkUserInLobby(req.cookies.token);
     // send needed lobby info if in game, if not, don't
-    if (lobbyKey) {
-        res.json({found: true, lobbyID: lobbyKey, inGame: lobbies[lobbyKey].inGame});
+    if (lobbyInfo) {
+        res.json({found: true, lobbyID: lobbyInfo.key, inGame: lobbies[lobbyInfo.key].inGame, playerIndex: lobbyInfo.playerIndex});
     }
     else {
         res.json({found: false});
@@ -117,9 +118,9 @@ function checkUserInLobby(token) {
     let correctKey = null;
     let keys = Object.keys(lobbies);
     keys.forEach(key => {
-        lobbies[key].players.forEach(player => {
+        lobbies[key].players.forEach((player, index) => {
             if(player.token == token) {
-                correctKey = key;
+                correctKey = {key: key, playerIndex: index};
             }
         })
     });
@@ -163,6 +164,12 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
     let user = await getUser('token', req.cookies.token);
     lobbies[req.params.lobbyID].players.push(user);
     res.status(200).json({msg: 'Success'});
+});
+
+// endpoint to set the game to active
+apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
+    lobbies[req.params.lobbyID].inGame = true;
+    res.status(200).end();
 });
 
 apiRouter.use("*", (req, res) => {
