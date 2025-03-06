@@ -101,7 +101,15 @@ const lobbies = {};
 
 // add the list of game lobby IDs
 apiRouter.get("/lobbies", verifyUser, (req, res) => {
-    res.status(200).json({lobbies: lobbies});
+    // send a partial object to avoid giving user's secret info
+    const lobbiesToSend = {}
+    let keys = Object.keys(lobbies);
+    keys.forEach(key => {
+        lobbiesToSend[key] = {
+            lobbyName: lobbies[key].lobbyName
+        }
+    });
+    res.status(200).json({lobbies: lobbiesToSend});
 });
 
 // add a new room, but this should definitely be implemented here and not in front end
@@ -110,7 +118,7 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let user = await getUser('token', req.cookies.token);
     let newLobby = {
         lobbyName: user.username + "'s Game",
-        players: [user.username]
+        players: [user]
     };
     lobbies[randomID] = newLobby;
     res.status(200).json({lobbyID: randomID});
@@ -120,6 +128,13 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
 apiRouter.get('/lobby/players/:lobbyID', verifyUser, (req, res) => {
     let currentLobby = lobbies[req.params.lobbyID];
     res.json({players: currentLobby.players});
+});
+
+// let a user join an open game
+apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
+    let user = await getUser('token', req.cookies.token);
+    lobbies[req.params.lobbyID].players.push(user);
+    res.status(200).json({msg: 'Success'});
 });
 
 apiRouter.use("*", (req, res) => {

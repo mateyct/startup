@@ -54,7 +54,11 @@ function Join(props) {
     }
     // function to join a game
     function joinLobby(id) {
-        props.setGameID(id);
+        fetch(`/api/lobby/players/${id}`, {
+            method: 'put'
+        })
+            .finally(() => props.setGameID(id));
+
     }
     return (
         <>
@@ -82,45 +86,30 @@ function GameLobby(props) {
         new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
     ]
     // use a set interval and useEffect to represent a WebSocket
-    useEffect( () => {
-        /*intervalID.current = setInterval(() => {
-            // use functional method to get accurate count
-            setCounter(oldCount => {
-                if (oldCount >= playerOptions.length) {
-                    clearInterval(intervalID.current);
-                    return oldCount;
-                }
-                // return new count
-                return oldCount + 1;
-            });
-        }, 3000);
-        // return to clear interval
+    useEffect(() => {
+        intervalID.current = setInterval(() => {
+            fetch(`/api/lobby/players/${props.gameID}`)
+                .then(result => result.json())
+                .then(json => {
+                    const playerObjs = json.players;
+                    const players = [];
+                    if (playerObjs) {
+                        let playerCounter = 0;
+                        playerObjs.forEach(player => {
+                            let chosenPlayer = playerOptions[playerCounter];
+                            chosenPlayer.name = player.username;
+                            players.push(chosenPlayer);
+                            playerCounter++;
+                        });
+                        props.setPlayers(players);
+                    }
+                })
+        }, 500);
+
         return () => {
             clearInterval(intervalID.current);
-        }*/
-        fetch(`/api/lobby/players/${props.gameID}`)
-            .then(result => result.json())
-            .then(json => {
-                const playerNames = json.players;
-                const players = [];
-                if (playerNames) {
-                    playerNames.forEach(playerName => {
-                        players.push(new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, playerName));
-                    });
-                    props.setPlayers(players);
-                }
-            })
-    }, []);
-    // for updating the player
-    /*useEffect(() => {
-        if (counter < playerOptions.length) {
-            // make temp players to save
-            let tempPlayers = JSON.parse(JSON.stringify(props.players));
-            tempPlayers.push(playerOptions[counter]);
-            props.setPlayers(tempPlayers);
         }
-    }, [counter, props.setPlayers]);*/
-
+    }, []);
     // button clicked to start the game
     function startGame() {
         props.setInGame(true);
