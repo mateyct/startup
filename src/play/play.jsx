@@ -32,13 +32,7 @@ function Join(props) {
             fetch("/api/lobbies")
                 .then(response => response.json())
                 .then(json => {
-                    setLobbies(lobbies => {
-                        let tempLobbies = [];
-                        json.lobbies.forEach(element => {
-                            tempLobbies.push(element);
-                        });
-                        return tempLobbies;
-                    })
+                    setLobbies(json.lobbies);
                 });
         }, 1000);
         // cleanup
@@ -68,8 +62,8 @@ function Join(props) {
             <div className="join-room">
                 <button className="my-button" onClick={createRoom}>Create Room</button>
                 <div className="available-rooms">
-                    {lobbies.map(lobby => (
-                        <div key={lobby} className="room-join-option" onClick={() => joinLobby(lobby)}>{lobby}</div>
+                    {Object.keys(lobbies).map(lobbyID => (
+                        <div key={lobbyID} className="room-join-option" onClick={() => joinLobby(lobbyID)}>{lobbies[lobbyID].lobbyName}</div>
                     ))}
                 </div>
             </div>
@@ -107,11 +101,11 @@ function GameLobby(props) {
         fetch(`/api/lobby/players/${props.gameID}`)
             .then(result => result.json())
             .then(json => {
-                const playerIDs = json.players;
+                const playerNames = json.players;
                 const players = [];
-                if (playerIDs) {
-                    playerIDs.forEach(playerID => {
-                        players.push(new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, playerID));
+                if (playerNames) {
+                    playerNames.forEach(playerName => {
+                        players.push(new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, playerName));
                     });
                     props.setPlayers(players);
                 }

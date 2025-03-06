@@ -21,7 +21,7 @@ apiRouter.post("/auth", async (req, res) => {
         res.send(409, {msg: "User already exists"});
     }
     else {
-        const user = createUser(req.body.username, req.body.password);
+        const user = await createUser(req.body.username, req.body.password);
         setAuthCookie(res, user);
 
         res.json({username: req.body.username});
@@ -84,34 +84,41 @@ function clearAuthCookie(res, user) {
     res.clearCookie('token');
 }
 
-
+// middleware for verifying users are signed in
+const verifyUser = async (req, res, next) => {
+    const user = await getUser('token', req.cookies.token);
+    if (user) {
+        next();
+    }
+    else {
+        res.status(401).send({msg: "Unauthorized"});
+    }
+}
 
 //////////// Gameplay stuff ////////////////
 
 const lobbies = {};
 
 // add the list of game lobby IDs
-apiRouter.get("/lobbies", (req, res) => {
-    // convert lobbies object to array of game IDs
-    let lobbyArray = Object.keys(lobbies);
-    res.status(200).json({lobbies: lobbyArray});
+apiRouter.get("/lobbies", verifyUser, (req, res) => {
+    res.status(200).json({lobbies: lobbies});
 });
 
 // add a new room, but this should definitely be implemented here and not in front end
-apiRouter.post("/lobbies", (req, res) => {
+apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let randomID = Math.round(Math.random() * 100000);
+    let user = await getUser('token', req.cookies.token);
     let newLobby = {
-        players: [req.cookies?.token]
+        lobbyName: user.username + "'s Game",
+        players: [user.username]
     };
     lobbies[randomID] = newLobby;
-    //lobbies.push(newLobby);
     res.status(200).json({lobbyID: randomID});
 });
 
 // get the list of players in a lobby
-apiRouter.get('/lobby/players/:lobbyID', (req, res) => {
+apiRouter.get('/lobby/players/:lobbyID', verifyUser, (req, res) => {
     let currentLobby = lobbies[req.params.lobbyID];
-    console.log(currentLobby);
     res.json({players: currentLobby.players});
 });
 
