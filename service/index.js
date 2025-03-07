@@ -4,6 +4,8 @@ const uuid = require("uuid");
 const cookieParser = require("cookie-parser");
 const app = express();
 
+import { ServerPlayer } from "./ServerPlayer";
+
 const gameData = require("./datafiles/clueData.json");
 
 app.use(express.json());
@@ -158,7 +160,7 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let user = await getUser('token', req.cookies.token);
     let newLobby = {
         lobbyName: user.username + "'s Game",
-        players: [user],
+        players: [new ServerPlayer(user.username, 7, 0, 0)],
         inGame: false
     };
     lobbies[randomID] = newLobby;
@@ -178,7 +180,7 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
         res.sendStatus(405);
         return;
     }
-    lobbies[req.params.lobbyID].players.push(user);
+    lobbies[req.params.lobbyID].players.push(new ServerPlayer(user.username, 0, 0, 0));
     res.status(200).json({msg: 'Success'});
 });
 

@@ -53,9 +53,13 @@ const Footer = () => {
     const [reference, setReference] = useState("Loading...");
     const [text, setText] = useState("Loading...");
     useEffect(() => {
-        let verse = getVerse();
-        setReference(verse.reference);
-        setText(verse.text);
+        fetch('https://book-of-mormon-api.vercel.app/random')
+            .then(response => response.json())
+            .then(json => {
+                setReference(json.reference);
+                setText(json.text);
+            });
+        
     }, []);
     return (
         <footer className="footer">
@@ -68,11 +72,3 @@ const Footer = () => {
         </footer>
     );
 };
-
-// represents a 3rd party API
-function getVerse() {
-    return {
-        reference: "3 Nephi 5:13",
-        text: "Behold, I am a disciple of Jesus Christ, the Son of God. I have been called of him to declare his word among his people, that they might have everlasting life."
-    };
-}
