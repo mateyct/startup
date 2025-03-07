@@ -55,6 +55,7 @@ apiRouter.delete("/auth", async (req, res) => {
     if(user) {
         clearAuthCookie(res, user);
     }
+    // if there is a user in a game, we want to get rid of the game
 
     res.json({msg: 'Logged out'});
 });
@@ -121,6 +122,7 @@ apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
             playerIndex: lobbyInfo.playerIndex,
             players: lobbies[lobbyInfo.key].players,
             turn: lobbies[lobbyInfo.key].turn,
+            winner: lobbies[lobbyInfo.key].winner
         });
     }
     else {
@@ -165,7 +167,8 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
         lobbyName: user.username + "'s Game",
         players: [new ServerPlayer(user.username, 7, 0, 0)],
         inGame: false,
-        turn: 0
+        turn: 0,
+        winner: -1
     };
     lobbies[randomID] = newLobby;
     res.status(200).json({lobbyID: randomID});
@@ -219,9 +222,15 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
 
 // update a player's position
 apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
-    lobbies[req.params.lobbyID].players[req.body.index].x = req.body.x;
-    lobbies[req.params.lobbyID].players[req.body.index].y = req.body.y;
-    lobbies[req.params.lobbyID].turn = req.body.turn;
+    try {
+        lobbies[req.params.lobbyID].players[req.body.index].x = req.body.x;
+        lobbies[req.params.lobbyID].players[req.body.index].y = req.body.y;
+        lobbies[req.params.lobbyID].turn = req.body.turn;
+        lobbies[req.params.lobbyID].players[req.body.index].moves = req.body.moves;
+    }
+    catch (e) {
+        console.log(lobbies);
+    }
     // send the user back I guess
     res.json(lobbies[req.params.lobbyID].players[req.body.index]);
 });
@@ -262,8 +271,13 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
                 response.winner = index;
             }
         });
+        // delay for a bit, then end the game
+        setTimeout(() => {
+            delete lobbies[req.params.lobbyID];
+        }, 6000);
     }
     lobbies[req.params.lobbyID].turn = guess.nextTurn;
+    lobbies[req.params.lobbyID].winner = response.winner;
     res.json(response);
 });
 

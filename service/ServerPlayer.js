@@ -4,6 +4,7 @@ class ServerPlayer {
         this.x = x;
         this.y = y;
         this.index = index;
+        this.moves = 0;
     }
 }
 
