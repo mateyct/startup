@@ -20,6 +20,7 @@ export function Play(props) {
     const [winner, setWinner] = useState();
     // define which player's turn
     const [playerTurn, setPlayerTurn] = useState(null);
+    const [turn, setTurn] = useState(0);
 
     // fetch if this user is in a game
     useEffect(() => {
@@ -31,6 +32,7 @@ export function Play(props) {
                     setGameID(data.lobbyID);
                     setInGame(data.inGame);
                     setPlayerTurn(data.playerIndex);
+                    setTurn(data.turn);
                     setPlayers(() => {
                         let players = [];
                         data.players.forEach((player, index) => {
@@ -51,7 +53,7 @@ export function Play(props) {
             {winner && <WinScreen winner={winner} />}
             {!winner && !gameID && <Join gameID={gameID} setGameID={setGameID} />}
             {!winner && gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
-            {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} playerIndex={playerTurn} />}
+            {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} playerIndex={playerTurn} turn={turn} setTurn={setTurn} />}
         </main>
     );
 }

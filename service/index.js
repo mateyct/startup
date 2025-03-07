@@ -119,7 +119,8 @@ apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
             lobbyID: lobbyInfo.key,
             inGame: lobbies[lobbyInfo.key].inGame,
             playerIndex: lobbyInfo.playerIndex,
-            players: lobbies[lobbyInfo.key].players
+            players: lobbies[lobbyInfo.key].players,
+            turn: lobbies[lobbyInfo.key].turn,
         });
     }
     else {
@@ -163,7 +164,8 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let newLobby = {
         lobbyName: user.username + "'s Game",
         players: [new ServerPlayer(user.username, 7, 0, 0)],
-        inGame: false
+        inGame: false,
+        turn: 0
     };
     lobbies[randomID] = newLobby;
     res.status(200).json({lobbyID: randomID});
@@ -195,7 +197,7 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
     const weapons = Object.keys(gameData.weaponIdNames);
     // set the solution of the game
     lobbies[req.params.lobbyID].solution = {
-        player: players[Math.floor(Math.random() * players.length)].username,
+        player: players[Math.floor(Math.random() * players.length)].name,
         room: rooms[Math.floor(Math.random() * rooms.length)],
         weapon: weapons[Math.floor(Math.random() * weapons.length)]
     }
@@ -216,7 +218,13 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
 });
 
 // update a player's position
-
+apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
+    lobbies[req.params.lobbyID].players[req.body.index].x = req.body.x;
+    lobbies[req.params.lobbyID].players[req.body.index].y = req.body.y;
+    lobbies[req.params.lobbyID].turn = req.body.turn;
+    // send the user back I guess
+    res.json(lobbies[req.params.lobbyID].players[req.body.index]);
+});
 
 // make a guess for the game
 apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
@@ -249,10 +257,10 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     if (correctFlags >= 3) {
         // get which is the winner
         let keys = Object.keys(lobbies);
-        let token = req.cookies.token;
+        let guesser = await getUser('token', req.cookies.token);
         keys.forEach(key => {
             lobbies[key].players.forEach((player, index) => {
-                if(player.token == token) {
+                if(player.name == guesser.username) {
                     response.winner = index;
                 }
             })
