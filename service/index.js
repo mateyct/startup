@@ -51,12 +51,16 @@ apiRouter.put("/auth", async (req, res) => {
 // logout a user
 apiRouter.delete("/auth", async (req, res) => {
     const token = req.cookies['token'];
-    const user = getUser('token', token);
+    const user = await getUser('token', token);
     if(user) {
         clearAuthCookie(res, user);
+        // if there is a user in a game, we want to get rid of the game
+        const lobbyInfo = checkUserInLobby(user.username);
+        console.log(lobbyInfo);
+        if (lobbyInfo) {
+            delete lobbies[lobbyInfo.key];
+        }
     }
-    // if there is a user in a game, we want to get rid of the game
-
     res.json({msg: 'Logged out'});
 });
 
@@ -222,15 +226,15 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
 
 // update a player's position
 apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
-    try {
-        lobbies[req.params.lobbyID].players[req.body.index].x = req.body.x;
-        lobbies[req.params.lobbyID].players[req.body.index].y = req.body.y;
-        lobbies[req.params.lobbyID].turn = req.body.turn;
-        lobbies[req.params.lobbyID].players[req.body.index].moves = req.body.moves;
+    // if the lobby does not exists, a player probably left, and the game should end
+    if (!(req.params.lobbyID in lobbies)) {
+        res.redirect(req.get('referer'));
+        return;
     }
-    catch (e) {
-        console.log(lobbies);
-    }
+    lobbies[req.params.lobbyID].players[req.body.index].x = req.body.x;
+    lobbies[req.params.lobbyID].players[req.body.index].y = req.body.y;
+    lobbies[req.params.lobbyID].turn = req.body.turn;
+    lobbies[req.params.lobbyID].players[req.body.index].moves = req.body.moves;
     // send the user back I guess
     res.json(lobbies[req.params.lobbyID].players[req.body.index]);
 });
