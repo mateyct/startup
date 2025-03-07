@@ -1,7 +1,7 @@
 export class Player {
-    constructor(x, y, color, disabled, currentRoom, moves, turn, recentArrival, name) {
-        this.x = x;
-        this.y = y;
+    constructor(color, disabled, currentRoom, moves, turn, recentArrival, name) {
+        this.x = 7;
+        this.y = 7;
         this.color = color;
         this.disabled = disabled;
         this.currentRoom = currentRoom;

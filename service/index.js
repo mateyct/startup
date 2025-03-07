@@ -202,9 +202,9 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
     // set player locations
     let locOpts = [
         {x: 7, y: 0},
-        {x: 18, y: 18},
-        {x: 7, y: 18},
-        {x: 18, y: 7}
+        {x: 16, y: 23},
+        {x: 16, y: 0},
+        {x: 7, y: 23}
     ];
     // loop to set
     lobbies[req.params.lobbyID].players.forEach((player, index) => {
@@ -212,8 +212,11 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
         player.y = locOpts[index].y;
     });
     console.log(lobbies[req.params.lobbyID].solution);
-    res.status(200).end();
+    res.json({players: lobbies[req.params.lobbyID].players});
 });
+
+// update a player's position
+
 
 // make a guess for the game
 apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {

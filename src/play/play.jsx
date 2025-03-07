@@ -6,10 +6,10 @@ import { Link } from "react-router-dom";
 
 // also have player options
 const playerOptions = [
-    new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, ""),
-    new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, ""),
-    new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, ""),
-    new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "")
+    new Player('yellow', '#FFFFC5', null, 0, true, false, ""),
+    new Player('green', '#c4ffc4', null, 0, true, false, ""),
+    new Player('blue', '#c7c7ff', null, 0, true, false, ""),
+    new Player('red', '#ffa8a8', null, 0, true, false, "")
 ]
 
 export function Play(props) {
@@ -28,7 +28,6 @@ export function Play(props) {
             .then(data => {
                 // if they are in a game, set all the relevant things
                 if(data.found) {
-                    console.log("huh");
                     setGameID(data.lobbyID);
                     setInGame(data.inGame);
                     setPlayerTurn(data.playerIndex);
@@ -40,7 +39,7 @@ export function Play(props) {
                             chosenPlayer.x = player.x;
                             chosenPlayer.y = player.y;
                             players.push(chosenPlayer);
-                        })
+                        });
                         return players;
                     });
                 }
@@ -147,7 +146,19 @@ function GameLobby(props) {
     }, []);
     // button clicked to start the game
     function startGame() {
-        fetch(`/api/lobby/activate/${props.gameID}`, {method: 'PUT'});
+        fetch(`/api/lobby/activate/${props.gameID}`, {method: 'PUT'})
+            .then(response => response.json())
+            .then(data => {
+                const players = [];
+                data.players.forEach((player, index) => {
+                    let chosenPlayer = playerOptions[index];
+                    chosenPlayer.name = player.name;
+                    chosenPlayer.x = player.x;
+                    chosenPlayer.y = player.y;
+                    players.push(chosenPlayer);
+                });
+                props.setPlayers(players);
+            });
         props.setInGame(true);
     }
     return (
