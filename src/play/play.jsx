@@ -28,7 +28,7 @@ export function Play(props) {
             .then(response => response.json())
             .then(data => {
                 // if they are in a game, set all the relevant things
-                if(data.found) {
+                if (data.found) {
                     setGameID(data.lobbyID);
                     setInGame(data.inGame);
                     setPlayerTurn(data.playerIndex);
@@ -52,7 +52,7 @@ export function Play(props) {
         <main>
             {winner && <WinScreen winner={winner} />}
             {!winner && !gameID && <Join gameID={gameID} setGameID={setGameID} />}
-            {!winner && gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} />}
+            {!winner && gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} setTurn={setTurn} />}
             {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} playerIndex={playerTurn} turn={turn} setTurn={setTurn} />}
         </main>
     );
@@ -96,7 +96,7 @@ function Join(props) {
         })
             .then(response => {
                 console.log(response);
-                if(response?.status == 200) {
+                if (response?.status == 200) {
                     props.setGameID(id)
                 }
                 else {
@@ -148,7 +148,7 @@ function GameLobby(props) {
     }, []);
     // button clicked to start the game
     function startGame() {
-        fetch(`/api/lobby/activate/${props.gameID}`, {method: 'PUT'})
+        fetch(`/api/lobby/activate/${props.gameID}`, { method: 'PUT' })
             .then(response => response.json())
             .then(data => {
                 const players = [];

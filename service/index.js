@@ -256,16 +256,14 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     // check if they won
     if (correctFlags >= 3) {
         // get which is the winner
-        let keys = Object.keys(lobbies);
         let guesser = await getUser('token', req.cookies.token);
-        keys.forEach(key => {
-            lobbies[key].players.forEach((player, index) => {
-                if(player.name == guesser.username) {
-                    response.winner = index;
-                }
-            })
+        lobbies[req.params.lobbyID].players.forEach((player, index) => {
+            if(player.name == guesser.username) {
+                response.winner = index;
+            }
         });
     }
+    lobbies[req.params.lobbyID].turn = guess.nextTurn;
     res.json(response);
 });
 

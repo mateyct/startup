@@ -52,7 +52,8 @@ export default function GuessingForm(props) {
             body: JSON.stringify({
                 player: chosenPlayer,
                 weapon: chosenWeapon,
-                room: players[turn].currentRoom
+                room: players[turn].currentRoom,
+                nextTurn: nextTurn
             })
         })
             .then(response => response.json())

@@ -26,7 +26,7 @@ export function Game(props) {
     const [intel, setIntel] = useState([]);
 
     // this represents which index of the players array the user of this device is
-    const [playerTurn, _] = useState(props.playerIndex);
+    const [playerTurn, setPlayerTurn] = useState(props.playerIndex);
 
     // use this to add to intel to prevent duplication
     function addIntel(info) {
@@ -43,26 +43,16 @@ export function Game(props) {
             fetch("/api/lobby/player/status")
                 .then(response => response.json())
                 .then(data => {
-                    // if they are in a game, set all the relevant things
+                    // update players with most recent data from server
                     if (data.found) {
-                        //setGameID(data.lobbyID);
-                        //setInGame(data.inGame);
-                        //setPlayerTurn(data.playerIndex);
                         setTurn(data.turn);
+                        setPlayerTurn(data.playerIndex);
                         setPlayers(players => {
                             let tempPlayers = JSON.parse(JSON.stringify(players));
                             data.players.forEach((player, index) => {
                                 tempPlayers[index].x = player.x;
                                 tempPlayers[index].y = player.y;
                             });
-                            /*let players = [];
-                            data.players.forEach((player, index) => {
-                                let chosenPlayer = playerOptions[index];
-                                chosenPlayer.name = player.name;
-                                chosenPlayer.x = player.x;
-                                chosenPlayer.y = player.y;
-                                players.push(chosenPlayer);
-                            });*/
                             return tempPlayers;
                         });
                     }
@@ -117,6 +107,7 @@ export function Game(props) {
                             addIntel={addIntel}
                             setWinner={props.setWinner}
                             gameID={props.gameID}
+                            guessingForm={updatePos}
                         />
                     </div>
                 </div>
