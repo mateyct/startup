@@ -8,8 +8,12 @@ const gameData = require("./datafiles/clueData.json");
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static('public'));
 
 const users = [];
+
+// do this for the port
+const port = process.argv.length > 2 ? process.argv[2] : 3000;
 
 // api router
 var apiRouter = express.Router();
@@ -250,13 +254,14 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     res.json(response);
 });
 
-apiRouter.use("*", (req, res) => {
-    console.log(req.originalUrl);
-    res.send({msg: "What the heck just happened?"});
-});
-
 app.use(function (err, req, res, next) {
     res.status(500).send({ type: err.name, message: err.message });
 });
 
-app.listen(3000);
+app.use((_req, res) => {
+    res.sendFile('index.html', {root: 'public'});
+});
+
+app.listen(port, () => {
+    console.log("On port " + port);
+});
