@@ -4,6 +4,8 @@ const uuid = require("uuid");
 const cookieParser = require("cookie-parser");
 const app = express();
 
+const gameData = require("./datafiles/clueData.json");
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -169,7 +171,61 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
 // endpoint to set the game to active
 apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
     lobbies[req.params.lobbyID].inGame = true;
+    // generate the solution to the murder
+    const players = lobbies[req.params.lobbyID].players;
+    const rooms = Object.keys(gameData.roomIdNames);
+    const weapons = Object.keys(gameData.weaponIdNames);
+    // set the solution of the game
+    lobbies[req.params.lobbyID].solution = {
+        player: players[Math.floor(Math.random() * players.length)].username,
+        room: rooms[Math.floor(Math.random() * rooms.length)],
+        weapon: weapons[Math.floor(Math.random() * weapons.length)]
+    }
+    console.log(lobbies[req.params.lobbyID].solution);
     res.status(200).end();
+});
+
+// make a guess for the game
+apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
+    const guess = req.body;
+    let correctFlags = 0; // 3 flags is a winner
+    // winner will be -1 until the winner is set
+    const response = {
+        winner: -1,
+        player: false,
+        room: false,
+        weapon: false
+    };
+    // determine player
+    if (guess.player == lobbies[req.params.lobbyID].solution.player) {
+        response.player = true;
+        // add info about correct
+        correctFlags++;
+    }
+    // determine room
+    if (guess.room == lobbies[req.params.lobbyID].solution.room) {
+        response.room = true;;
+        correctFlags++;
+    }
+    // determine weapon
+    if (guess.weapon == lobbies[req.params.lobbyID].solution.weapon) {
+        response.weapon = true;
+        correctFlags++;
+    }
+    // check if they won
+    if (correctFlags >= 3) {
+        // get which is the winner
+        let keys = Object.keys(lobbies);
+        let token = req.cookies.token;
+        keys.forEach(key => {
+            lobbies[key].players.forEach((player, index) => {
+                if(player.token == token) {
+                    response.winner = index;
+                }
+            })
+        });
+    }
+    res.json(response);
 });
 
 apiRouter.use("*", (req, res) => {

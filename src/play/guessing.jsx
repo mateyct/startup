@@ -7,7 +7,6 @@ export default function GuessingForm(props) {
     const [chosenPlayer, setChosenPlayer] = useState(props.players[0].name);
     const players = props.players;
     const turn = props.turn;
-    const answers = props.answers.current;
 
     // submit the guessing form and change values
     function handleSubmit() {
@@ -47,40 +46,28 @@ export default function GuessingForm(props) {
         props.setPlayers(tempPlayers);
         props.setChat(old => [{ type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" }, ...old]);
         // check if guess is a winning one
-        console.log("correct: ", answers.player, answers.room, answers.weapon); // keep for debugging purposes
-        console.log("guess: ", chosenPlayer, players[turn].currentRoom, chosenWeapon);
-        let correctFlags = 0; // 3 flags is a winner
-        // determine player
-        if (answers.player == chosenPlayer) {
-            props.addIntel("Correct: " + chosenPlayer);
-            correctFlags++;
-        }
-        else {
-            props.addIntel("Incorrect: " + chosenPlayer);
-        }
-        // determine player
-        if (answers.room == players[turn].currentRoom) {
-            props.addIntel("Correct: " + clueData.roomIdNames[players[turn].currentRoom]);
-            correctFlags++;
-        }
-        else {
-            props.addIntel("Incorrect: " + clueData.roomIdNames[players[turn].currentRoom]);
-        }
-        if (answers.weapon == chosenWeapon) {
-            props.addIntel("Correct: " + clueData.weaponIdNames[chosenWeapon]);
-            correctFlags++;
-        }
-        else {
-            props.addIntel("Incorrect: " + clueData.weaponIdNames[chosenWeapon]);
-        }
-        if (correctFlags >= 3) {
-            props.setChat(old => [{ type: "line", message: (tempPlayers[turn].name + " guessed correctly and wins!")}, ...old]);
-            props.setWinner(tempPlayers[turn]);
-        }
-        // condition for mocking up other players moving
-        else {
-            //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
-        }
+        fetch(`/api/lobby/guess/${props.gameID}`, {
+            method: 'PUT',
+            headers: { 'Content-type': 'application/json'},
+            body: JSON.stringify({
+                player: chosenPlayer,
+                weapon: chosenWeapon,
+                room: players[turn].currentRoom
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // check if the game is over
+                if (data.winner >= 0) {
+                    props.setWinner(tempPlayers[data.winner]);
+                }
+                else {
+                    // add correct and incorrect data
+                    props.addIntel((data.player ? "Correct: " : "Incorrect: ") + chosenPlayer);
+                    props.addIntel((data.weapon ? "Correct: " : "Incorrect: ") + clueData.weaponIdNames[chosenWeapon]);
+                    props.addIntel((data.room ? "Correct: " : "Incorrect: ") + clueData.roomIdNames[players[turn].currentRoom]);
+                }
+            });
     }
 
     return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./login.css"
 import { Auth } from "./auth";
 
@@ -52,6 +52,13 @@ export function Login(props) {
             setReturnMessage(failInfo.msg);
         }
     }
+
+    // make the message go away
+    useEffect(() => {
+        return () => {
+            setReturnMessage('');
+        };
+    }, []);
 
     return (
 

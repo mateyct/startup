@@ -22,9 +22,6 @@ export function Game(props) {
             message: "Welcome to Medical Murder Mystery!",
         }
     ]);
-    // set up secret data...
-    const answers = useRef(chooseSecrets());
-
     const [intel, setIntel] = useState([]);
 
     // this represents which index of the players array the user of this device is
@@ -36,43 +33,6 @@ export function Game(props) {
             setIntel(old => [...old, info]);
         }
     }
-
-    // choose all the secret data
-    function chooseSecrets() {
-        // player
-        let choice = Math.floor(Math.random() * players.length);
-        let player = players[choice];
-        // room
-        let roomKeys = Object.keys(clueData.roomIdNames);
-        let room = roomKeys[Math.floor(Math.random() * roomKeys.length)];
-        // weapon
-        let weaponKeys = Object.keys(clueData.weaponIdNames);
-        let weapon = weaponKeys[Math.floor(Math.random() * weaponKeys.length)];
-        return {
-            player: player.name,
-            room: room,
-            weapon: weapon
-        };
-    }
-
-    // a mock function to cause other players to move between this players turn
-    /*function mockPlayer(index, last, movesLeft) {
-        setPlayers((old) => {
-            let tempPlayers = JSON.parse(JSON.stringify(old));
-            tempPlayers[index].x += -last;
-            return tempPlayers;
-        });
-        if(movesLeft > 0) {
-            setTimeout(() => mockPlayer(index, -last, movesLeft - 1), 300);
-        }
-        else {
-            setTurn(oldTurn => (oldTurn + 1) % players.length);
-            setChat(old => [{type: "line", message: players[(index + 1) % players.length].name + "'s turn"}, ...old]);
-            if ((index + 1) % players.length != playerTurn) {
-                mockPlayer(index + 1, -last, 3);
-            }
-        }
-    }*/
 
     // the grid to track what each place on the map should be, a little messy
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
@@ -114,10 +74,9 @@ export function Game(props) {
                         chatlog={chatlog}
                         setChat={setChat}
                         setPlayers={setPlayers}
-                        answers={answers}
                         addIntel={addIntel}
                         setWinner={props.setWinner}
-                       // mockPlayer={mockPlayer}
+                        gameID={props.gameID}
                         />
                     </div>
                 </div>
