@@ -108,7 +108,13 @@ apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
     const lobbyInfo = checkUserInLobby(req.cookies.token);
     // send needed lobby info if in game, if not, don't
     if (lobbyInfo) {
-        res.json({found: true, lobbyID: lobbyInfo.key, inGame: lobbies[lobbyInfo.key].inGame, playerIndex: lobbyInfo.playerIndex});
+        res.json({
+            found: true,
+            lobbyID: lobbyInfo.key,
+            inGame: lobbies[lobbyInfo.key].inGame,
+            playerIndex: lobbyInfo.playerIndex,
+            players: lobbies[lobbyInfo.key].players
+        });
     }
     else {
         res.json({found: false});
@@ -164,6 +170,10 @@ apiRouter.get('/lobby/players/:lobbyID', verifyUser, (req, res) => {
 // let a user join an open game
 apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
     let user = await getUser('token', req.cookies.token);
+    if (lobbies[req.params.lobbyID].players.length >= 4) {
+        res.sendStatus(405);
+        return;
+    }
     lobbies[req.params.lobbyID].players.push(user);
     res.status(200).json({msg: 'Success'});
 });
@@ -181,6 +191,18 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
         room: rooms[Math.floor(Math.random() * rooms.length)],
         weapon: weapons[Math.floor(Math.random() * weapons.length)]
     }
+    // set player locations
+    let locOpts = [
+        {x: 7, y: 0},
+        {x: 18, y: 18},
+        {x: 7, y: 18},
+        {x: 18, y: 7}
+    ];
+    // loop to set
+    lobbies[req.params.lobbyID].players.forEach((player, index) => {
+        player.x = locOpts[index].x;
+        player.y = locOpts[index].y;
+    });
     console.log(lobbies[req.params.lobbyID].solution);
     res.status(200).end();
 });

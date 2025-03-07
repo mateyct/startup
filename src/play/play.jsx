@@ -4,12 +4,20 @@ import './play.css';
 import { Player } from "./player";
 import { Link } from "react-router-dom";
 
+// also have player options
+const playerOptions = [
+    new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, ""),
+    new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, ""),
+    new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, ""),
+    new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "")
+]
+
 export function Play(props) {
     const [gameID, setGameID] = useState('');
     const [inGame, setInGame] = useState(false);
     // players that are used
     const [players, setPlayers] = useState([]);
-    const [winner, setWinner] = useState(/* new Player(4, 4, "red", false, null, 4, false, false, "Test winner") */);
+    const [winner, setWinner] = useState();
     // define which player's turn
     const [playerTurn, setPlayerTurn] = useState(null);
 
@@ -23,9 +31,20 @@ export function Play(props) {
                     setGameID(data.lobbyID);
                     setInGame(data.inGame);
                     setPlayerTurn(data.playerIndex);
+                    setPlayers(() => {
+                        let players = [];
+                        data.players.forEach((player, index) => {
+                            let chosenPlayer = playerOptions[index];
+                            chosenPlayer.name = player.username;
+                            chosenPlayer.x = player.x;
+                            chosenPlayer.y = player.y;
+                            players.push(chosenPlayer);
+                        })
+                        return players;
+                    });
                 }
             });
-    });
+    }, []);
 
     return (
         <main>
@@ -73,7 +92,14 @@ function Join(props) {
         fetch(`/api/lobby/players/${id}`, {
             method: 'put'
         })
-            .finally(() => props.setGameID(id));
+            .finally(response => {
+                if(response?.status == 200) {
+                    props.setGameID(id)
+                }
+                else {
+                    console.log("Lobby full");
+                }
+            });
 
     }
     return (
@@ -94,13 +120,6 @@ function Join(props) {
 function GameLobby(props) {
     const [counter, setCounter] = useState(0); // also should be temporary
     const intervalID = useRef(null);
-    // also have player options
-    const playerOptions = [
-        new Player(7, 0, 'yellow', '#FFFFC5', null, 0, true, false, props.userName),
-        new Player(7, 7, 'green', '#c4ffc4', null, 0, true, false, "Hal"),
-        new Player(18, 7, 'blue', '#c7c7ff', null, 0, true, false, "Jeremy"),
-        new Player(7, 18, 'red', '#ffa8a8', null, 0, true, false, "Dave100")
-    ]
     // use a set interval and useEffect to represent a WebSocket
     useEffect(() => {
         intervalID.current = setInterval(() => {
@@ -110,12 +129,12 @@ function GameLobby(props) {
                     const playerObjs = json.players;
                     const players = [];
                     if (playerObjs) {
-                        let playerCounter = 0;
-                        playerObjs.forEach(player => {
-                            let chosenPlayer = playerOptions[playerCounter];
+                        playerObjs.forEach((player, index) => {
+                            let chosenPlayer = playerOptions[index];
                             chosenPlayer.name = player.username;
+                            chosenPlayer.x = player.x;
+                            chosenPlayer.y = player.y;
                             players.push(chosenPlayer);
-                            playerCounter++;
                         });
                         props.setPlayers(players);
                     }
