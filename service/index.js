@@ -4,7 +4,7 @@ const uuid = require("uuid");
 const cookieParser = require("cookie-parser");
 const app = express();
 
-import { ServerPlayer } from "./ServerPlayer";
+const ServerPlayer = require("./ServerPlayer");
 
 const gameData = require("./datafiles/clueData.json");
 
@@ -109,9 +109,9 @@ const lobbies = {};
 
 // Check if the user is already in a lobby/game, return its info if so
 apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
-    // TODO: Make this function return the list of players too
     // get if in lobby
-    const lobbyInfo = checkUserInLobby(req.cookies.token);
+    const user = await getUser('token', req.cookies.token);
+    const lobbyInfo = checkUserInLobby(user.username);
     // send needed lobby info if in game, if not, don't
     if (lobbyInfo) {
         res.json({
@@ -128,12 +128,12 @@ apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
 });
 
 // check if a user is in a lobby and return it's info
-function checkUserInLobby(token) {
+function checkUserInLobby(username) {
     let correctKey = null;
     let keys = Object.keys(lobbies);
     keys.forEach(key => {
         lobbies[key].players.forEach((player, index) => {
-            if(player.token == token) {
+            if(player.name == username) {
                 correctKey = {key: key, playerIndex: index};
             }
         })
@@ -147,14 +147,16 @@ apiRouter.get("/lobbies", verifyUser, (req, res) => {
     const lobbiesToSend = {}
     let keys = Object.keys(lobbies);
     keys.forEach(key => {
-        lobbiesToSend[key] = {
-            lobbyName: lobbies[key].lobbyName
+        if(!lobbies[key].inGame && lobbies[key].players.length < 4) {
+            lobbiesToSend[key] = {
+                lobbyName: lobbies[key].lobbyName
+            }
         }
     });
     res.status(200).json({lobbies: lobbiesToSend});
 });
 
-// add a new room, but this should definitely be implemented here and not in front end
+// add a new room
 apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let randomID = Math.round(Math.random() * 100000);
     let user = await getUser('token', req.cookies.token);
@@ -181,7 +183,7 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
         return;
     }
     lobbies[req.params.lobbyID].players.push(new ServerPlayer(user.username, 0, 0, 0));
-    res.status(200).json({msg: 'Success'});
+    res.json({msg: 'Success'});
 });
 
 // endpoint to set the game to active

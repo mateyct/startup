@@ -28,6 +28,7 @@ export function Play(props) {
             .then(data => {
                 // if they are in a game, set all the relevant things
                 if(data.found) {
+                    console.log("huh");
                     setGameID(data.lobbyID);
                     setInGame(data.inGame);
                     setPlayerTurn(data.playerIndex);
@@ -35,7 +36,7 @@ export function Play(props) {
                         let players = [];
                         data.players.forEach((player, index) => {
                             let chosenPlayer = playerOptions[index];
-                            chosenPlayer.name = player.username;
+                            chosenPlayer.name = player.name;
                             chosenPlayer.x = player.x;
                             chosenPlayer.y = player.y;
                             players.push(chosenPlayer);
@@ -92,7 +93,8 @@ function Join(props) {
         fetch(`/api/lobby/players/${id}`, {
             method: 'put'
         })
-            .finally(response => {
+            .then(response => {
+                console.log(response);
                 if(response?.status == 200) {
                     props.setGameID(id)
                 }
@@ -131,9 +133,7 @@ function GameLobby(props) {
                     if (playerObjs) {
                         playerObjs.forEach((player, index) => {
                             let chosenPlayer = playerOptions[index];
-                            chosenPlayer.name = player.username;
-                            chosenPlayer.x = player.x;
-                            chosenPlayer.y = player.y;
+                            chosenPlayer.name = player.name;
                             players.push(chosenPlayer);
                         });
                         props.setPlayers(players);

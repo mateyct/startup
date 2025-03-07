@@ -1,4 +1,4 @@
-export class ServerPlayer {
+class ServerPlayer {
     constructor(name, x, y, index) {
         this.name = name;
         this.x = x;
@@ -6,3 +6,5 @@ export class ServerPlayer {
         this.index = index;
     }
 }
+
+module.exports = ServerPlayer;
