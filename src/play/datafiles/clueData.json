@@ -18,5 +18,23 @@
         "op": "Operating Room",
         "lobby": "Lobby",
         "mri": "MRI Room"
+    },
+    "allKeys": {
+        "stethoscope": "Stethoscope",
+        "syringe": "Syringe",
+        "hammer": "Reflex Hammer",
+        "iv": "IV Needle",
+        "plug": "Pulling the Plug",
+        "gloves": "Latex Gloves",
+        "boredom": "Boredom",
+        "defib": "Defibrilator",
+        "clinic": "Clinic",
+        "dr-office": "Dr. Office",
+        "dir-office": "Director's Office",
+        "lab": "Lab",
+        "icu": "ICU",
+        "op": "Operating Room",
+        "lobby": "Lobby",
+        "mri": "MRI Room"
     }
 }

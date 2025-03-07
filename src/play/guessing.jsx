@@ -64,9 +64,7 @@ export default function GuessingForm(props) {
                 }
                 else {
                     // add correct and incorrect data
-                    props.addIntel((data.player ? "Correct: " : "Incorrect: ") + chosenPlayer);
-                    props.addIntel((data.weapon ? "Correct: " : "Incorrect: ") + clueData.weaponIdNames[chosenWeapon]);
-                    props.addIntel((data.room ? "Correct: " : "Incorrect: ") + clueData.roomIdNames[players[turn].currentRoom]);
+                    props.addIntel(data.results);
                 }
             });
     }

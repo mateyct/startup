@@ -56,7 +56,6 @@ apiRouter.delete("/auth", async (req, res) => {
         clearAuthCookie(res, user);
         // if there is a user in a game, we want to get rid of the game
         const lobbyInfo = checkUserInLobby(user.username);
-        console.log(lobbyInfo);
         if (lobbyInfo) {
             delete lobbies[lobbyInfo.key];
         }
@@ -242,6 +241,13 @@ apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
 // make a guess for the game
 apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     const guess = req.body;
+    let guesser = await getUser('token', req.cookies.token);
+    // get which is the guessor
+    lobbies[req.params.lobbyID].players.forEach((player, index) => {
+        if(player.name == guesser.username) {
+            guesser = player;
+        }
+    });
     let correctFlags = 0; // 3 flags is a winner
     // winner will be -1 until the winner is set
     const response = {
@@ -253,33 +259,41 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     // determine player
     if (guess.player == lobbies[req.params.lobbyID].solution.player) {
         response.player = true;
+        guesser.guesses[guess.player] = true;
         // add info about correct
         correctFlags++;
+    }
+    else {
+        guesser.guesses[guess.player] = false;
     }
     // determine room
     if (guess.room == lobbies[req.params.lobbyID].solution.room) {
         response.room = true;;
         correctFlags++;
+        guesser.guesses[guess.room] = true;
+    }
+    else {
+        guesser.guesses[guess.room] = false;
     }
     // determine weapon
     if (guess.weapon == lobbies[req.params.lobbyID].solution.weapon) {
         response.weapon = true;
         correctFlags++;
+        guesser.guesses[guess.weapon] = true;
+    }
+    else {
+        guesser.guesses[guess.weapon] = false;
     }
     // check if they won
     if (correctFlags >= 3) {
-        // get which is the winner
-        let guesser = await getUser('token', req.cookies.token);
-        lobbies[req.params.lobbyID].players.forEach((player, index) => {
-            if(player.name == guesser.username) {
-                response.winner = index;
-            }
-        });
+        response.winner = guesser.index;
         // delay for a bit, then end the game
         setTimeout(() => {
             delete lobbies[req.params.lobbyID];
         }, 6000);
     }
+    // set the correctness of the guesses to send back
+    response.results = guesser.guesses;
     lobbies[req.params.lobbyID].turn = guess.nextTurn;
     lobbies[req.params.lobbyID].winner = response.winner;
     res.json(response);

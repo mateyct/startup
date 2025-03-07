@@ -23,16 +23,15 @@ export function Game(props) {
             message: "Welcome to Medical Murder Mystery!",
         }
     ]);
-    const [intel, setIntel] = useState([]);
+    const intel = props.intel;
+    const setIntel = props.setIntel;
 
     // this represents which index of the players array the user of this device is
     const [playerTurn, setPlayerTurn] = useState(props.playerIndex);
 
     // use this to add to intel to prevent duplication
-    function addIntel(info) {
-        if (!intel.includes(info)) {
-            setIntel(old => [...old, info]);
-        }
+    function addIntel(newIntel) {
+        setIntel(newIntel);
     }
 
     const intervalRef = useRef(null);
@@ -83,8 +82,8 @@ export function Game(props) {
                         <button id="close-controls" className="large-screen-hidden" onClick={() => setControlModal(false)}></button>
                         <h3>Your Secret Info</h3>
                         <ul>
-                            {intel.map((info, index) => (
-                                <li key={index}>{info}</li>
+                            {Object.keys(intel).map((key, index) => (
+                                <li key={index}>{(intel[key] ? "Correct: " : "Incorrect: ") + (key in clueData.allKeys ? clueData.allKeys[key] : key)}</li>
                             ))}
                         </ul>
                     </div>

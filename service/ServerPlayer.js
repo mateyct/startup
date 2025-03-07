@@ -5,6 +5,7 @@ class ServerPlayer {
         this.y = y;
         this.index = index;
         this.moves = 0;
+        this.guesses = {};
     }
 }
 
