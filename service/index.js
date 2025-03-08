@@ -6,7 +6,7 @@ const app = express();
 
 const ServerPlayer = require("./ServerPlayer");
 
-const gameData = require("./datafiles/clueData.json");
+const gameData = require("./clueData.json");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -162,7 +162,7 @@ apiRouter.get("/lobbies", verifyUser, (req, res) => {
     res.status(200).json({lobbies: lobbiesToSend});
 });
 
-// add a new room
+// add a new lobby
 apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let randomID = Math.round(Math.random() * 100000);
     let user = await getUser('token', req.cookies.token);
@@ -234,6 +234,8 @@ apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
     lobbies[req.params.lobbyID].players[req.body.index].y = req.body.y;
     lobbies[req.params.lobbyID].turn = req.body.turn;
     lobbies[req.params.lobbyID].players[req.body.index].moves = req.body.moves;
+    lobbies[req.params.lobbyID].players[req.body.index].recentArrival = req.body.recentArrival;
+    lobbies[req.params.lobbyID].players[req.body.index].currentRoom = req.body.currentRoom;
     // send the user back I guess
     res.json(lobbies[req.params.lobbyID].players[req.body.index]);
 });
@@ -296,6 +298,7 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     response.results = guesser.guesses;
     lobbies[req.params.lobbyID].turn = guess.nextTurn;
     lobbies[req.params.lobbyID].winner = response.winner;
+    guesser.recentArrival = false;
     res.json(response);
 });
 

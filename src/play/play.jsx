@@ -39,6 +39,8 @@ export function Play(props) {
                             chosenPlayer.x = player.x;
                             chosenPlayer.y = player.y;
                             chosenPlayer.moves = player.moves;
+                            chosenPlayer.currentRoom = player.currentRoom;
+                            chosenPlayer.recentArrival = player.recentArrival;
                             herePlayers.push(chosenPlayer);
                         });
                         return herePlayers;

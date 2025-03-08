@@ -236,7 +236,7 @@ function Cell(props) {
                 //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
                 props.setChat(old => [{ type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" }, ...old]);
             }
-            updatePos(i, j, props.turn, props.gameID, nextTurn, tempPlayers[props.turn].moves);
+            updatePos(i, j, props.turn, props.gameID, nextTurn, tempPlayers[props.turn].moves, null, false);
             props.setPlayers(tempPlayers);
         }
     }
@@ -291,7 +291,7 @@ function Door(props) {
             tempPlayers[props.turn].recentArrival = true;
             props.setChat(old => [{ type: "line", message: (tempPlayers[props.turn].name) + " just entered " + clueData.roomIdNames[props.roomId] }, ...old]);
             props.setPlayers(tempPlayers);
-            updatePos(i, j, props.turn, props.gameID, props.turn, 0);
+            updatePos(i, j, props.turn, props.gameID, props.turn, 0, props.roomId, true);
         }
     }
     // determine if a player is on this door
@@ -366,7 +366,7 @@ function rollDice() {
 }
 
 // function to update the position of the player on server-side
-function updatePos(x, y, index, lobbyID, turn, moves) {
+function updatePos(x, y, index, lobbyID, turn, moves, currentRoom, recentArrival) {
     fetch(`/api/player/position/${lobbyID}`, {
         method: 'put',
         headers: { "Content-type": "application/json" },
@@ -375,7 +375,9 @@ function updatePos(x, y, index, lobbyID, turn, moves) {
             x: x,
             y: y,
             moves: moves,
-            turn: turn
+            turn: turn,
+            currentRoom: currentRoom,
+            recentArrival: recentArrival
         })
     });
 }

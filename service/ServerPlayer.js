@@ -6,6 +6,8 @@ class ServerPlayer {
         this.index = index;
         this.moves = 0;
         this.guesses = {};
+        this.recentArrival = false;
+        this.currentRoom = null;
     }
 }
 
