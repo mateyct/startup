@@ -180,7 +180,8 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
 // get the list of players in a lobby
 apiRouter.get('/lobby/players/:lobbyID', verifyUser, (req, res) => {
     let currentLobby = lobbies[req.params.lobbyID];
-    res.json({players: currentLobby.players});
+    // include if the game has started to it begins for all users
+    res.json({players: currentLobby.players, start: currentLobby.inGame});
 });
 
 // let a user join an open game
@@ -299,8 +300,49 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     lobbies[req.params.lobbyID].turn = guess.nextTurn;
     lobbies[req.params.lobbyID].winner = response.winner;
     guesser.recentArrival = false;
+    // update the history based on the guess
+    updateHistory(guesser, guess.player, guess.room, guess.weapon);
     res.json(response);
 });
+
+//////////// History Stuff /////////////
+const history = {};
+
+// add a new history entry
+const updateHistory = (guesser, person, room, weapon) => {
+    // set up the object
+    let histItem = {
+        date: Date.now(),
+        guesser: guesser.name,
+        person: person,
+        room: room,
+        weapon: weapon
+    };
+    // add a new array or push it on depending
+    if (guesser.name in history) {
+        history[guesser.name].push(histItem);
+    }
+    else {
+        history[guesser.name] = [histItem];
+    }
+    // skip this part if it's irrelevant
+    if (guesser.name == person) return;
+    // also, if this person was guessed, add them
+    if(person in history) {
+        history[person].push(histItem);
+    }
+    else {
+        history[person] = [histItem];
+    }
+
+};
+
+// retrieve history of the user
+apiRouter.get('/history', verifyUser, async (req, res) => {
+    const user = await getUser('token', req.cookies?.token);
+    res.json({history: history[user.username]});
+})
+
 
 app.use(function (err, req, res, next) {
     res.status(500).send({ type: err.name, message: err.message });

@@ -147,7 +147,10 @@ function GameLobby(props) {
                         });
                         props.setPlayers(players);
                     }
-                })
+                    if(json.start) {
+                        props.setInGame(true);
+                    }
+                });
         }, 500);
 
         return () => {
