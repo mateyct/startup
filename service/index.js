@@ -195,7 +195,7 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
         res.sendStatus(405);
         return;
     }
-    lobbies[req.params.lobbyID].players.push(new ServerPlayer(user.username, 0, 0, 0));
+    lobbies[req.params.lobbyID].players.push(new ServerPlayer(user.username, 0, 0, lobbies[req.params.lobbyID].players.length));
     res.json({msg: 'Success'});
 });
 
