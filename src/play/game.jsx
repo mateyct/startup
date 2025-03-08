@@ -17,12 +17,8 @@ export function Game(props) {
     const turn = props.turn;
     const setTurn = props.setTurn;
     // set up the chat for displaying info
-    const [chatlog, setChat] = useState([
-        {
-            type: "line",
-            message: "Welcome to Medical Murder Mystery!",
-        }
-    ]);
+    const chatlog = props.chatlog;
+    const setChat = props.setChat;
     const intel = props.intel;
     const setIntel = props.setIntel;
 
@@ -58,6 +54,7 @@ export function Game(props) {
                             });
                             return tempPlayers;
                         });
+                        setChat(data.chatlog);
                     }
                 })
         }, 200);
@@ -234,7 +231,14 @@ function Cell(props) {
                 nextTurn = (props.turn + 1) % tempPlayers.length;
                 props.setTurn(nextTurn);
                 //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
-                props.setChat(old => [{ type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" }, ...old]);
+                let newChat = {type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
+                props.setChat(old => [newChat, ...old]);
+                // add to the chat on the server
+                fetch(`/api/lobby/chat/${props.gameID}`, {
+                    method: 'PUT',
+                    headers: {"Content-type": "application/json"},
+                    body: JSON.stringify(newChat)
+                });
             }
             updatePos(i, j, props.turn, props.gameID, nextTurn, tempPlayers[props.turn].moves, null, false);
             props.setPlayers(tempPlayers);
@@ -289,7 +293,14 @@ function Door(props) {
             tempPlayers[props.turn].currentRoom = props.roomId;
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
-            props.setChat(old => [{ type: "line", message: (tempPlayers[props.turn].name) + " just entered " + clueData.roomIdNames[props.roomId] }, ...old]);
+            let newChat = { type: "line", message: (tempPlayers[props.turn].name) + " just entered " + clueData.roomIdNames[props.roomId] };
+            props.setChat(old => [newChat, ...old]);
+            // add to the chat on the server
+            fetch(`/api/lobby/chat/${props.gameID}`, {
+                method: 'PUT',
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify(newChat)
+            });
             props.setPlayers(tempPlayers);
             updatePos(i, j, props.turn, props.gameID, props.turn, 0, props.roomId, true);
         }

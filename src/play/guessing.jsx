@@ -20,6 +20,12 @@ export default function GuessingForm(props) {
         };
         let oldGuess = JSON.parse(JSON.stringify(props.chatlog));
         props.setChat([newGuess, ...oldGuess]);
+        // add to the chat on the server
+        fetch(`/api/lobby/chat/${props.gameID}`, {
+            method: 'PUT',
+            headers: {"Content-type": "application/json"},
+            body: JSON.stringify(newGuess)
+        });
         // change turns now
         let tempPlayers = JSON.parse(JSON.stringify(players));
         tempPlayers[turn].recentArrival = false; // this for tracking when a player recently entered a room
@@ -27,7 +33,14 @@ export default function GuessingForm(props) {
         let nextTurn = (turn + 1) % players.length;
         props.setTurn(nextTurn);
         props.setPlayers(tempPlayers);
-        props.setChat(old => [{ type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" }, ...old]);
+        let newChat = { type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
+        props.setChat(old => [newChat, ...old]);
+        // add to the chat on the server
+        fetch(`/api/lobby/chat/${props.gameID}`, {
+            method: 'PUT',
+            headers: {"Content-type": "application/json"},
+            body: JSON.stringify(newChat)
+        });
         // check if guess is a winning one
         fetch(`/api/lobby/guess/${props.gameID}`, {
             method: 'PUT',

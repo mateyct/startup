@@ -119,12 +119,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
+- [x] **Node.js/Express HTTP service** - Done, express is implemented.
+- [x] **Static middleware for frontend** - Done, page loads on server.
+- [x] **Calls to third party endpoints** - Calls for a Book of Mormon quote in the footer.
+- [x] **Backend service endpoints** - There are lots of these. You can test all of them if you open up multiple browsers and create multiple accounts, then join a lobby together. You can play whole games this way, which should use all.
+    * Also, you can check the history page and then return to the play page without the game disappearing.
+- [x] **Frontend calls service endpoints** - The frontend uses `fetch` to pull from the server a lot.
+- [x] **Supports registration, login, logout, and restricted endpoint** - Users can create accounts, log in, and log out. In-site endpoints only work for authenticated users.
+
+Note: There are differences between my game and the normal game of Clue. Players don't pass data around here, they just discover it on their own as they guess. Also, players can only exit the same door they entered into a room. 
 
 ## 🚀 DB/Login deliverable
 

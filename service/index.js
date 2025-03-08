@@ -31,7 +31,6 @@ apiRouter.post("/auth", async (req, res) => {
     else {
         const user = await createUser(req.body.username, req.body.password);
         setAuthCookie(res, user);
-
         res.json({username: req.body.username});
     }
 });
@@ -125,7 +124,8 @@ apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
             playerIndex: lobbyInfo.playerIndex,
             players: lobbies[lobbyInfo.key].players,
             turn: lobbies[lobbyInfo.key].turn,
-            winner: lobbies[lobbyInfo.key].winner
+            winner: lobbies[lobbyInfo.key].winner,
+            chatlog: lobbies[lobbyInfo.key].chatlog
         });
     }
     else {
@@ -171,7 +171,11 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
         players: [new ServerPlayer(user.username, 7, 0, 0)],
         inGame: false,
         turn: 0,
-        winner: -1
+        winner: -1,
+        chatlog: [{
+            type: "line",
+            message: "Welcome to Medical Murder Mystery!",
+        }]
     };
     lobbies[randomID] = newLobby;
     res.status(200).json({lobbyID: randomID});
@@ -222,6 +226,12 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
     });
     console.log(lobbies[req.params.lobbyID].solution);
     res.json({players: lobbies[req.params.lobbyID].players});
+});
+
+// add a portion of the chat
+apiRouter.put('/lobby/chat/:lobbyID', verifyUser, async (req, res) => {
+    lobbies[req.params.lobbyID].chatlog.unshift(req.body);
+    res.send(req.body);
 });
 
 // update a player's position

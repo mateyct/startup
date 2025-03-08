@@ -22,6 +22,7 @@ export function Play(props) {
     const [playerTurn, setPlayerTurn] = useState(null);
     const [turn, setTurn] = useState(0);
     const [intel, setIntel] = useState({});
+    const [chatlog, setChat] = useState([]);
 
     // fetch if this user is in a game
     useEffect(() => {
@@ -53,6 +54,7 @@ export function Play(props) {
                     setPlayerTurn(data.playerIndex);
                     setIntel(data.players[data.playerIndex].guesses);
                     setTurn(data.turn);
+                    setChat(data.chatlog);
                 }
             });
     }, []);
@@ -62,7 +64,7 @@ export function Play(props) {
             {winner && <WinScreen winner={winner} />}
             {!winner && !gameID && <Join gameID={gameID} setGameID={setGameID} />}
             {!winner && gameID && !inGame && <GameLobby gameID={gameID} inGame={inGame} setInGame={setInGame} userName={props.userName} players={players} setPlayers={setPlayers} setTurn={setTurn} />}
-            {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} playerIndex={playerTurn} turn={turn} setTurn={setTurn} intel={intel} setIntel={setIntel} />}
+            {!winner && gameID && inGame && <Game gameID={gameID} players={players} setPlayers={setPlayers} setWinner={setWinner} playerIndex={playerTurn} turn={turn} setTurn={setTurn} intel={intel} setIntel={setIntel} chatlog={chatlog} setChat={setChat} />}
         </main>
     );
 }
