@@ -121,7 +121,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 - [x] **Node.js/Express HTTP service** - Done, express is implemented.
 - [x] **Static middleware for frontend** - Done, page loads on server.
-- [x] **Calls to third party endpoints** - Calls for a Book of Mormon quote in the footer.
+- [x] **Calls to third party endpoints** - Calls for a Book of Mormon quote in the footer. This is in the footer Component function in App.jsx.
 - [x] **Backend service endpoints** - There are lots of these. You can test all of them if you open up multiple browsers and create multiple accounts, then join a lobby together. You can play whole games this way, which should use all.
     * Also, you can check the history page and then return to the play page without the game disappearing.
 - [x] **Frontend calls service endpoints** - The frontend uses `fetch` to pull from the server a lot.
