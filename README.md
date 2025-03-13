@@ -133,8 +133,10 @@ Note: There are differences between my game and the normal game of Clue. Players
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
-- [ ] **Stores credentials in MongoDB** - I did not complete this part of the deliverable.
+- [x] **Stores data in MongoDB** - Stores a history of guesses that the user makes in MongoDB. This history is displayed on the history page.
+- [x] **Stores credentials in MongoDB** - Users are created and credentials are stored in MongoDB.
+
+There weren't a ton of commits that I made for this deliverable, but honestly there weren't that many changes to make.
 
 ## 🚀 WebSocket deliverable
 
