@@ -41,7 +41,8 @@ apiRouter.put("/auth", async (req, res) => {
     const user = await getUser('username', req.body.username);
     if (user && (await bcrypt.compare(req.body.password, user.password))) {
         setAuthCookie(res, user);
-        DB.loginUser(user);
+        // login user in the database
+        DB.updateUser(user);
         res.json({username: req.body.username});
     }
     else {
@@ -60,7 +61,8 @@ apiRouter.delete("/auth", async (req, res) => {
         if (lobbyInfo) {
             delete lobbies[lobbyInfo.key];
         }
-        await DB.loginUser(user);
+        // log the user out
+        await DB.updateUser(user);
     }
     res.json({msg: 'Logged out'});
 });

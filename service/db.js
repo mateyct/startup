@@ -31,7 +31,7 @@ async function addUser(user) {
 }
 
 // update user with token to log them in
-async function loginUser(user) {
+async function updateUser(user) {
     await users.replaceOne({username: user.username}, user);
 }
 
@@ -54,5 +54,5 @@ module.exports = {
     getUserHistory,
     addUser,
     addUserHistory,
-    loginUser
+    updateUser
 }
