@@ -2,3 +2,5 @@
 *.sh
 *.ps1
 node_modules
+.vscode
+dbConfig.json
