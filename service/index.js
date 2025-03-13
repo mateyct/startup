@@ -320,7 +320,6 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
 });
 
 //////////// History Stuff /////////////
-const history = {};
 
 // add a new history entry
 const updateHistory = async (guesser, person, room, weapon) => {
@@ -339,7 +338,8 @@ const updateHistory = async (guesser, person, room, weapon) => {
 // retrieve history of the user
 apiRouter.get('/history', verifyUser, async (req, res) => {
     const user = await getUser('token', req.cookies?.token);
-    res.json(DB.getUserHistory(user.username));
+    let hist = await DB.getUserHistory(user.username);
+    res.json({history: hist});
 })
 
 

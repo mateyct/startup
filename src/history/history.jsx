@@ -8,14 +8,16 @@ export function History() {
         fetch('/api/history')
             .then(response => response.json())
             .then(data => {
-                setHistory(data.history);
+                if(data.history.length > 0)
+                    setHistory(data.history);
+                else setHistory([]);
             });
-    });
+    }, []);
     return (
         <main>
             {/*Placeholder for displaying history of suspicions*/}
             <h1>History of Suspicions</h1>
-            {history && <div className="table-responsive-mine">
+            {history && history.length > 0 && <div className="table-responsive-mine">
                 <table id="history-table">
                     <thead className="thead-dark">
                         <tr>
@@ -45,6 +47,7 @@ export function History() {
                     </tbody>
                 </table>
             </div>}
+            {history && history.length <= 0 && <div style={{textAlign: "center", fontSize: "2em"}}>No data</div>}
             {!history && <div style={{textAlign: "center", fontSize: "2em"}}>Loading...</div>}
         </main>
     );

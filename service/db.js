@@ -41,7 +41,7 @@ function getUserByToken(token) {
 
 // gets the user's history, anything that mentions their name
 function getUserHistory(username) {
-    return history.find({$or: {guesser: username, person: username}}, {sort: {date: -1}});
+    return history.find({$or: [{guesser: username}, {person: username}]}, {sort: {date: -1}}).toArray();
 }
 
 async function addUserHistory(toAdd) {
