@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
 
-const users = [];
+const DB = require('./db');
 
 // do this for the port
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -31,6 +31,7 @@ apiRouter.post("/auth", async (req, res) => {
     else {
         const user = await createUser(req.body.username, req.body.password);
         setAuthCookie(res, user);
+        DB.addUser(user);
         res.json({username: req.body.username});
     }
 });
@@ -40,6 +41,7 @@ apiRouter.put("/auth", async (req, res) => {
     const user = await getUser('username', req.body.username);
     if (user && (await bcrypt.compare(req.body.password, user.password))) {
         setAuthCookie(res, user);
+        DB.loginUser(user);
         res.json({username: req.body.username});
     }
     else {
@@ -58,6 +60,7 @@ apiRouter.delete("/auth", async (req, res) => {
         if (lobbyInfo) {
             delete lobbies[lobbyInfo.key];
         }
+        await DB.loginUser(user);
     }
     res.json({msg: 'Logged out'});
 });
@@ -70,17 +73,18 @@ async function createUser(username, password) {
         username: username,
         password: passwordHash
     }
-
-    users.push(user);
     return user;
 }
 
 // check if the user exists
 async function getUser(field, value) {
-    if (value) {
-        return users.find((user) => user[field] === value);
+    if (!value) return null;
+    // get user from DB
+    if (field === "token") {
+        return DB.getUserByToken(value);
     }
-    return null;
+
+    return DB.getUser(value);
 }
 
 // sets the auth cookie
@@ -311,7 +315,7 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     lobbies[req.params.lobbyID].winner = response.winner;
     guesser.recentArrival = false;
     // update the history based on the guess
-    updateHistory(guesser, guess.player, guess.room, guess.weapon);
+    await updateHistory(guesser, guess.player, guess.room, guess.weapon);
     res.json(response);
 });
 
@@ -319,7 +323,7 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
 const history = {};
 
 // add a new history entry
-const updateHistory = (guesser, person, room, weapon) => {
+const updateHistory = async (guesser, person, room, weapon) => {
     // set up the object
     let histItem = {
         date: Date.now(),
@@ -328,29 +332,14 @@ const updateHistory = (guesser, person, room, weapon) => {
         room: room,
         weapon: weapon
     };
-    // add a new array or push it on depending
-    if (guesser.name in history) {
-        history[guesser.name].push(histItem);
-    }
-    else {
-        history[guesser.name] = [histItem];
-    }
-    // skip this part if it's irrelevant
-    if (guesser.name == person) return;
-    // also, if this person was guessed, add them
-    if(person in history) {
-        history[person].push(histItem);
-    }
-    else {
-        history[person] = [histItem];
-    }
+    await DB.addUserHistory(histItem);
 
 };
 
 // retrieve history of the user
 apiRouter.get('/history', verifyUser, async (req, res) => {
     const user = await getUser('token', req.cookies?.token);
-    res.json({history: history[user.username]});
+    res.json(DB.getUserHistory(user.username));
 })
 
 

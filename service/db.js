@@ -26,11 +26,33 @@ function getUser(username) {
     return users.findOne({username});
 }
 
+async function addUser(user) {
+    await users.insertOne(user);
+}
+
+// update user with token to log them in
+async function loginUser(user) {
+    await users.replaceOne({username: user.username}, user);
+}
+
 function getUserByToken(token) {
     return users.findOne({token});
 }
 
 // gets the user's history, anything that mentions their name
 function getUserHistory(username) {
-    return history.find({$or: {guesser: username, person: username}});
+    return history.find({$or: {guesser: username, person: username}}, {sort: {date: -1}});
+}
+
+async function addUserHistory(toAdd) {
+    await history.insertOne(toAdd);
+}
+
+module.exports = {
+    getUser,
+    getUserByToken,
+    getUserHistory,
+    addUser,
+    addUserHistory,
+    loginUser
 }
