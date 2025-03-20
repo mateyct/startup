@@ -14,6 +14,8 @@ app.use(express.static('public'));
 
 const DB = require('./db');
 
+const { WebSocketServer } = require('ws');
+
 // do this for the port
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
@@ -353,6 +355,34 @@ app.use((_req, res) => {
     res.sendFile('index.html', {root: 'public'});
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log("On port " + port);
 });
+
+const socketServer = new WebSocketServer({server});
+
+// set up WebSocket connection
+socketServer.on('connection', socket => {
+    socket.isAlive = true;
+    socket.on('message', msg => {
+
+    });
+
+    // receive pings and pongs to maintain connection
+    socket.on('pong', () => {
+        socket.isAlive = true;
+    })
+});
+
+// send out pings
+setInterval(() => {
+    socketServer.clients.forEach(client => {
+        // if client has been dormant between checks, terminate them
+        if(client.isAlive === false) return client.terminate();
+        
+        // set this flag between connection
+        client.isAlive = false;
+
+        client.ping();
+    });
+}, 10000);
