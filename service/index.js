@@ -369,7 +369,9 @@ socketServer.on('connection', socket => {
     connections.push(connection);
 
     socket.on('message', data => {
-        // proces all the various conditions here
+        switch (data.case) {
+            // differentiate behavior based on data
+        }
     });
 
     // process a closure
@@ -390,11 +392,11 @@ socketServer.on('connection', socket => {
 setInterval(() => {
     connections.forEach(con => {
         // if client has been dormant between checks, terminate them
-        if(con.alive === false) return con.ws.terminate();
+        if(con.alive === false) return con.socket.terminate();
         
         // set this flag between connection
-        con.isAlive = false;
+        con.alive = false;
 
-        con.ping();
+        con.socket.ping();
     });
 }, 10000);

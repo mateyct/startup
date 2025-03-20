@@ -3,6 +3,7 @@ import { Game } from "./game";
 import './play.css';
 import { Player } from "./player";
 import { Link } from "react-router-dom";
+import { webSocket } from "./webSocketHandler";
 
 // also have player options
 const playerOptions = [
@@ -57,6 +58,14 @@ export function Play(props) {
                     setChat(data.chatlog);
                 }
             });
+    }, []);
+
+    // Make the websocket connection
+    useEffect(() => {
+        webSocket.initialize();
+
+        // I guess I had to do it this way for some reason...
+        return () => webSocket.cleanup();
     }, []);
 
     return (
