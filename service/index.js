@@ -360,29 +360,41 @@ const server = app.listen(port, () => {
 });
 
 const socketServer = new WebSocketServer({server});
+const connections = [];
 
 // set up WebSocket connection
 socketServer.on('connection', socket => {
-    socket.isAlive = true;
-    socket.on('message', msg => {
+    // create new connection for the list
+    const connection = {id: uuid.v4(), alive: true, socket: socket};
+    connections.push(connection);
 
+    socket.on('message', data => {
+        // proces all the various conditions here
+    });
+
+    // process a closure
+    socket.on('close', () => {
+        let index = connections.findIndex(co => co.id === connection.id);
+        if (index >= 0) {
+            connections.splice(index, 1);
+        }
     });
 
     // receive pings and pongs to maintain connection
     socket.on('pong', () => {
-        socket.isAlive = true;
+        connection.alive = true;
     })
 });
 
 // send out pings
 setInterval(() => {
-    socketServer.clients.forEach(client => {
+    connections.forEach(con => {
         // if client has been dormant between checks, terminate them
-        if(client.isAlive === false) return client.terminate();
+        if(con.alive === false) return con.ws.terminate();
         
         // set this flag between connection
-        client.isAlive = false;
+        con.isAlive = false;
 
-        client.ping();
+        con.ping();
     });
 }, 10000);
