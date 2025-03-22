@@ -4,6 +4,7 @@ import boardFile from "./datafiles/board.json";
 import { Player } from "./player";
 import GuessingForm from "./guessing";
 import clueData from "./datafiles/clueData.json";
+import { webSocket } from './webSocketHandler';
 
 export function Game(props) {
     const [controlModalOpen, setControlModal] = useState(false);
@@ -34,7 +35,27 @@ export function Game(props) {
 
     // interval to retrieve location data from server
     useEffect(() => {
-        intervalRef.current = setInterval(() => {
+        // function that updates the player's position
+        webSocket.updatePos = data => {
+            if (data.found) {
+                if (data.winner >= 0) {
+                    props.setWinner(players[data.winner]);
+                }
+                setTurn(data.turn);
+                //setPlayerTurn(data.playerIndex);
+                setPlayers(players => {
+                    let tempPlayers = JSON.parse(JSON.stringify(players));
+                    data.players.forEach((player, index) => {
+                        tempPlayers[index].x = player.x;
+                        tempPlayers[index].y = player.y;
+                        //tempPlayers[index].moves = player.moves;
+                    });
+                    return tempPlayers;
+                });
+                setChat(data.chatlog);
+            }
+        };
+        /* intervalRef.current = setInterval(() => {
             fetch("/api/lobby/player/status")
                 .then(response => response.json())
                 .then(data => {
@@ -61,7 +82,7 @@ export function Game(props) {
 
         return () => {
             clearInterval(intervalRef.current);
-        };
+        }; */
     }, []);
 
     // the grid to track what each place on the map should be, a little messy
@@ -107,7 +128,6 @@ export function Game(props) {
                             addIntel={addIntel}
                             setWinner={props.setWinner}
                             gameID={props.gameID}
-                            guessingForm={updatePos}
                         />
                     </div>
                 </div>
@@ -231,16 +251,16 @@ function Cell(props) {
                 nextTurn = (props.turn + 1) % tempPlayers.length;
                 props.setTurn(nextTurn);
                 //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
-                let newChat = {type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
+                let newChat = { type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
                 props.setChat(old => [newChat, ...old]);
                 // add to the chat on the server
                 fetch(`/api/lobby/chat/${props.gameID}`, {
                     method: 'PUT',
-                    headers: {"Content-type": "application/json"},
+                    headers: { "Content-type": "application/json" },
                     body: JSON.stringify(newChat)
                 });
             }
-            updatePos(i, j, props.turn, props.gameID, nextTurn, tempPlayers[props.turn].moves, null, false);
+            updatePos(i, j, props.turn, props.gameID, nextTurn, tempPlayers[props.turn].moves, null, false, tempPlayers[props.turn].name);
             props.setPlayers(tempPlayers);
         }
     }
@@ -298,11 +318,11 @@ function Door(props) {
             // add to the chat on the server
             fetch(`/api/lobby/chat/${props.gameID}`, {
                 method: 'PUT',
-                headers: {"Content-type": "application/json"},
+                headers: { "Content-type": "application/json" },
                 body: JSON.stringify(newChat)
             });
             props.setPlayers(tempPlayers);
-            updatePos(i, j, props.turn, props.gameID, props.turn, 0, props.roomId, true);
+            updatePos(i, j, props.turn, props.gameID, props.turn, 0, props.roomId, true, tempPlayers[props.turn].name);
         }
     }
     // determine if a player is on this door
@@ -377,18 +397,21 @@ function rollDice() {
 }
 
 // function to update the position of the player on server-side
-function updatePos(x, y, index, lobbyID, turn, moves, currentRoom, recentArrival) {
-    fetch(`/api/player/position/${lobbyID}`, {
+function updatePos(x, y, index, lobbyID, turn, moves, currentRoom, recentArrival, playerName) {
+    /* fetch(`/api/player/position/${lobbyID}`, {
         method: 'put',
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({
+            case: "updatePos",
             index: index,
             x: x,
             y: y,
             moves: moves,
             turn: turn,
             currentRoom: currentRoom,
-            recentArrival: recentArrival
+            recentArrival: recentArrival,
+            lobbyID: lobbyID
         })
-    });
+    }); */
+    webSocket.sendPosition(index, x, y, moves, turn, currentRoom, recentArrival, lobbyID, playerName);
 }

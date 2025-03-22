@@ -183,7 +183,8 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
         chatlog: [{
             type: "line",
             message: "Welcome to Medical Murder Mystery!",
-        }]
+        }],
+        connections: []
     };
     lobbies[randomID] = newLobby;
     res.status(200).json({lobbyID: randomID});
@@ -249,15 +250,21 @@ apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
         res.redirect(req.get('referer'));
         return;
     }
-    lobbies[req.params.lobbyID].players[req.body.index].x = req.body.x;
-    lobbies[req.params.lobbyID].players[req.body.index].y = req.body.y;
-    lobbies[req.params.lobbyID].turn = req.body.turn;
-    lobbies[req.params.lobbyID].players[req.body.index].moves = req.body.moves;
-    lobbies[req.params.lobbyID].players[req.body.index].recentArrival = req.body.recentArrival;
-    lobbies[req.params.lobbyID].players[req.body.index].currentRoom = req.body.currentRoom;
+    updatePlayer(lobbyID);
     // send the user back I guess
-    res.json(lobbies[req.params.lobbyID].players[req.body.index]);
+    res.json(lobbies[data.lobbyID].players[data.index]);
 });
+
+// update the player's position based on data
+function updatePlayer(data) {
+    // set all of these things
+    lobbies[data.lobbyID].players[data.index].x = data.x;
+    lobbies[data.lobbyID].players[data.index].y = data.y;
+    lobbies[data.lobbyID].turn = data.turn;
+    lobbies[data.lobbyID].players[data.index].moves = data.moves;
+    lobbies[data.lobbyID].players[data.index].recentArrival = data.recentArrival;
+    lobbies[data.lobbyID].players[data.index].currentRoom = data.currentRoom;
+}
 
 // make a guess for the game
 apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
@@ -362,6 +369,23 @@ const server = app.listen(port, () => {
 const socketServer = new WebSocketServer({server});
 const connections = [];
 
+// gets and returns player's info
+function getPlayerInfo(lobbyID) {
+    let data = {found: false};
+    // find the lobby data
+    if (lobbyID in lobbies) {
+        data = {
+            found: true,
+            case: "updatePos",
+            players: lobbies[lobbyID].players,
+            turn: lobbies[lobbyID].turn,
+            winner: lobbies[lobbyID].winner,
+            chatlog: lobbies[lobbyID].chatlog
+        }
+    }
+    return data;
+}
+
 // set up WebSocket connection
 socketServer.on('connection', socket => {
     // create new connection for the list
@@ -369,8 +393,30 @@ socketServer.on('connection', socket => {
     connections.push(connection);
 
     socket.on('message', data => {
+        // parse it into JSON
+        data = JSON.parse(data);
         switch (data.case) {
-            // differentiate behavior based on data
+            case "updatePos":
+                // update player info on the server
+                updatePlayer(data);
+                // get player info from the server and send it to each person
+                let playerInfo = getPlayerInfo(data.lobbyID);
+                lobbies[data.lobbyID].connections.forEach((con, index) => {
+                    playerInfo.playerIndex = index;
+                    con.socket.send(JSON.stringify(playerInfo));
+                });
+                break;
+            case "update":
+                // get player info from the server and send it to each person
+                let players = getPlayerInfo(data.lobbyID);
+                lobbies[data.lobbyID].connections.forEach((con, index) => {
+                    players.playerIndex = index;
+                    con.socket.send(JSON.stringify(players));
+                });
+                break;
+            case "joinLobby":
+                lobbies[data.lobbyID].connections.push(connection);
+                break;
         }
     });
 

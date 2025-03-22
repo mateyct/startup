@@ -111,17 +111,18 @@ function Join(props) {
     }
     // function to join a game
     function joinLobby(id) {
-        fetch(`/api/lobby/players/${id}`, {
+         fetch(`/api/lobby/players/${id}`, {
             method: 'put'
         })
             .then(response => {
                 if (response?.status == 200) {
-                    props.setGameID(id)
+                    props.setGameID(id);
+                    webSocket.joinLobby(id);
                 }
                 else {
                     console.log("Lobby full");
                 }
-            });
+            }); 
 
     }
     return (

@@ -1,6 +1,11 @@
 class WebSocketHandler {
     constructor() {
         this.initialized = false;
+        const unset = () => {
+            console.log("This function is unset.");
+        };
+        // function that is called when received the right type of message
+        this.updatePos = unset;
     }
 
     // initialize the websocket
@@ -16,8 +21,15 @@ class WebSocketHandler {
         this.socket.onclose = event => {
             console.log('closed');
         };
-        this.socket.onmessage = msg => {
-            console.log(msg);
+        this.socket.onmessage = data => {
+            data = JSON.parse(data.data);
+            switch(data.case) {
+                case "updatePos":
+                    this.updatePos(data);
+                    break;
+                default:
+                    break;
+            }
         };
         this.initialized = true;
     }
@@ -25,6 +37,39 @@ class WebSocketHandler {
     // close the socket at the end
     cleanup () {
         if (this.initialized) this.socket.close();
+    }
+
+    // send the current position
+    sendPosition(index, x, y, moves, turn, currentRoom, recentArrival, lobbyID, playerName) {
+        const data = JSON.stringify({
+            case: "updatePos",
+            index: index,
+            x: x,
+            y: y,
+            moves: moves,
+            turn: turn,
+            currentRoom: currentRoom,
+            recentArrival: recentArrival,
+            lobbyID: lobbyID,
+            playerName: playerName
+        });
+        this.socket.send(data);
+    }
+
+    // join lobby
+    joinLobby(id) {
+        this.socket.send(JSON.stringify({
+            lobbyID: id,
+            case: "joinLobby"
+        }));
+    }
+
+    // message to cause other games to update
+    updateGame(id) {
+        this.socket.send(JSON.stringify({
+            lobbyID: id,
+            case: "update"
+        }));
     }
 }
 

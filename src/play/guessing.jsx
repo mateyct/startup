@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import clueData from "./datafiles/clueData.json";
+import { webSocket } from "./webSocketHandler";
 
 export default function GuessingForm(props) {
     // set up initial values, since they are automatic in the HTML
@@ -33,6 +34,8 @@ export default function GuessingForm(props) {
         let nextTurn = (turn + 1) % players.length;
         props.setTurn(nextTurn);
         props.setPlayers(tempPlayers);
+        // WebSocket to the server
+        webSocket.updateGame(props.gameID);
         let newChat = { type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
         props.setChat(old => [newChat, ...old]);
         // add to the chat on the server
