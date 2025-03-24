@@ -28,13 +28,13 @@ app.use(`/api`, apiRouter);
 // endpoint for creating a new user
 apiRouter.post("/auth", async (req, res) => {
     if (await getUser('username', req.body.username)) {
-        res.send(409, {msg: "User already exists"});
+        res.send(409, { msg: "User already exists" });
     }
     else {
         const user = await createUser(req.body.username, req.body.password);
         setAuthCookie(res, user);
         DB.addUser(user);
-        res.json({username: req.body.username});
+        res.json({ username: req.body.username });
     }
 });
 
@@ -45,10 +45,10 @@ apiRouter.put("/auth", async (req, res) => {
         setAuthCookie(res, user);
         // login user in the database
         DB.updateUser(user);
-        res.json({username: req.body.username});
+        res.json({ username: req.body.username });
     }
     else {
-        res.send(401, {msg: 'Unauthorized'});
+        res.send(401, { msg: 'Unauthorized' });
     }
 });
 
@@ -56,7 +56,7 @@ apiRouter.put("/auth", async (req, res) => {
 apiRouter.delete("/auth", async (req, res) => {
     const token = req.cookies['token'];
     const user = await getUser('token', token);
-    if(user) {
+    if (user) {
         clearAuthCookie(res, user);
         // if there is a user in a game, we want to get rid of the game
         const lobbyInfo = checkUserInLobby(user.username);
@@ -66,7 +66,7 @@ apiRouter.delete("/auth", async (req, res) => {
         // log the user out
         await DB.updateUser(user);
     }
-    res.json({msg: 'Logged out'});
+    res.json({ msg: 'Logged out' });
 });
 
 // creates a new user
@@ -94,7 +94,7 @@ async function getUser(field, value) {
 // sets the auth cookie
 function setAuthCookie(res, user) {
     user.token = uuid.v4();
-    res.cookie('token', user.token, { secure: true, httpOnly: true, sameSite: 'strict'});
+    res.cookie('token', user.token, { secure: true, httpOnly: true, sameSite: 'strict' });
 }
 
 // clears the auth cookie
@@ -110,7 +110,7 @@ const verifyUser = async (req, res, next) => {
         next();
     }
     else {
-        res.status(401).send({msg: "Unauthorized"});
+        res.status(401).send({ msg: "Unauthorized" });
     }
 }
 
@@ -137,7 +137,7 @@ apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
         });
     }
     else {
-        res.json({found: false});
+        res.json({ found: false });
     }
 });
 
@@ -147,8 +147,8 @@ function checkUserInLobby(username) {
     let keys = Object.keys(lobbies);
     keys.forEach(key => {
         lobbies[key].players.forEach((player, index) => {
-            if(player.name == username) {
-                correctKey = {key: key, playerIndex: index};
+            if (player.name == username) {
+                correctKey = { key: key, playerIndex: index };
             }
         })
     });
@@ -161,13 +161,13 @@ apiRouter.get("/lobbies", verifyUser, (req, res) => {
     const lobbiesToSend = {}
     let keys = Object.keys(lobbies);
     keys.forEach(key => {
-        if(!lobbies[key].inGame && lobbies[key].players.length < 4) {
+        if (!lobbies[key].inGame && lobbies[key].players.length < 4) {
             lobbiesToSend[key] = {
                 lobbyName: lobbies[key].lobbyName
             }
         }
     });
-    res.status(200).json({lobbies: lobbiesToSend});
+    res.status(200).json({ lobbies: lobbiesToSend });
 });
 
 // add a new lobby
@@ -187,14 +187,14 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
         connections: []
     };
     lobbies[randomID] = newLobby;
-    res.status(200).json({lobbyID: randomID});
+    res.status(200).json({ lobbyID: randomID });
 });
 
 // get the list of players in a lobby
 apiRouter.get('/lobby/players/:lobbyID', verifyUser, (req, res) => {
     let currentLobby = lobbies[req.params.lobbyID];
     // include if the game has started to it begins for all users
-    res.json({players: currentLobby.players, start: currentLobby.inGame});
+    res.json({ players: currentLobby.players, start: currentLobby.inGame });
 });
 
 // let a user join an open game
@@ -205,7 +205,7 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
         return;
     }
     lobbies[req.params.lobbyID].players.push(new ServerPlayer(user.username, 0, 0, lobbies[req.params.lobbyID].players.length));
-    res.json({msg: 'Success'});
+    res.json({ msg: 'Success' });
 });
 
 // endpoint to set the game to active
@@ -223,10 +223,10 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
     }
     // set player locations
     let locOpts = [
-        {x: 7, y: 0},
-        {x: 16, y: 23},
-        {x: 16, y: 0},
-        {x: 7, y: 23}
+        { x: 7, y: 0 },
+        { x: 16, y: 23 },
+        { x: 16, y: 0 },
+        { x: 7, y: 23 }
     ];
     // loop to set
     lobbies[req.params.lobbyID].players.forEach((player, index) => {
@@ -234,7 +234,7 @@ apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
         player.y = locOpts[index].y;
     });
     console.log(lobbies[req.params.lobbyID].solution);
-    res.json({players: lobbies[req.params.lobbyID].players});
+    res.json({ players: lobbies[req.params.lobbyID].players });
 });
 
 // add a portion of the chat
@@ -272,7 +272,7 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     let guesser = await getUser('token', req.cookies.token);
     // get which is the guessor
     lobbies[req.params.lobbyID].players.forEach((player, index) => {
-        if(player.name == guesser.username) {
+        if (player.name == guesser.username) {
             guesser = player;
         }
     });
@@ -350,7 +350,7 @@ const updateHistory = async (guesser, person, room, weapon) => {
 apiRouter.get('/history', verifyUser, async (req, res) => {
     const user = await getUser('token', req.cookies?.token);
     let hist = await DB.getUserHistory(user.username);
-    res.json({history: hist});
+    res.json({ history: hist });
 })
 
 
@@ -359,19 +359,19 @@ app.use(function (err, req, res, next) {
 });
 
 app.use((_req, res) => {
-    res.sendFile('index.html', {root: 'public'});
+    res.sendFile('index.html', { root: 'public' });
 });
 
 const server = app.listen(port, () => {
     console.log("On port " + port);
 });
 
-const socketServer = new WebSocketServer({server});
+const socketServer = new WebSocketServer({ server });
 const connections = [];
 
 // gets and returns player's info
 function getPlayerInfo(lobbyID) {
-    let data = {found: false};
+    let data = { found: false };
     // find the lobby data
     if (lobbyID in lobbies) {
         data = {
@@ -387,11 +387,18 @@ function getPlayerInfo(lobbyID) {
 }
 
 // set up WebSocket connection
-socketServer.on('connection', socket => {
+socketServer.on('connection', (socket, req) => {
     // create new connection for the list
-    const connection = {id: uuid.v4(), alive: true, socket: socket};
+    const params = new URLSearchParams(req.url.split('?')[1]);
+    let username = params.get('username');
+    const connection = { id: uuid.v4(), alive: true, socket: socket, username };
     connections.push(connection);
-
+    // check if the user is already in a lobby and add them
+    let lobbyInfo = checkUserInLobby(username);
+    if (lobbyInfo) {
+        lobbies[lobbyInfo.key].connections[lobbyInfo.playerIndex] = connection;
+    }
+    // check for socket connections
     socket.on('message', data => {
         // parse it into JSON
         data = JSON.parse(data);
@@ -438,8 +445,8 @@ socketServer.on('connection', socket => {
 setInterval(() => {
     connections.forEach(con => {
         // if client has been dormant between checks, terminate them
-        if(con.alive === false) return con.socket.terminate();
-        
+        if (con.alive === false) return con.socket.terminate();
+
         // set this flag between connection
         con.alive = false;
 

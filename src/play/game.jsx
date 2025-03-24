@@ -42,7 +42,7 @@ export function Game(props) {
                     props.setWinner(players[data.winner]);
                 }
                 setTurn(data.turn);
-                //setPlayerTurn(data.playerIndex);
+                setPlayerTurn(data.playerIndex);
                 setPlayers(players => {
                     let tempPlayers = JSON.parse(JSON.stringify(players));
                     data.players.forEach((player, index) => {

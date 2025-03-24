@@ -13,7 +13,8 @@ class WebSocketHandler {
         // set up the websocket
         let port = window.location.port;
         const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
-        this.socket = new WebSocket(`${protocol}://${window.location.hostname}:${port}/ws`);
+        const userName = localStorage.getItem("userName");
+        this.socket = new WebSocket(`${protocol}://${window.location.hostname}:${port}/ws?username=${userName}`);
         // event handlers
         this.socket.onopen = event => {
             console.log('opened');
@@ -23,6 +24,7 @@ class WebSocketHandler {
         };
         this.socket.onmessage = data => {
             data = JSON.parse(data.data);
+            console.log(data);
             switch(data.case) {
                 case "updatePos":
                     this.updatePos(data);
@@ -63,6 +65,9 @@ class WebSocketHandler {
             case: "joinLobby"
         }));
     }
+
+    // socket command for making a guess
+    
 
     // message to cause other games to update
     updateGame(id) {
