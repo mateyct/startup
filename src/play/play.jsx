@@ -1,17 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Game } from "./game";
 import './play.css';
-import { Player } from "./player";
+import { playerOptions } from "./player";
 import { Link } from "react-router-dom";
 import { webSocket } from "./webSocketHandler";
-
-// also have player options
-const playerOptions = [
-    new Player('yellow', '#FFFFC5', null, 0, true, false, ""),
-    new Player('green', '#c4ffc4', null, 0, true, false, ""),
-    new Player('blue', '#c7c7ff', null, 0, true, false, ""),
-    new Player('red', '#ffa8a8', null, 0, true, false, "")
-]
 
 export function Play(props) {
     const [gameID, setGameID] = useState('');
@@ -47,7 +39,7 @@ export function Play(props) {
                         });
                         return herePlayers;
                     });
-                    if(data.winner >= 0) {
+                    if (data.winner >= 0) {
                         setWinner(herePlayers[data.winner]);
                     }
                     setGameID(data.lobbyID);
@@ -63,6 +55,20 @@ export function Play(props) {
     // Make the websocket connection
     useEffect(() => {
         webSocket.initialize();
+        // set the callback for starting the game when socket message is received
+        webSocket.startGameResult = data => {
+            const players = [];
+            data.players.forEach((player, index) => {
+                let chosenPlayer = playerOptions[index];
+                chosenPlayer.name = player.name;
+                chosenPlayer.x = player.x;
+                chosenPlayer.y = player.y;
+                players.push(chosenPlayer);
+            });
+            setInGame(true);
+            setPlayers(players);
+
+        };
 
         // I guess I had to do it this way for some reason...
         return () => webSocket.cleanup();
@@ -111,7 +117,7 @@ function Join(props) {
     }
     // function to join a game
     function joinLobby(id) {
-         fetch(`/api/lobby/players/${id}`, {
+        fetch(`/api/lobby/players/${id}`, {
             method: 'put'
         })
             .then(response => {
@@ -122,7 +128,7 @@ function Join(props) {
                 else {
                     console.log("Lobby full");
                 }
-            }); 
+            });
 
     }
     return (
@@ -159,7 +165,7 @@ function GameLobby(props) {
                         });
                         props.setPlayers(players);
                     }
-                    if(json.start) {
+                    if (json.start) {
                         props.setInGame(true);
                     }
                 });
@@ -171,7 +177,7 @@ function GameLobby(props) {
     }, []);
     // button clicked to start the game
     function startGame() {
-        fetch(`/api/lobby/activate/${props.gameID}`, { method: 'PUT' })
+        /* fetch(`/api/lobby/activate/${props.gameID}`, { method: 'PUT' })
             .then(response => response.json())
             .then(data => {
                 const players = [];
@@ -183,8 +189,9 @@ function GameLobby(props) {
                     players.push(chosenPlayer);
                 });
                 props.setPlayers(players);
-            });
+            }); */
         props.setInGame(true);
+        webSocket.startGame(props.gameID);
     }
     return (
         <>

@@ -7,6 +7,7 @@ class WebSocketHandler {
         // function that is called when received the right type of message
         this.updatePos = unset;
         this.guessResult = unset;
+        this.startGameResult = unset;
     }
 
     // initialize the websocket
@@ -33,6 +34,8 @@ class WebSocketHandler {
                 case "guessResult":
                     this.guessResult(data);
                     break;
+                case "startGame":
+                    this.startGameResult(data);
                 default:
                     break;
             }
@@ -88,6 +91,14 @@ class WebSocketHandler {
         this.socket.send(JSON.stringify({
             lobbyID: id,
             case: "update"
+        }));
+    }
+
+    // send message to start game
+    startGame(id) {
+        this.socket.send(JSON.stringify({
+            case: "startGame",
+            lobbyID: id
         }));
     }
 }

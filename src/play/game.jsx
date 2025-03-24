@@ -1,7 +1,6 @@
 import React, { use, useRef, useState, useEffect } from "react";
 import "./game.css";
 import boardFile from "./datafiles/board.json";
-import { Player } from "./player";
 import GuessingForm from "./guessing";
 import clueData from "./datafiles/clueData.json";
 import { webSocket } from './webSocketHandler';
