@@ -89,7 +89,7 @@ function Join(props) {
     const [lobbies, setLobbies] = useState([]);
     const intervalID = useRef(null);
     // set and unset interval with Effect, represents WebSocket stuff
-    useEffect(() => {
+    /* useEffect(() => {
         // set interval to show new lobbies automatically
         intervalID.current = setInterval(() => {
             fetch("/api/lobbies")
@@ -102,18 +102,34 @@ function Join(props) {
         return () => {
             clearInterval(intervalID.current);
         };
+    }, []); */
+    // set up function to receive lobby updates
+    useEffect(() => {
+        webSocket.createNewLobby = data => {
+            setLobbies(data);
+        };
+        // set up so creator of a lobby is also added
+        webSocket.creatorJoin = data => {
+            props.setGameID(data.lobbyID);
+        }
+
+        // cleanup so it only fires the function when this is loaded
+        return () => {
+            webSocket.createNewLobby = () => console.log("This function is unset.");
+            webSocket.creatorJoin = () => console.log("This function is unset.");
+        };
     }, []);
     // function that creates a new room
     async function createRoom() {
         // call the method, it will return the lobby ID
-        fetch("/api/lobbies", {
+        /* fetch("/api/lobbies", {
             method: "POST",
         })
             .then(res => res.json())
             .then(json => {
                 props.setGameID(json.lobbyID);
-            });
-
+            }); */
+        webSocket.createLobby(localStorage.getItem("userName"));
     }
     // function to join a game
     function joinLobby(id) {
@@ -131,6 +147,7 @@ function Join(props) {
             });
 
     }
+    console.log(lobbies);
     return (
         <>
             <h2>Join a game</h2>

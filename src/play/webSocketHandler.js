@@ -8,6 +8,8 @@ class WebSocketHandler {
         this.updatePos = unset;
         this.guessResult = unset;
         this.startGameResult = unset;
+        this.createNewLobby = unset;
+        this.creatorJoin = unset;
     }
 
     // initialize the websocket
@@ -36,6 +38,11 @@ class WebSocketHandler {
                     break;
                 case "startGame":
                     this.startGameResult(data);
+                case "creatorJoin":
+                    this.creatorJoin(data);
+                case "newLobby":
+                    this.createNewLobby(data.lobbies);
+                    break;
                 default:
                     break;
             }
@@ -91,6 +98,14 @@ class WebSocketHandler {
         this.socket.send(JSON.stringify({
             lobbyID: id,
             case: "update"
+        }));
+    }
+
+    // socket message to create a lobby
+    createLobby(username) {
+        this.socket.send(JSON.stringify({
+            case: "createLobby",
+            username: username
         }));
     }
 
