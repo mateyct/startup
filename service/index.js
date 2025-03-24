@@ -330,6 +330,69 @@ apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
     res.json(response);
 });
 
+// function to handle guess making
+async function handleGuess(guesser, guess) {
+    // get which is the guessor
+    lobbies[guess.lobbyID].players.forEach((player, index) => {
+        if (player.name == guesser.username) {
+            guesser = player;
+        }
+    });
+    let correctFlags = 0; // 3 flags is a winner
+    // winner will be -1 until the winner is set
+    const response = {
+        winner: -1,
+        player: false,
+        room: false,
+        weapon: false,
+        case: "guessResult"
+    };
+    // determine player
+    if (guess.player == lobbies[guess.lobbyID].solution.player) {
+        response.player = true;
+        guesser.guesses[guess.player] = true;
+        // add info about correct
+        correctFlags++;
+    }
+    else {
+        guesser.guesses[guess.player] = false;
+    }
+    // determine room
+    if (guess.room == lobbies[guess.lobbyID].solution.room) {
+        response.room = true;;
+        correctFlags++;
+        guesser.guesses[guess.room] = true;
+    }
+    else {
+        guesser.guesses[guess.room] = false;
+    }
+    // determine weapon
+    if (guess.weapon == lobbies[guess.lobbyID].solution.weapon) {
+        response.weapon = true;
+        correctFlags++;
+        guesser.guesses[guess.lobbyID] = true;
+    }
+    else {
+        guesser.guesses[guess.lobbyID] = false;
+    }
+    // check if they won
+    if (correctFlags >= 3) {
+        response.winner = guesser.index;
+        // delay for a bit, then end the game
+        setTimeout(() => {
+            delete lobbies[guess.lobbyID];
+        }, 6000);
+    }
+    // set the correctness of the guesses to send back
+    response.results = guesser.guesses;
+    lobbies[guess.lobbyID].turn = guess.nextTurn;
+    lobbies[guess.lobbyID].winner = response.winner;
+    guesser.recentArrival = false;
+    // update the history based on the guess
+    await updateHistory(guesser, guess.player, guess.room, guess.weapon);
+    return response;
+}
+
 //////////// History Stuff /////////////
 
 // add a new history entry
@@ -399,25 +462,40 @@ socketServer.on('connection', (socket, req) => {
         lobbies[lobbyInfo.key].connections[lobbyInfo.playerIndex] = connection;
     }
     // check for socket connections
-    socket.on('message', data => {
+    socket.on('message', async data => {
         // parse it into JSON
         data = JSON.parse(data);
+        // declare this up here to be used later
+        let players;
         switch (data.case) {
             case "updatePos":
                 // update player info on the server
                 updatePlayer(data);
                 // get player info from the server and send it to each person
-                let playerInfo = getPlayerInfo(data.lobbyID);
+                players = getPlayerInfo(data.lobbyID);
                 lobbies[data.lobbyID].connections.forEach((con, index) => {
-                    playerInfo.playerIndex = index;
-                    con.socket.send(JSON.stringify(playerInfo));
+                    players.playerIndex = index;
+                    con.socket.send(JSON.stringify(players));
                 });
                 break;
             case "update":
                 // get player info from the server and send it to each person
-                let players = getPlayerInfo(data.lobbyID);
+                players = getPlayerInfo(data.lobbyID);
                 lobbies[data.lobbyID].connections.forEach((con, index) => {
                     players.playerIndex = index;
+                    con.socket.send(JSON.stringify(players));
+                });
+                break;
+            case "guess":
+                let player = await getUser("username", data.guesser);
+                const result = handleGuess(player, data);
+                players = getPlayerInfo(data.lobbyID);
+                // loop through players and return result
+                lobbies[data.lobbyID].connections.forEach(con => {
+                    con.socket.send(JSON.stringify(result));
+                });
+                // loop to update positions and such
+                lobbies[data.lobbyID].connections.forEach(con => {
                     con.socket.send(JSON.stringify(players));
                 });
                 break;

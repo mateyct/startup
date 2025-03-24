@@ -6,6 +6,7 @@ class WebSocketHandler {
         };
         // function that is called when received the right type of message
         this.updatePos = unset;
+        this.guessResult = unset;
     }
 
     // initialize the websocket
@@ -28,6 +29,9 @@ class WebSocketHandler {
             switch(data.case) {
                 case "updatePos":
                     this.updatePos(data);
+                    break;
+                case "guessResult":
+                    this.guessResult(data);
                     break;
                 default:
                     break;
@@ -67,7 +71,17 @@ class WebSocketHandler {
     }
 
     // socket command for making a guess
-    
+    makeGuess(lobbyID, guesser, player, weapon, room, nextTurn) {
+        this.socket.send(JSON.stringify({
+            case: "guess",
+            lobbyID: lobbyID,
+            player: player,
+            weapon: weapon,
+            room: room,
+            nextTurn: nextTurn,
+            guesser: guesser
+        }));
+    }
 
     // message to cause other games to update
     updateGame(id) {

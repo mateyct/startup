@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import clueData from "./datafiles/clueData.json";
 import { webSocket } from "./webSocketHandler";
 
@@ -8,6 +8,19 @@ export default function GuessingForm(props) {
     const [chosenPlayer, setChosenPlayer] = useState(props.players[0].name);
     const players = props.players;
     const turn = props.turn;
+
+    useEffect(() => {
+        webSocket.guessResult = data => {
+            // check if the game is over
+            if (data.winner >= 0) {
+                props.setWinner(tempPlayers[data.winner]);
+            }
+            else {
+                // add correct and incorrect data
+                props.addIntel(data.results);
+            }
+        };
+    });
 
     // submit the guessing form and change values
     function handleSubmit() {
@@ -35,7 +48,7 @@ export default function GuessingForm(props) {
         props.setTurn(nextTurn);
         props.setPlayers(tempPlayers);
         // WebSocket to the server
-        webSocket.updateGame(props.gameID);
+        //webSocket.updateGame(props.gameID);
         let newChat = { type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
         props.setChat(old => [newChat, ...old]);
         // add to the chat on the server
@@ -45,7 +58,7 @@ export default function GuessingForm(props) {
             body: JSON.stringify(newChat)
         });
         // check if guess is a winning one
-        fetch(`/api/lobby/guess/${props.gameID}`, {
+        /* fetch(`/api/lobby/guess/${props.gameID}`, {
             method: 'PUT',
             headers: { 'Content-type': 'application/json'},
             body: JSON.stringify({
@@ -65,7 +78,8 @@ export default function GuessingForm(props) {
                     // add correct and incorrect data
                     props.addIntel(data.results);
                 }
-            });
+            }); */
+            webSocket.makeGuess(props.gameID, players[turn].name, chosenPlayer, chosenWeapon, players[turn].currentRoom, nextTurn);
     }
 
     return (
