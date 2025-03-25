@@ -155,7 +155,7 @@ function checkUserInLobby(username) {
     return correctKey;
 }
 
-// add the list of game lobby IDs
+/* // add the list of game lobby IDs
 apiRouter.get("/lobbies", verifyUser, (req, res) => {
     // send a partial object to avoid giving user's secret info
     const lobbiesToSend = {}
@@ -168,7 +168,7 @@ apiRouter.get("/lobbies", verifyUser, (req, res) => {
         }
     });
     res.status(200).json({ lobbies: lobbiesToSend });
-});
+}); */
 
 // gets the list of lobbies to send out
 function getLobbies() {
@@ -184,7 +184,7 @@ function getLobbies() {
     return { case: "newLobby", lobbies: lobbiesToSend };
 }
 
-// add a new lobby
+/* // add a new lobby
 apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     let randomID = Math.round(Math.random() * 100000);
     let user = await getUser('token', req.cookies.token);
@@ -202,7 +202,7 @@ apiRouter.post("/lobbies", verifyUser, async (req, res) => {
     };
     lobbies[randomID] = newLobby;
     res.status(200).json({ lobbyID: randomID });
-});
+}); */
 
 // function to make a new lobby
 async function createLobby(username) {
@@ -224,15 +224,15 @@ async function createLobby(username) {
     return { lobbyID: randomID, case: "newLobby" };
 }
 
-// get the list of players in a lobby
+/* // get the list of players in a lobby
 apiRouter.get('/lobby/players/:lobbyID', verifyUser, (req, res) => {
     let currentLobby = lobbies[req.params.lobbyID];
     // include if the game has started to it begins for all users
     res.json({ players: currentLobby.players, start: currentLobby.inGame });
-});
+}); */
 
 // let a user join an open game
-apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
+/* apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
     let user = await getUser('token', req.cookies.token);
     if (lobbies[req.params.lobbyID].players.length >= 4) {
         res.sendStatus(405);
@@ -240,7 +240,7 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
     }
     lobbies[req.params.lobbyID].players.push(new ServerPlayer(user.username, 0, 0, lobbies[req.params.lobbyID].players.length));
     res.json({ msg: 'Success' });
-});
+}); */
 
 async function joinLobby(lobbyID, username) {
     let user = await getUser('username', username);
@@ -578,9 +578,9 @@ socketServer.on('connection', (socket, req) => {
                 break;
             case "startGame":
                 // send code to start the game
-                players = startGame(data.lobbyID);
+                let game = startGame(data.lobbyID);
                 lobbies[data.lobbyID].connections.forEach(con => {
-                    con.socket.send(JSON.stringify(players));
+                    con.socket.send(JSON.stringify(game));
                 });
                 break;
             case "createLobby":

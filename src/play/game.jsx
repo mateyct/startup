@@ -88,7 +88,6 @@ export function Game(props) {
 
     // the grid to track what each place on the map should be, a little messy
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
-    console.log("Player turn:", playerTurn);
     return (
         <>
             <h1>Play</h1>

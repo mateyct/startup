@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { Game } from "./game";
 import './play.css';
 import { playerOptions } from "./player";
@@ -55,22 +55,8 @@ export function Play(props) {
     // Make the websocket connection
     useEffect(() => {
         webSocket.initialize();
-        // set the callback for starting the game when socket message is received
-        webSocket.startGameResult = data => {
-            const players = [];
-            data.players.forEach((player, index) => {
-                let chosenPlayer = playerOptions[index];
-                chosenPlayer.name = player.name;
-                chosenPlayer.x = player.x;
-                chosenPlayer.y = player.y;
-                players.push(chosenPlayer);
-            });
-            setInGame(true);
-            setPlayers(players);
 
-        };
-
-        // I guess I had to do it this way for some reason...
+        // Use this to clean up the web socket when the page is left
         return () => webSocket.cleanup();
     }, []);
 
@@ -115,8 +101,8 @@ function Join(props) {
 
         // cleanup so it only fires the function when this is loaded
         return () => {
-            webSocket.createNewLobby = () => {};
-            webSocket.creatorJoin = () => {};
+            webSocket.createNewLobby = () => { };
+            webSocket.creatorJoin = () => { };
         };
     }, []);
     // function that creates a new room
@@ -166,7 +152,7 @@ function GameLobby(props) {
     const [counter, setCounter] = useState(0); // also should be temporary
     const intervalID = useRef(null);
     // use a set interval and useEffect to represent a WebSocket
-    useEffect(() => {
+    /* useEffect(() => {
         intervalID.current = setInterval(() => {
             fetch(`/api/lobby/players/${props.gameID}`)
                 .then(result => result.json())
@@ -190,6 +176,22 @@ function GameLobby(props) {
         return () => {
             clearInterval(intervalID.current);
         }
+    }, []); */
+    useEffect(() => {
+        // set the callback for starting the game when socket message is received
+        webSocket.startGameResult = data => {
+            const players = [];
+            data.players.forEach((player, index) => {
+                let chosenPlayer = playerOptions[index];
+                chosenPlayer.name = player.name;
+                chosenPlayer.x = player.x;
+                chosenPlayer.y = player.y;
+                players.push(chosenPlayer);
+            });
+            props.setInGame(true);
+            props.setPlayers(players);
+        };
+        return () => webSocket.startGameResult = () => {};
     }, []);
     // button clicked to start the game
     function startGame() {
