@@ -56,9 +56,38 @@ export function Play(props) {
     useEffect(() => {
         webSocket.initialize();
 
+        webSocket.startGameResult = data => {
+            setupPlayers(data.players);
+            setInGame(true);
+            setPlayerTurn(data.playerIndex);
+            webSocket.startGameResult = () => {console.log('deactivated in start game callback')};
+            webSocket.setupPlayers = () => { };
+        };
+        // call updatePlayers, message for when players join the game
+        webSocket.updatePlayers = data => {
+            setupPlayers(data.players);
+        };
+
         // Use this to clean up the web socket when the page is left
-        return () => webSocket.cleanup();
+        return () => {
+            webSocket.cleanup()
+            webSocket.startGameResult = () => {console.log('deactivated in play clean up')};
+            webSocket.setupPlayers = () => { };
+        };
     }, []);
+
+    // function to set up players when message is received
+    function setupPlayers(playerData) {
+        const playersToSet = [];
+        playerData.forEach((player, index) => {
+            let chosenPlayer = playerOptions[index];
+            chosenPlayer.name = player.name;
+            chosenPlayer.x = player.x;
+            chosenPlayer.y = player.y;
+            playersToSet.push(chosenPlayer);
+        });
+        setPlayers(playersToSet);
+    }
 
     return (
         <main>
@@ -98,6 +127,12 @@ function Join(props) {
         webSocket.creatorJoin = data => {
             props.setGameID(data.lobbyID);
         }
+        // get the list of lobbies the first time
+        fetch('/api/lobbies')
+            .then(data => data.json())
+            .then(json => {
+                setLobbies(json.lobbies);
+            });
 
         // cleanup so it only fires the function when this is loaded
         return () => {
@@ -177,22 +212,6 @@ function GameLobby(props) {
             clearInterval(intervalID.current);
         }
     }, []); */
-    useEffect(() => {
-        // set the callback for starting the game when socket message is received
-        webSocket.startGameResult = data => {
-            const players = [];
-            data.players.forEach((player, index) => {
-                let chosenPlayer = playerOptions[index];
-                chosenPlayer.name = player.name;
-                chosenPlayer.x = player.x;
-                chosenPlayer.y = player.y;
-                players.push(chosenPlayer);
-            });
-            props.setInGame(true);
-            props.setPlayers(players);
-        };
-        return () => webSocket.startGameResult = () => {};
-    }, []);
     // button clicked to start the game
     function startGame() {
         /* fetch(`/api/lobby/activate/${props.gameID}`, { method: 'PUT' })
@@ -208,7 +227,7 @@ function GameLobby(props) {
                 });
                 props.setPlayers(players);
             }); */
-        props.setInGame(true);
+        //props.setInGame(true);
         webSocket.startGame(props.gameID);
     }
     return (

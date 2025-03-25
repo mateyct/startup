@@ -23,6 +23,8 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
+const connections = [];
+
 ///////////// Authentication stuff ///////////////
 
 // endpoint for creating a new user
@@ -62,6 +64,10 @@ apiRouter.delete("/auth", async (req, res) => {
         const lobbyInfo = checkUserInLobby(user.username);
         if (lobbyInfo) {
             delete lobbies[lobbyInfo.key];
+            // send messages to refresh when game is started
+            connections.forEach(con => {
+                con.socket.send(JSON.stringify(getLobbies()));
+            });
         }
         // log the user out
         await DB.updateUser(user);
@@ -139,6 +145,11 @@ apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
     else {
         res.json({ found: false });
     }
+});
+
+// return the list of lobby IDs
+apiRouter.get('/lobbies', verifyUser, (req, res) => {
+    res.send({ lobbies: getLobbies().lobbies });
 });
 
 // check if a user is in a lobby and return it's info
@@ -505,9 +516,6 @@ const server = app.listen(port, () => {
     console.log("On port " + port);
 });
 
-const socketServer = new WebSocketServer({ server });
-const connections = [];
-
 // gets and returns player's info
 function getPlayerInfo(lobbyID) {
     let data = { found: false };
@@ -524,6 +532,8 @@ function getPlayerInfo(lobbyID) {
     }
     return data;
 }
+
+const socketServer = new WebSocketServer({ server });
 
 // set up WebSocket connection
 socketServer.on('connection', (socket, req) => {
@@ -543,6 +553,7 @@ socketServer.on('connection', (socket, req) => {
         data = JSON.parse(data);
         // declare this up here to be used later
         let players;
+        // Very big, nasty, bad switch statement...
         switch (data.case) {
             case "updatePos":
                 // update player info on the server
@@ -579,8 +590,13 @@ socketServer.on('connection', (socket, req) => {
             case "startGame":
                 // send code to start the game
                 let game = startGame(data.lobbyID);
-                lobbies[data.lobbyID].connections.forEach(con => {
+                lobbies[data.lobbyID].connections.forEach((con, index) => {
+                    game.playerIndex = index;
                     con.socket.send(JSON.stringify(game));
+                });
+                // send messages to refresh when game is started
+                connections.forEach(con => {
+                    con.socket.send(JSON.stringify(getLobbies()));
                 });
                 break;
             case "createLobby":
@@ -597,6 +613,8 @@ socketServer.on('connection', (socket, req) => {
                 }));
                 // add the socket connection to the lobby
                 lobbies[newLobbyInfo.lobbyID].connections.push(connection);
+                // send update to people in lobby that it's been joined
+                sendUpdateToPlayers(newLobbyInfo.lobbyID);
                 break;
             case "chat":
                 let chat = updateChat(data);
@@ -617,6 +635,8 @@ socketServer.on('connection', (socket, req) => {
                     case: "creatorJoin",
                     lobbyID: data.lobbyID
                 }));
+                // send update to people in lobby that it's been joined
+                sendUpdateToPlayers(data.lobbyID);
                 break;
         }
     });
@@ -634,6 +654,17 @@ socketServer.on('connection', (socket, req) => {
         connection.alive = true;
     })
 });
+
+// sends updates to players currently waiting for a game to start
+function sendUpdateToPlayers(lobbyID) {
+    let toSendPlayers = {
+        case: "updatePlayers",
+        players: lobbies[lobbyID].players
+    };
+    lobbies[lobbyID].connections.forEach(con => {
+        con.socket.send(JSON.stringify(toSendPlayers));
+    });
+}
 
 // send out pings
 setInterval(() => {

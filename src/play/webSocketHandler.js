@@ -2,8 +2,7 @@ class WebSocketHandler {
     constructor() {
         this.initialized = false;
         const unset = () => {
-            return;
-            // console.log("This function is unset.");
+            console.log("This function is unset.");
         };
         // function that is called when received the right type of message
         this.updatePos = unset;
@@ -12,6 +11,7 @@ class WebSocketHandler {
         this.createNewLobby = unset;
         this.creatorJoin = unset;
         this.updateChat = unset;
+        this.updatePlayers = unset;
     }
 
     // initialize the websocket
@@ -23,10 +23,10 @@ class WebSocketHandler {
         this.socket = new WebSocket(`${protocol}://${window.location.hostname}:${port}/ws?username=${userName}`);
         // event handlers
         this.socket.onopen = event => {
-            console.log('opened');
+            console.log('socket opened');
         };
         this.socket.onclose = event => {
-            console.log('closed');
+            console.log('socket closed');
         };
         this.socket.onmessage = data => {
             data = JSON.parse(data.data);
@@ -46,6 +46,9 @@ class WebSocketHandler {
                     break;
                 case "chat":
                     this.updateChat(data);
+                    break;
+                case "updatePlayers":
+                    this.updatePlayers(data);
                     break;
                 default:
                     break;
