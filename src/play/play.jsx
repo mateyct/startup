@@ -147,7 +147,6 @@ function Join(props) {
             });
 
     }
-    console.log(lobbies);
     return (
         <>
             <h2>Join a game</h2>

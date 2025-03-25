@@ -305,6 +305,12 @@ apiRouter.put('/lobby/chat/:lobbyID', verifyUser, async (req, res) => {
     res.send(req.body);
 });
 
+// function to update the chat for everyone
+function updateChat(data) {
+    lobbies[data.lobbyID].chatlog.unshift(data.message);
+    return lobbies[data.lobbyID].chatlog;
+}
+
 // update a player's position
 apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
     // if the lobby does not exists, a player probably left, and the game should end
@@ -583,6 +589,12 @@ socketServer.on('connection', (socket, req) => {
                 }));
                 // add the socket connection to the lobby
                 lobbies[newLobbyInfo.lobbyID].connections.push(connection);
+                break;
+            case "chat":
+                let chat = updateChat(data);
+                lobbies[data.lobbyID].connections.forEach(con => {
+                    con.socket.send(JSON.stringify(chat));
+                });
                 break;
             case "joinLobby":
                 lobbies[data.lobbyID].connections.push(connection);

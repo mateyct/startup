@@ -78,10 +78,12 @@ export function Game(props) {
                     }
                 })
         }, 200);
-
         return () => {
             clearInterval(intervalRef.current);
         }; */
+        webSocket.updateChat = data => {
+            setChat(data.chatlog);
+        };
     }, []);
 
     // the grid to track what each place on the map should be, a little messy
@@ -251,13 +253,14 @@ function Cell(props) {
                 props.setTurn(nextTurn);
                 //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
                 let newChat = { type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
-                props.setChat(old => [newChat, ...old]);
+                //props.setChat(old => [newChat, ...old]);
                 // add to the chat on the server
-                fetch(`/api/lobby/chat/${props.gameID}`, {
+               /*  fetch(`/api/lobby/chat/${props.gameID}`, {
                     method: 'PUT',
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify(newChat)
-                });
+                }); */
+                webSocket.sendChat(props.gameID, newChat);
             }
             updatePos(i, j, props.turn, props.gameID, nextTurn, tempPlayers[props.turn].moves, null, false, tempPlayers[props.turn].name);
             props.setPlayers(tempPlayers);
@@ -313,13 +316,14 @@ function Door(props) {
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
             let newChat = { type: "line", message: (tempPlayers[props.turn].name) + " just entered " + clueData.roomIdNames[props.roomId] };
-            props.setChat(old => [newChat, ...old]);
+            /* props.setChat(old => [newChat, ...old]);
             // add to the chat on the server
             fetch(`/api/lobby/chat/${props.gameID}`, {
                 method: 'PUT',
                 headers: { "Content-type": "application/json" },
                 body: JSON.stringify(newChat)
-            });
+            }); */
+            webSocket.sendChat(props.gameID, newChat);
             props.setPlayers(tempPlayers);
             updatePos(i, j, props.turn, props.gameID, props.turn, 0, props.roomId, true, tempPlayers[props.turn].name);
         }

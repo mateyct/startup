@@ -2,7 +2,8 @@ class WebSocketHandler {
     constructor() {
         this.initialized = false;
         const unset = () => {
-            console.log("This function is unset.");
+            return;
+            // console.log("This function is unset.");
         };
         // function that is called when received the right type of message
         this.updatePos = unset;
@@ -10,6 +11,7 @@ class WebSocketHandler {
         this.startGameResult = unset;
         this.createNewLobby = unset;
         this.creatorJoin = unset;
+        this.updateChat = unset;
     }
 
     // initialize the websocket
@@ -28,7 +30,6 @@ class WebSocketHandler {
         };
         this.socket.onmessage = data => {
             data = JSON.parse(data.data);
-            console.log(data);
             switch(data.case) {
                 case "updatePos":
                     this.updatePos(data);
@@ -42,6 +43,9 @@ class WebSocketHandler {
                     this.creatorJoin(data);
                 case "newLobby":
                     this.createNewLobby(data.lobbies);
+                    break;
+                case "chat":
+                    this.updateChat(data);
                     break;
                 default:
                     break;
@@ -114,6 +118,15 @@ class WebSocketHandler {
         this.socket.send(JSON.stringify({
             case: "startGame",
             lobbyID: id
+        }));
+    }
+
+    // send chat to server
+    sendChat(lobbyID, message) {
+        this.socket.send(JSON.stringify({
+            case: "chat",
+            lobbyID: lobbyID,
+            message
         }));
     }
 }
