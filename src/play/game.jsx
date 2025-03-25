@@ -88,7 +88,7 @@ export function Game(props) {
 
     // the grid to track what each place on the map should be, a little messy
     const grid = new Array(24).fill().map(() => new Array(24).fill(null));
-
+    console.log("Player turn:", playerTurn);
     return (
         <>
             <h1>Play</h1>
@@ -109,8 +109,8 @@ export function Game(props) {
                     <div className="rolling">
                         {/*Dice section*/}
                         <h3>Roll for movement</h3>
-                        <p>Moves left: {players[turn].moves}</p>
-                        <button id="dice-roll" className="my-button" disabled={playerTurn != turn || players[turn].recentArrival || players[turn].moves > 0} onClick={() => {
+                        <p>Moves left: {players[playerTurn].moves}</p>
+                        <button id="dice-roll" className="my-button" disabled={playerTurn != turn || players[turn].recentArrival || players[playerTurn].moves > 0} onClick={() => {
                             let tempPlayers = JSON.parse(JSON.stringify(players));
                             tempPlayers[turn].moves = rollDice();
                             setPlayers(tempPlayers);
@@ -144,6 +144,7 @@ export function Game(props) {
                         chatlog={chatlog}
                         setChat={setChat}
                         gameID={props.gameID}
+                        playerTurn={playerTurn}
                     //mockPlayer={mockPlayer}
                     />
                 </div>
@@ -187,6 +188,7 @@ function Board(props) {
                 chatlog={props.chatlog}
                 setChat={props.setChat}
                 gameID={props.gameID}
+                playerTurn={props.playerTurn}
             //mockPlayer={props.mockPlayer}
             />
             <Doors
@@ -199,6 +201,7 @@ function Board(props) {
                 chatlog={props.chatlog}
                 setChat={props.setChat}
                 gameID={props.gameID}
+                playerTurn={props.playerTurn}
             />
         </div>
     );
@@ -225,6 +228,7 @@ function Cells(props) {
                     chatlog={props.chatlog}
                     setChat={props.setChat}
                     gameID={props.gameID}
+                    playerTurn={props.playerTurn}
                 //mockPlayer={props.mockPlayer}
                 />
                 // now grid displays
@@ -239,7 +243,7 @@ function Cell(props) {
     function moveGuy(i, j) {
         let tempPlayers = JSON.parse(JSON.stringify(props.players));
         // if selected spot within one step, move there
-        if (Math.abs(i - tempPlayers[props.turn].x) + Math.abs(j - tempPlayers[props.turn].y) == 1 && tempPlayers[props.turn].moves > 0) {
+        if (Math.abs(i - tempPlayers[props.playerTurn].x) + Math.abs(j - tempPlayers[props.playerTurn].y) == 1 && tempPlayers[props.playerTurn].moves > 0) {
             // set everything to new position
             tempPlayers[props.turn].x = i;
             tempPlayers[props.turn].y = j;
@@ -299,6 +303,7 @@ function Doors(props) {
             setChat={props.setChat}
             roomId={door.roomId}
             gameID={props.gameID}
+            playerTurn={props.playerTurn}
         />);
     });
     return doors;
@@ -308,7 +313,7 @@ function Door(props) {
     function moveGuy(i, j) {
         let tempPlayers = JSON.parse(JSON.stringify(props.players));
         // check that the space is only one away
-        if (Math.abs(i - tempPlayers[props.turn].x) + Math.abs(j - tempPlayers[props.turn].y) == 1 && tempPlayers[props.turn].moves > 0) {
+        if (Math.abs(i - tempPlayers[props.playerTurn].x) + Math.abs(j - tempPlayers[props.playerTurn].y) == 1 && tempPlayers[props.playerTurn].moves > 0) {
             // set player to new position
             tempPlayers[props.turn].x = i;
             tempPlayers[props.turn].y = j;

@@ -299,11 +299,11 @@ function startGame(lobbyID) {
     return { players: lobbies[lobbyID].players, case: "startGame" };
 }
 
-// add a portion of the chat
+/* // add a portion of the chat
 apiRouter.put('/lobby/chat/:lobbyID', verifyUser, async (req, res) => {
     lobbies[req.params.lobbyID].chatlog.unshift(req.body);
     res.send(req.body);
-});
+}); */
 
 // function to update the chat for everyone
 function updateChat(data) {
@@ -311,7 +311,7 @@ function updateChat(data) {
     return lobbies[data.lobbyID].chatlog;
 }
 
-// update a player's position
+/* // update a player's position
 apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
     // if the lobby does not exists, a player probably left, and the game should end
     if (!(req.params.lobbyID in lobbies)) {
@@ -321,7 +321,7 @@ apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
     updatePlayer(lobbyID);
     // send the user back I guess
     res.json(lobbies[data.lobbyID].players[data.index]);
-});
+}); */
 
 // update the player's position based on data
 function updatePlayer(data) {
