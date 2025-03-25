@@ -115,8 +115,8 @@ function Join(props) {
 
         // cleanup so it only fires the function when this is loaded
         return () => {
-            webSocket.createNewLobby = () => console.log("This function is unset.");
-            webSocket.creatorJoin = () => console.log("This function is unset.");
+            webSocket.createNewLobby = () => {};
+            webSocket.creatorJoin = () => {};
         };
     }, []);
     // function that creates a new room
@@ -133,19 +133,19 @@ function Join(props) {
     }
     // function to join a game
     function joinLobby(id) {
-        fetch(`/api/lobby/players/${id}`, {
+        /* fetch(`/api/lobby/players/${id}`, {
             method: 'put'
         })
             .then(response => {
                 if (response?.status == 200) {
                     props.setGameID(id);
-                    webSocket.joinLobby(id);
+                    
                 }
                 else {
                     console.log("Lobby full");
                 }
-            });
-
+            }); */
+        webSocket.joinLobby(id);
     }
     return (
         <>

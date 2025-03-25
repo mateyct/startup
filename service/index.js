@@ -242,6 +242,14 @@ apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
     res.json({ msg: 'Success' });
 });
 
+async function joinLobby(lobbyID, username) {
+    let user = await getUser('username', username);
+    if (lobbies[lobbyID].players.length >= 4) {
+        return {msg: "lobby full"};
+    }
+    lobbies[lobbyID].players.push(new ServerPlayer(username, 0, 0, lobbies[lobbyID].players.length));
+}
+
 // endpoint to set the game to active
 /* apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
     lobbies[req.params.lobbyID].inGame = true;
@@ -598,6 +606,17 @@ socketServer.on('connection', (socket, req) => {
                 break;
             case "joinLobby":
                 lobbies[data.lobbyID].connections.push(connection);
+                await joinLobby(data.lobbyID, connection.username);
+                // get the list of lobbies again to remove full lobbies from list
+                let lobbiesToSend = getLobbies();
+                connections.forEach(con => {
+                    con.socket.send(JSON.stringify(lobbiesToSend));
+                });
+                // send message to joiner to join lobby
+                connection.socket.send(JSON.stringify({
+                    case: "creatorJoin",
+                    lobbyID: data.lobbyID
+                }));
                 break;
         }
     });
