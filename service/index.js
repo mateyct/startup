@@ -166,21 +166,6 @@ function checkUserInLobby(username) {
     return correctKey;
 }
 
-/* // add the list of game lobby IDs
-apiRouter.get("/lobbies", verifyUser, (req, res) => {
-    // send a partial object to avoid giving user's secret info
-    const lobbiesToSend = {}
-    let keys = Object.keys(lobbies);
-    keys.forEach(key => {
-        if (!lobbies[key].inGame && lobbies[key].players.length < 4) {
-            lobbiesToSend[key] = {
-                lobbyName: lobbies[key].lobbyName
-            }
-        }
-    });
-    res.status(200).json({ lobbies: lobbiesToSend });
-}); */
-
 // gets the list of lobbies to send out
 function getLobbies() {
     const lobbiesToSend = {}
@@ -194,26 +179,6 @@ function getLobbies() {
     });
     return { case: "newLobby", lobbies: lobbiesToSend };
 }
-
-/* // add a new lobby
-apiRouter.post("/lobbies", verifyUser, async (req, res) => {
-    let randomID = Math.round(Math.random() * 100000);
-    let user = await getUser('token', req.cookies.token);
-    let newLobby = {
-        lobbyName: user.username + "'s Game",
-        players: [new ServerPlayer(user.username, 7, 0, 0)],
-        inGame: false,
-        turn: 0,
-        winner: -1,
-        chatlog: [{
-            type: "line",
-            message: "Welcome to Medical Murder Mystery!",
-        }],
-        connections: []
-    };
-    lobbies[randomID] = newLobby;
-    res.status(200).json({ lobbyID: randomID });
-}); */
 
 // function to make a new lobby
 async function createLobby(username) {
@@ -235,24 +200,6 @@ async function createLobby(username) {
     return { lobbyID: randomID, case: "newLobby" };
 }
 
-/* // get the list of players in a lobby
-apiRouter.get('/lobby/players/:lobbyID', verifyUser, (req, res) => {
-    let currentLobby = lobbies[req.params.lobbyID];
-    // include if the game has started to it begins for all users
-    res.json({ players: currentLobby.players, start: currentLobby.inGame });
-}); */
-
-// let a user join an open game
-/* apiRouter.put('/lobby/players/:lobbyID', verifyUser, async (req, res) => {
-    let user = await getUser('token', req.cookies.token);
-    if (lobbies[req.params.lobbyID].players.length >= 4) {
-        res.sendStatus(405);
-        return;
-    }
-    lobbies[req.params.lobbyID].players.push(new ServerPlayer(user.username, 0, 0, lobbies[req.params.lobbyID].players.length));
-    res.json({ msg: 'Success' });
-}); */
-
 async function joinLobby(lobbyID, username) {
     let user = await getUser('username', username);
     if (lobbies[lobbyID].players.length >= 4) {
@@ -260,35 +207,6 @@ async function joinLobby(lobbyID, username) {
     }
     lobbies[lobbyID].players.push(new ServerPlayer(username, 0, 0, lobbies[lobbyID].players.length));
 }
-
-// endpoint to set the game to active
-/* apiRouter.put('/lobby/activate/:lobbyID', verifyUser, async (req, res) => {
-    lobbies[req.params.lobbyID].inGame = true;
-    // generate the solution to the murder
-    const players = lobbies[req.params.lobbyID].players;
-    const rooms = Object.keys(gameData.roomIdNames);
-    const weapons = Object.keys(gameData.weaponIdNames);
-    // set the solution of the game
-    lobbies[req.params.lobbyID].solution = {
-        player: players[Math.floor(Math.random() * players.length)].name,
-        room: rooms[Math.floor(Math.random() * rooms.length)],
-        weapon: weapons[Math.floor(Math.random() * weapons.length)]
-    }
-    // set player locations
-    let locOpts = [
-        { x: 7, y: 0 },
-        { x: 16, y: 23 },
-        { x: 16, y: 0 },
-        { x: 7, y: 23 }
-    ];
-    // loop to set
-    lobbies[req.params.lobbyID].players.forEach((player, index) => {
-        player.x = locOpts[index].x;
-        player.y = locOpts[index].y;
-    });
-    console.log(lobbies[req.params.lobbyID].solution);
-    res.json({ players: lobbies[req.params.lobbyID].players });
-}); */
 
 function startGame(lobbyID) {
     lobbies[lobbyID].inGame = true;
@@ -318,29 +236,11 @@ function startGame(lobbyID) {
     return { players: lobbies[lobbyID].players, case: "startGame" };
 }
 
-/* // add a portion of the chat
-apiRouter.put('/lobby/chat/:lobbyID', verifyUser, async (req, res) => {
-    lobbies[req.params.lobbyID].chatlog.unshift(req.body);
-    res.send(req.body);
-}); */
-
 // function to update the chat for everyone
 function updateChat(data) {
     lobbies[data.lobbyID].chatlog.unshift(data.message);
     return lobbies[data.lobbyID].chatlog;
 }
-
-/* // update a player's position
-apiRouter.put('/player/position/:lobbyID', verifyUser, async (req, res) => {
-    // if the lobby does not exists, a player probably left, and the game should end
-    if (!(req.params.lobbyID in lobbies)) {
-        res.redirect(req.get('referer'));
-        return;
-    }
-    updatePlayer(lobbyID);
-    // send the user back I guess
-    res.json(lobbies[data.lobbyID].players[data.index]);
-}); */
 
 // update the player's position based on data
 function updatePlayer(data) {
@@ -352,70 +252,6 @@ function updatePlayer(data) {
     lobbies[data.lobbyID].players[data.index].recentArrival = data.recentArrival;
     lobbies[data.lobbyID].players[data.index].currentRoom = data.currentRoom;
 }
-
-// make a guess for the game
-/* apiRouter.put('/lobby/guess/:lobbyID', verifyUser, async (req, res) => {
-    const guess = req.body;
-    let guesser = await getUser('token', req.cookies.token);
-    // get which is the guessor
-    lobbies[req.params.lobbyID].players.forEach((player, index) => {
-        if (player.name == guesser.username) {
-            guesser = player;
-        }
-    });
-    let correctFlags = 0; // 3 flags is a winner
-    // winner will be -1 until the winner is set
-    const response = {
-        winner: -1,
-        player: false,
-        room: false,
-        weapon: false
-    };
-    // determine player
-    if (guess.player == lobbies[req.params.lobbyID].solution.player) {
-        response.player = true;
-        guesser.guesses[guess.player] = true;
-        // add info about correct
-        correctFlags++;
-    }
-    else {
-        guesser.guesses[guess.player] = false;
-    }
-    // determine room
-    if (guess.room == lobbies[req.params.lobbyID].solution.room) {
-        response.room = true;;
-        correctFlags++;
-        guesser.guesses[guess.room] = true;
-    }
-    else {
-        guesser.guesses[guess.room] = false;
-    }
-    // determine weapon
-    if (guess.weapon == lobbies[req.params.lobbyID].solution.weapon) {
-        response.weapon = true;
-        correctFlags++;
-        guesser.guesses[guess.weapon] = true;
-    }
-    else {
-        guesser.guesses[guess.weapon] = false;
-    }
-    // check if they won
-    if (correctFlags >= 3) {
-        response.winner = guesser.index;
-        // delay for a bit, then end the game
-        setTimeout(() => {
-            delete lobbies[req.params.lobbyID];
-        }, 6000);
-    }
-    // set the correctness of the guesses to send back
-    response.results = guesser.guesses;
-    lobbies[req.params.lobbyID].turn = guess.nextTurn;
-    lobbies[req.params.lobbyID].winner = response.winner;
-    guesser.recentArrival = false;
-    // update the history based on the guess
-    await updateHistory(guesser, guess.player, guess.room, guess.weapon);
-    res.json(response);
-}); */
 
 // function to handle guess making
 async function handleGuess(guesser, guess) {

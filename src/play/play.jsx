@@ -102,22 +102,6 @@ export function Play(props) {
 function Join(props) {
     // rooms here represents different instances of the game
     const [lobbies, setLobbies] = useState([]);
-    const intervalID = useRef(null);
-    // set and unset interval with Effect, represents WebSocket stuff
-    /* useEffect(() => {
-        // set interval to show new lobbies automatically
-        intervalID.current = setInterval(() => {
-            fetch("/api/lobbies")
-                .then(response => response.json())
-                .then(json => {
-                    setLobbies(json.lobbies);
-                });
-        }, 1000);
-        // cleanup
-        return () => {
-            clearInterval(intervalID.current);
-        };
-    }, []); */
     // set up function to receive lobby updates
     useEffect(() => {
         webSocket.createNewLobby = data => {
@@ -142,30 +126,10 @@ function Join(props) {
     }, []);
     // function that creates a new room
     async function createRoom() {
-        // call the method, it will return the lobby ID
-        /* fetch("/api/lobbies", {
-            method: "POST",
-        })
-            .then(res => res.json())
-            .then(json => {
-                props.setGameID(json.lobbyID);
-            }); */
         webSocket.createLobby(localStorage.getItem("userName"));
     }
     // function to join a game
     function joinLobby(id) {
-        /* fetch(`/api/lobby/players/${id}`, {
-            method: 'put'
-        })
-            .then(response => {
-                if (response?.status == 200) {
-                    props.setGameID(id);
-                    
-                }
-                else {
-                    console.log("Lobby full");
-                }
-            }); */
         webSocket.joinLobby(id);
     }
     return (
@@ -184,50 +148,8 @@ function Join(props) {
 }
 
 function GameLobby(props) {
-    const [counter, setCounter] = useState(0); // also should be temporary
-    const intervalID = useRef(null);
-    // use a set interval and useEffect to represent a WebSocket
-    /* useEffect(() => {
-        intervalID.current = setInterval(() => {
-            fetch(`/api/lobby/players/${props.gameID}`)
-                .then(result => result.json())
-                .then(json => {
-                    const playerObjs = json.players;
-                    const players = [];
-                    if (playerObjs) {
-                        playerObjs.forEach((player, index) => {
-                            let chosenPlayer = playerOptions[index];
-                            chosenPlayer.name = player.name;
-                            players.push(chosenPlayer);
-                        });
-                        props.setPlayers(players);
-                    }
-                    if (json.start) {
-                        props.setInGame(true);
-                    }
-                });
-        }, 500);
-
-        return () => {
-            clearInterval(intervalID.current);
-        }
-    }, []); */
     // button clicked to start the game
     function startGame() {
-        /* fetch(`/api/lobby/activate/${props.gameID}`, { method: 'PUT' })
-            .then(response => response.json())
-            .then(data => {
-                const players = [];
-                data.players.forEach((player, index) => {
-                    let chosenPlayer = playerOptions[index];
-                    chosenPlayer.name = player.name;
-                    chosenPlayer.x = player.x;
-                    chosenPlayer.y = player.y;
-                    players.push(chosenPlayer);
-                });
-                props.setPlayers(players);
-            }); */
-        //props.setInGame(true);
         webSocket.startGame(props.gameID);
     }
     return (

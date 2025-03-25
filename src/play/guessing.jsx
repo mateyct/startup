@@ -32,14 +32,6 @@ export default function GuessingForm(props) {
             room: players[turn].currentRoom,
             weapon: chosenWeapon
         };
-        let oldGuess = JSON.parse(JSON.stringify(props.chatlog));
-        /* props.setChat([newGuess, ...oldGuess]);
-        // add to the chat on the server
-        fetch(`/api/lobby/chat/${props.gameID}`, {
-            method: 'PUT',
-            headers: {"Content-type": "application/json"},
-            body: JSON.stringify(newGuess)
-        }); */
         // send the new chat
         webSocket.sendChat(props.gameID, newGuess);
         // change turns now
@@ -50,39 +42,11 @@ export default function GuessingForm(props) {
         props.setTurn(nextTurn);
         props.setPlayers(tempPlayers);
         // WebSocket to the server
-        //webSocket.updateGame(props.gameID);
         let newChat = { type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
-        /* props.setChat(old => [newChat, ...old]);
         // add to the chat on the server
-        fetch(`/api/lobby/chat/${props.gameID}`, {
-            method: 'PUT',
-            headers: {"Content-type": "application/json"},
-            body: JSON.stringify(newChat)
-        }); */
         webSocket.sendChat(props.gameID, newChat);
         // check if guess is a winning one
-        /* fetch(`/api/lobby/guess/${props.gameID}`, {
-            method: 'PUT',
-            headers: { 'Content-type': 'application/json'},
-            body: JSON.stringify({
-                player: chosenPlayer,
-                weapon: chosenWeapon,
-                room: players[turn].currentRoom,
-                nextTurn: nextTurn
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                // check if the game is over
-                if (data.winner >= 0) {
-                    props.setWinner(tempPlayers[data.winner]);
-                }
-                else {
-                    // add correct and incorrect data
-                    props.addIntel(data.results);
-                }
-            }); */
-            webSocket.makeGuess(props.gameID, players[turn].name, chosenPlayer, chosenWeapon, players[turn].currentRoom, nextTurn);
+        webSocket.makeGuess(props.gameID, players[turn].name, chosenPlayer, chosenWeapon, players[turn].currentRoom, nextTurn);
     }
 
     return (

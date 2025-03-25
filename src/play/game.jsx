@@ -47,40 +47,12 @@ export function Game(props) {
                     data.players.forEach((player, index) => {
                         tempPlayers[index].x = player.x;
                         tempPlayers[index].y = player.y;
-                        //tempPlayers[index].moves = player.moves;
                     });
                     return tempPlayers;
                 });
                 setChat(data.chatlog);
             }
         };
-        /* intervalRef.current = setInterval(() => {
-            fetch("/api/lobby/player/status")
-                .then(response => response.json())
-                .then(data => {
-                    // update players with most recent data from server
-                    if (data.found) {
-                        if(data.winner >= 0) {
-                            props.setWinner(players[data.winner]);
-                        }
-                        setTurn(data.turn);
-                        setPlayerTurn(data.playerIndex);
-                        setPlayers(players => {
-                            let tempPlayers = JSON.parse(JSON.stringify(players));
-                            data.players.forEach((player, index) => {
-                                tempPlayers[index].x = player.x;
-                                tempPlayers[index].y = player.y;
-                                //tempPlayers[index].moves = player.moves;
-                            });
-                            return tempPlayers;
-                        });
-                        setChat(data.chatlog);
-                    }
-                })
-        }, 200);
-        return () => {
-            clearInterval(intervalRef.current);
-        }; */
         webSocket.updateChat = data => {
             setChat(data.chatlog);
         };
@@ -144,7 +116,6 @@ export function Game(props) {
                         setChat={setChat}
                         gameID={props.gameID}
                         playerTurn={playerTurn}
-                    //mockPlayer={mockPlayer}
                     />
                 </div>
                 <div className="large-screen-hidden modal-buttons">
@@ -188,7 +159,6 @@ function Board(props) {
                 setChat={props.setChat}
                 gameID={props.gameID}
                 playerTurn={props.playerTurn}
-            //mockPlayer={props.mockPlayer}
             />
             <Doors
                 doorData={boardFile.doors}
@@ -228,7 +198,6 @@ function Cells(props) {
                     setChat={props.setChat}
                     gameID={props.gameID}
                     playerTurn={props.playerTurn}
-                //mockPlayer={props.mockPlayer}
                 />
                 // now grid displays
                 cells.push(cell);
@@ -254,15 +223,7 @@ function Cell(props) {
                 tempPlayers[props.turn].turn = false;
                 nextTurn = (props.turn + 1) % tempPlayers.length;
                 props.setTurn(nextTurn);
-                //setTimeout(() => props.mockPlayer(nextTurn, 1, 3), 300);
                 let newChat = { type: "line", message: (tempPlayers[nextTurn].name) + "'s turn" };
-                //props.setChat(old => [newChat, ...old]);
-                // add to the chat on the server
-               /*  fetch(`/api/lobby/chat/${props.gameID}`, {
-                    method: 'PUT',
-                    headers: { "Content-type": "application/json" },
-                    body: JSON.stringify(newChat)
-                }); */
                 webSocket.sendChat(props.gameID, newChat);
             }
             updatePos(i, j, props.turn, props.gameID, nextTurn, tempPlayers[props.turn].moves, null, false, tempPlayers[props.turn].name);
@@ -320,13 +281,7 @@ function Door(props) {
             tempPlayers[props.turn].moves = 0;
             tempPlayers[props.turn].recentArrival = true;
             let newChat = { type: "line", message: (tempPlayers[props.turn].name) + " just entered " + clueData.roomIdNames[props.roomId] };
-            /* props.setChat(old => [newChat, ...old]);
-            // add to the chat on the server
-            fetch(`/api/lobby/chat/${props.gameID}`, {
-                method: 'PUT',
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify(newChat)
-            }); */
+            // send chat with websocket
             webSocket.sendChat(props.gameID, newChat);
             props.setPlayers(tempPlayers);
             updatePos(i, j, props.turn, props.gameID, props.turn, 0, props.roomId, true, tempPlayers[props.turn].name);
@@ -405,20 +360,5 @@ function rollDice() {
 
 // function to update the position of the player on server-side
 function updatePos(x, y, index, lobbyID, turn, moves, currentRoom, recentArrival, playerName) {
-    /* fetch(`/api/player/position/${lobbyID}`, {
-        method: 'put',
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({
-            case: "updatePos",
-            index: index,
-            x: x,
-            y: y,
-            moves: moves,
-            turn: turn,
-            currentRoom: currentRoom,
-            recentArrival: recentArrival,
-            lobbyID: lobbyID
-        })
-    }); */
     webSocket.sendPosition(index, x, y, moves, turn, currentRoom, recentArrival, lobbyID, playerName);
 }
