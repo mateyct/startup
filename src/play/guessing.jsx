@@ -13,14 +13,14 @@ export default function GuessingForm(props) {
         webSocket.guessResult = data => {
             // check if the game is over
             if (data.winner >= 0) {
-                props.setWinner(tempPlayers[data.winner]);
+                props.setWinner(players[data.winner]);
             }
             else {
                 // add correct and incorrect data
                 props.addIntel(data.results);
             }
         };
-    });
+    }, []);
 
     // submit the guessing form and change values
     function handleSubmit() {

@@ -293,10 +293,10 @@ async function handleGuess(guesser, guess) {
     if (guess.weapon == lobbies[guess.lobbyID].solution.weapon) {
         response.weapon = true;
         correctFlags++;
-        guesser.guesses[guess.lobbyID] = true;
+        guesser.guesses[guess.weapon] = true;
     }
     else {
-        guesser.guesses[guess.lobbyID] = false;
+        guesser.guesses[guess.weapon] = false;
     }
     // check if they won
     if (correctFlags >= 3) {
@@ -411,12 +411,17 @@ socketServer.on('connection', (socket, req) => {
                 break;
             case "guess":
                 let player = await getUser("username", data.guesser);
-                const result = handleGuess(player, data);
+                const result = await handleGuess(player, data);
                 players = getPlayerInfo(data.lobbyID);
-                // loop through players and return result
-                lobbies[data.lobbyID].connections.forEach(con => {
-                    con.socket.send(JSON.stringify(result));
-                });
+                // send result back to player
+                if (result.winner >= 0) {
+                    lobbies[data.lobbyID].connections.forEach(con => {
+                        con.socket.send(JSON.stringify(result));
+                    });
+                }
+                else {
+                    connection.socket.send(JSON.stringify(result));
+                }
                 // loop to update positions and such
                 lobbies[data.lobbyID].connections.forEach((con, index) => {
                     players.playerIndex = index;
