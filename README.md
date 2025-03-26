@@ -57,7 +57,7 @@ I am going to use the required technologies in the following ways.
 - **React** - React will be responsible for tying together the HTML, CSS, and JS. It will also handle the routing.
 - **Service** - There will be multiple service endpoints:
     * Backend service for logging in
-    * Sending board moves and suspicions to the backend
+    * When the player navigates away from the play page and then back, a service updates them on the current state of their game if they were in one.
     * Retrieving history of suspicions to display
     * Also retrieving a random Book of Mormon verse to display in the footer from [BraydenTW/book-of-mormon-api](https://book-of-mormon-api.vercel.app) ([GitHub](https://github.com/BraydenTW/book-of-mormon-api))
 - **DB/Login** - The database will store players' credentials and allow them to log in, which is required to play. The database will also store the history of suspicions the player has made.
@@ -142,8 +142,8 @@ There weren't a ton of commits that I made for this deliverable, but honestly th
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Backend listens for WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **Frontend makes WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **Data sent over WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **WebSocket data displayed** - I did not complete this part of the deliverable.
-- [ ] **Application is fully functional** - I did not complete this part of the deliverable.
+- [x] **Backend listens for WebSocket connection** - Backend listens for messages and organizes connections by game lobby.
+- [x] **Frontend makes WebSocket connection** - Playing the game uses WebSocket all over the place.
+- [x] **Data sent over WebSocket connection** - Game data is consistently sent back and forth over WebSocket.
+- [x] **WebSocket data displayed** - The data sent over WebSocket constantly updates the game.
+- [x] **Application is fully functional** - The site is done! 🥳
