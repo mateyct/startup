@@ -60,7 +60,7 @@ export function Play(props) {
             setupPlayers(data.players);
             setInGame(true);
             setPlayerTurn(data.playerIndex);
-            webSocket.startGameResult = () => {console.log('deactivated in start game callback')};
+            webSocket.startGameResult = () => { };
             webSocket.setupPlayers = () => { };
         };
         // call updatePlayers, message for when players join the game
@@ -71,7 +71,7 @@ export function Play(props) {
         // Use this to clean up the web socket when the page is left
         return () => {
             webSocket.cleanup()
-            webSocket.startGameResult = () => {console.log('deactivated in play clean up')};
+            webSocket.startGameResult = () => { };
             webSocket.setupPlayers = () => { };
         };
     }, []);

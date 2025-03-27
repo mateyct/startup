@@ -1,9 +1,7 @@
 class WebSocketHandler {
     constructor() {
         this.initialized = false;
-        const unset = () => {
-            console.log("This function is unset.");
-        };
+        const unset = () => { };
         // function that is called when received the right type of message
         this.updatePos = unset;
         this.guessResult = unset;
