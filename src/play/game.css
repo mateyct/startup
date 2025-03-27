@@ -173,7 +173,8 @@ main h1 {
 }
 .guessing > div div select {
     width: 50%;
-    padding: 10px 0;
+    padding: 5px 0;
+    padding: .25em 0;
 }
 .guessing > div p {
     text-align: center;
@@ -215,6 +216,40 @@ main h1 {
     border-radius: 100%;
     display: inline-block;
     margin-left: 5px;
+}
+
+@media only screen and (max-width: 1280px) {
+    .guessing > div div select {
+        width: 50%;
+        padding: .25em 0;
+    }
+    .guessing > div p {
+        text-align: center;
+    }
+    .guessing > div button {
+        margin: 0 0 0 0;
+        padding: 0;
+    }
+    #controls .rolling {
+        padding: 2px;
+        & > button {
+            aspect-ratio: unset;
+            border-radius: .15em;
+            padding: 0;
+            margin: 0;
+        }
+        & > p {
+            font-size: 1em;
+        }
+    }
+    #chat {
+        height: 50vh;
+    }
+    .guessing > div div label {
+        width: 30%;
+        display: inline-block;
+        margin: 2px 2px 2px 10px;
+    }
 }
 
 @media only screen and (max-width: 1024px){

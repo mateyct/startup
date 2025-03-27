@@ -160,7 +160,7 @@ h1.header-title {
         }
         & p {
             font-size: 1em;
-            
+            overflow-x: scroll;
         }
         & p::before{
             content: "";
