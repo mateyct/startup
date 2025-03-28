@@ -3,7 +3,7 @@
 ### First notes (From GitHub Reading)
 I already knew a lot about GitHub and Git before reading this, but I did learn that you can create a new repository using another one as a template. This could be helpful for me at some point.
 
-[My startup](http://18.233.173.238)
+[My startup](https://startup.mmmystery.click)
 
 ## To-Do
 - I may need to add a panel for showing the recent guesses
