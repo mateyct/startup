@@ -7,7 +7,7 @@ const {
   clearAuthCookie,
 } = require("../../helpers/authHelpers");
 
-module.exports = (DB) => {
+module.exports = (DB, lobbyManager, connections) => {
   const router = express.Router();
 
   const { getUser } = dbHelpers(DB);
@@ -31,7 +31,7 @@ module.exports = (DB) => {
       DB.updateUser(user);
       res.json({ username: req.body.username });
     } else {
-      res.send(401, { msg: "Unauthorized" });
+      res.status(401).send({ msg: "Unauthorized" });
     }
   });
 
@@ -42,12 +42,12 @@ module.exports = (DB) => {
     if (user) {
       clearAuthCookie(res, user);
       // if there is a user in a game, we want to get rid of the game
-      const lobbyInfo = checkUserInLobby(user.username);
+      const lobbyInfo = lobbyManager.checkUserInLobby(user.username);
       if (lobbyInfo) {
-        delete lobbies[lobbyInfo.key];
+        lobbyManager.deleteLobby(lobbyInfo.key)
         // send messages to refresh when game is started
         connections.forEach((con) => {
-          con.socket.send(JSON.stringify(getLobbies()));
+          con.socket.send(JSON.stringify(lobbyManager.getOpenLobbies()));
         });
       }
       // log the user out

@@ -7,10 +7,6 @@ const authRoutes = require('./routes/auth')
 
 const app = express();
 
-const ServerPlayer = require("./ServerPlayer");
-
-const gameData = require("./clueData.json");
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
@@ -18,6 +14,7 @@ app.use(express.static('public'));
 const DB = require('./db');
 
 const { WebSocketServer } = require('ws');
+const LobbyManager = require("./gameplay/lobbyManager");
 
 // do this for the port
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -26,9 +23,11 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
-apiRouter.use('/auth', authRoutes(DB))
-
+const lobbyManager = new LobbyManager()
 const connections = [];
+
+apiRouter.use('/auth', authRoutes(DB, lobbyManager, connections))
+
 
 const { verifyUser, getUser } = dbHelpers(DB)
 
@@ -129,24 +128,23 @@ const { verifyUser, getUser } = dbHelpers(DB)
 
 //////////// Gameplay stuff ////////////////
 
-const lobbies = {};
-
 // Check if the user is already in a lobby/game, return its info if so
 apiRouter.get('/lobbies/player/status', verifyUser, async (req, res) => {
     // get if in lobby
     const user = await getUser('token', req.cookies.token);
-    const lobbyInfo = checkUserInLobby(user.username);
+    const lobbyInfo = lobbyManager.checkUserInLobby(user.username)
     // send needed lobby info if in game, if not, don't
     if (lobbyInfo) {
+        const lobby = lobbyManager.getLobby(lobbyInfo.key)
         res.json({
             found: true,
             lobbyID: lobbyInfo.key,
-            inGame: lobbies[lobbyInfo.key].inGame,
+            inGame: lobby.inGame,
             playerIndex: lobbyInfo.playerIndex,
-            players: lobbies[lobbyInfo.key].players,
-            turn: lobbies[lobbyInfo.key].turn,
-            winner: lobbies[lobbyInfo.key].winner,
-            chatlog: lobbies[lobbyInfo.key].chatlog
+            players: lobby.players,
+            turn: lobby.turn,
+            winner: lobby.winner,
+            chatlog: lobby.chatlog
         });
     }
     else {
@@ -156,168 +154,12 @@ apiRouter.get('/lobbies/player/status', verifyUser, async (req, res) => {
 
 // return the list of lobby IDs
 apiRouter.get('/lobbies', verifyUser, (req, res) => {
-    res.send({ lobbies: getLobbies().lobbies });
+    res.send({ lobbies: lobbyManager.getOpenLobbies().lobbies });
 });
-
-// check if a user is in a lobby and return it's info
-function checkUserInLobby(username) {
-    let correctKey = null;
-    let keys = Object.keys(lobbies);
-    keys.forEach(key => {
-        lobbies[key].players.forEach((player, index) => {
-            if (player.name == username) {
-                correctKey = { key: key, playerIndex: index };
-            }
-        })
-    });
-    return correctKey;
-}
-
-// gets the list of lobbies to send out
-function getLobbies() {
-    const lobbiesToSend = {}
-    let keys = Object.keys(lobbies);
-    keys.forEach(key => {
-        if (!lobbies[key].inGame && lobbies[key].players.length < 4) {
-            lobbiesToSend[key] = {
-                lobbyName: lobbies[key].lobbyName
-            }
-        }
-    });
-    return { case: "newLobby", lobbies: lobbiesToSend };
-}
-
-// function to make a new lobby
-async function createLobby(username) {
-    let randomID = Math.round(Math.random() * 100000);
-    let user = await getUser('username', username);
-    let newLobby = {
-        lobbyName: user.username + "'s Game",
-        players: [new ServerPlayer(user.username, 7, 0, 0)],
-        inGame: false,
-        turn: 0,
-        winner: -1,
-        chatlog: [{
-            type: "line",
-            message: "Welcome to Medical Murder Mystery!",
-        }],
-        connections: []
-    };
-    lobbies[randomID] = newLobby;
-    return { lobbyID: randomID, case: "newLobby" };
-}
-
-async function joinLobby(lobbyID, username) {
-    let user = await getUser('username', username);
-    if (lobbies[lobbyID].players.length >= 4) {
-        return {msg: "lobby full"};
-    }
-    lobbies[lobbyID].players.push(new ServerPlayer(username, 0, 0, lobbies[lobbyID].players.length));
-}
-
-function startGame(lobbyID) {
-    lobbies[lobbyID].inGame = true;
-    // generate the solution to the murder
-    const players = lobbies[lobbyID].players;
-    const rooms = Object.keys(gameData.roomIdNames);
-    const weapons = Object.keys(gameData.weaponIdNames);
-    // set the solution of the game
-    lobbies[lobbyID].solution = {
-        player: players[Math.floor(Math.random() * players.length)].name,
-        room: rooms[Math.floor(Math.random() * rooms.length)],
-        weapon: weapons[Math.floor(Math.random() * weapons.length)]
-    }
-    // set player locations
-    let locOpts = [
-        { x: 7, y: 0 },
-        { x: 16, y: 23 },
-        { x: 16, y: 0 },
-        { x: 7, y: 23 }
-    ];
-    // loop to set
-    lobbies[lobbyID].players.forEach((player, index) => {
-        player.x = locOpts[index].x;
-        player.y = locOpts[index].y;
-    });
-    console.log(lobbies[lobbyID].solution);
-    return { players: lobbies[lobbyID].players, case: "startGame" };
-}
-
-// function to update the chat for everyone
-function updateChat(data) {
-    lobbies[data.lobbyID].chatlog.unshift(data.message);
-    return lobbies[data.lobbyID].chatlog;
-}
-
-// update the player's position based on data
-function updatePlayer(data) {
-    // set all of these things
-    lobbies[data.lobbyID].players[data.index].x = data.x;
-    lobbies[data.lobbyID].players[data.index].y = data.y;
-    lobbies[data.lobbyID].turn = data.turn;
-    lobbies[data.lobbyID].players[data.index].moves = data.moves;
-    lobbies[data.lobbyID].players[data.index].recentArrival = data.recentArrival;
-    lobbies[data.lobbyID].players[data.index].currentRoom = data.currentRoom;
-}
 
 // function to handle guess making
 async function handleGuess(guesser, guess) {
-    // get which is the guessor
-    lobbies[guess.lobbyID].players.forEach((player, index) => {
-        if (player.name == guesser.username) {
-            guesser = player;
-        }
-    });
-    let correctFlags = 0; // 3 flags is a winner
-    // winner will be -1 until the winner is set
-    const response = {
-        winner: -1,
-        player: false,
-        room: false,
-        weapon: false,
-        case: "guessResult"
-    };
-    // determine player
-    if (guess.player == lobbies[guess.lobbyID].solution.player) {
-        response.player = true;
-        guesser.guesses[guess.player] = true;
-        // add info about correct
-        correctFlags++;
-    }
-    else {
-        guesser.guesses[guess.player] = false;
-    }
-    // determine room
-    if (guess.room == lobbies[guess.lobbyID].solution.room) {
-        response.room = true;;
-        correctFlags++;
-        guesser.guesses[guess.room] = true;
-    }
-    else {
-        guesser.guesses[guess.room] = false;
-    }
-    // determine weapon
-    if (guess.weapon == lobbies[guess.lobbyID].solution.weapon) {
-        response.weapon = true;
-        correctFlags++;
-        guesser.guesses[guess.weapon] = true;
-    }
-    else {
-        guesser.guesses[guess.weapon] = false;
-    }
-    // check if they won
-    if (correctFlags >= 3) {
-        response.winner = guesser.index;
-        // delay for a bit, then end the game
-        setTimeout(() => {
-            delete lobbies[guess.lobbyID];
-        }, 6000);
-    }
-    // set the correctness of the guesses to send back
-    response.results = guesser.guesses;
-    lobbies[guess.lobbyID].turn = guess.nextTurn;
-    lobbies[guess.lobbyID].winner = response.winner;
-    guesser.recentArrival = false;
+    const response = lobbyManager.attemptGuess(guesser, guess)
     // update the history based on the guess
     await updateHistory(guesser, guess.player, guess.room, guess.weapon);
     return response;
@@ -359,24 +201,26 @@ const server = app.listen(port, () => {
     console.log("On port " + port);
 });
 
-// gets and returns player's info
-function getPlayerInfo(lobbyID) {
-    let data = { found: false };
-    // find the lobby data
-    if (lobbyID in lobbies) {
-        data = {
-            found: true,
-            case: "updatePos",
-            players: lobbies[lobbyID].players,
-            turn: lobbies[lobbyID].turn,
-            winner: lobbies[lobbyID].winner,
-            chatlog: lobbies[lobbyID].chatlog
-        }
-    }
-    return data;
-}
+// // gets and returns player's info
+// function getGamePlayers(lobbyID) {
+//     let data = { found: false };
+//     // find the lobby data
+//     if (lobbyID in lobbies) {
+//         data = {
+//             found: true,
+//             case: "updatePos",
+//             players: lobbies[lobbyID].players,
+//             turn: lobbies[lobbyID].turn,
+//             winner: lobbies[lobbyID].winner,
+//             chatlog: lobbies[lobbyID].chatlog
+//         }
+//     }
+//     return data;
+// }
 
 const socketServer = new WebSocketServer({ server });
+
+const scopedConnections = {}
 
 // set up WebSocket connection
 socketServer.on('connection', (socket, req) => {
@@ -385,10 +229,10 @@ socketServer.on('connection', (socket, req) => {
     let username = params.get('username');
     const connection = { id: uuid.v4(), alive: true, socket: socket, username };
     connections.push(connection);
-    // check if the user is already in a lobby and add them
-    let lobbyInfo = checkUserInLobby(username);
+    // check if the user is already in a lobby and add a connection
+    let lobbyInfo = lobbyManager.checkUserInLobby(username);
     if (lobbyInfo) {
-        lobbies[lobbyInfo.key].connections[lobbyInfo.playerIndex] = connection;
+        scopedConnections[lobbyInfo.key][lobbyInfo.playerIndex] = connection
     }
     // check for socket connections
     socket.on('message', async data => {
@@ -400,57 +244,59 @@ socketServer.on('connection', (socket, req) => {
         switch (data.case) {
             case "updatePos":
                 // update player info on the server
-                updatePlayer(data);
+                lobbyManager.updatePlayer(data)
+                // updatePlayer(data);
                 // get player info from the server and send it to each person
-                players = getPlayerInfo(data.lobbyID);
-                lobbies[data.lobbyID].connections.forEach((con, index) => {
+                players = lobbyManager.getPlayers(data.lobbyID)
+                // players = getGamePlayers(data.lobbyID);
+                scopedConnections[data.lobbyID].forEach((con, index) => {
                     players.playerIndex = index;
                     con.socket.send(JSON.stringify(players));
-                });
+                })
                 break;
             case "update":
                 // get player info from the server and send it to each person
-                players = getPlayerInfo(data.lobbyID);
-                lobbies[data.lobbyID].connections.forEach((con, index) => {
+                players = lobbyManager.getPlayers(data.lobbyID)
+                scopedConnections[data.lobbyID].forEach((con, index) => {
                     players.playerIndex = index;
                     con.socket.send(JSON.stringify(players));
-                });
+                })
                 break;
             case "guess":
                 let player = await getUser("username", data.guesser);
                 const result = await handleGuess(player, data);
-                players = getPlayerInfo(data.lobbyID);
+                players = lobbyManager.getPlayers(data.lobbyID)
                 // send result back to player
                 if (result.winner >= 0) {
-                    lobbies[data.lobbyID].connections.forEach(con => {
+                    scopedConnections[data.lobbyID].forEach((con) => {
                         con.socket.send(JSON.stringify(result));
-                    });
+                    })
                 }
                 else {
                     connection.socket.send(JSON.stringify(result));
                 }
                 // loop to update positions and such
-                lobbies[data.lobbyID].connections.forEach((con, index) => {
+                scopedConnections[data.lobbyID].forEach((con, index) => {
                     players.playerIndex = index;
                     con.socket.send(JSON.stringify(players));
                 });
                 break;
             case "startGame":
                 // send code to start the game
-                let game = startGame(data.lobbyID);
-                lobbies[data.lobbyID].connections.forEach((con, index) => {
+                let game = lobbyManager.startGame(data.lobbyID);
+                scopedConnections[data.lobbyID].forEach((con, index) => {
                     game.playerIndex = index;
                     con.socket.send(JSON.stringify(game));
-                });
+                })
                 // send messages to refresh when game is started
                 connections.forEach(con => {
-                    con.socket.send(JSON.stringify(getLobbies()));
+                    con.socket.send(JSON.stringify(lobbyManager.getOpenLobbies()));
                 });
                 break;
             case "createLobby":
                 // create the new lobby
-                let newLobbyInfo = await createLobby(data.username);
-                let lobbyInfo = getLobbies();
+                let newLobbyInfo = lobbyManager.createLobby(data.username);
+                let lobbyInfo = lobbyManager.getOpenLobbies();
                 connections.forEach(con => {
                     con.socket.send(JSON.stringify(lobbyInfo));
                 });
@@ -460,21 +306,23 @@ socketServer.on('connection', (socket, req) => {
                     lobbyID: newLobbyInfo.lobbyID
                 }));
                 // add the socket connection to the lobby
-                lobbies[newLobbyInfo.lobbyID].connections.push(connection);
+                scopedConnections[newLobbyInfo.lobbyID] = [connection]
                 // send update to people in lobby that it's been joined
                 sendUpdateToPlayers(newLobbyInfo.lobbyID);
                 break;
             case "chat":
-                let chat = updateChat(data);
-                lobbies[data.lobbyID].connections.forEach(con => {
+                let chat = lobbyManager.updateChat(data);
+                // let chat = updateChat(data);
+                scopedConnections[data.lobbyID].forEach((con) => {
                     con.socket.send(JSON.stringify(chat));
-                });
+                })
                 break;
             case "joinLobby":
-                lobbies[data.lobbyID].connections.push(connection);
-                await joinLobby(data.lobbyID, connection.username);
+                scopedConnections[data.lobbyID].push(connection)
+                lobbyManager.joinLobby(data.lobbyID, connection.username);
+                // await joinLobby(data.lobbyID, connection.username);
                 // get the list of lobbies again to remove full lobbies from list
-                let lobbiesToSend = getLobbies();
+                let lobbiesToSend = lobbyManager.getOpenLobbies();
                 connections.forEach(con => {
                     con.socket.send(JSON.stringify(lobbiesToSend));
                 });
@@ -507,9 +355,9 @@ socketServer.on('connection', (socket, req) => {
 function sendUpdateToPlayers(lobbyID) {
     let toSendPlayers = {
         case: "updatePlayers",
-        players: lobbies[lobbyID].players
+        players: lobbyManager.getPlayers(lobbyID).players
     };
-    lobbies[lobbyID].connections.forEach(con => {
+    scopedConnections[lobbyID].forEach(con => {
         con.socket.send(JSON.stringify(toSendPlayers));
     });
 }
