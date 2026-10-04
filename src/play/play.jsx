@@ -19,7 +19,7 @@ export function Play(props) {
 
     // fetch if this user is in a game
     useEffect(() => {
-        fetch("/api/lobby/player/status")
+        fetch("/api/lobbies/player/status")
             .then(response => response.json())
             .then(data => {
                 let herePlayers = [];

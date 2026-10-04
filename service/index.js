@@ -2,6 +2,9 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const uuid = require("uuid");
 const cookieParser = require("cookie-parser");
+const dbHelpers = require('./helpers/dbHelpers')
+const authRoutes = require('./routes/auth')
+
 const app = express();
 
 const ServerPlayer = require("./ServerPlayer");
@@ -23,109 +26,113 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
+apiRouter.use('/auth', authRoutes(DB))
+
 const connections = [];
+
+const { verifyUser, getUser } = dbHelpers(DB)
 
 ///////////// Authentication stuff ///////////////
 
-// endpoint for creating a new user
-apiRouter.post("/auth", async (req, res) => {
-    if (await getUser('username', req.body.username)) {
-        res.send(409, { msg: "User already exists" });
-    }
-    else {
-        const user = await createUser(req.body.username, req.body.password);
-        setAuthCookie(res, user);
-        DB.addUser(user);
-        res.json({ username: req.body.username });
-    }
-});
+// // endpoint for creating a new user
+// apiRouter.post("/auth", async (req, res) => {
+//     if (await getUser('username', req.body.username)) {
+//         res.send(409, { msg: "User already exists" });
+//     }
+//     else {
+//         const user = await createUser(req.body.username, req.body.password);
+//         setAuthCookie(res, user);
+//         DB.addUser(user);
+//         res.json({ username: req.body.username });
+//     }
+// });
 
-// login an existing user
-apiRouter.put("/auth", async (req, res) => {
-    const user = await getUser('username', req.body.username);
-    if (user && (await bcrypt.compare(req.body.password, user.password))) {
-        setAuthCookie(res, user);
-        // login user in the database
-        DB.updateUser(user);
-        res.json({ username: req.body.username });
-    }
-    else {
-        res.send(401, { msg: 'Unauthorized' });
-    }
-});
+// // login an existing user
+// apiRouter.put("/auth", async (req, res) => {
+//     const user = await getUser('username', req.body.username);
+//     if (user && (await bcrypt.compare(req.body.password, user.password))) {
+//         setAuthCookie(res, user);
+//         // login user in the database
+//         DB.updateUser(user);
+//         res.json({ username: req.body.username });
+//     }
+//     else {
+//         res.send(401, { msg: 'Unauthorized' });
+//     }
+// });
 
-// logout a user
-apiRouter.delete("/auth", async (req, res) => {
-    const token = req.cookies['token'];
-    const user = await getUser('token', token);
-    if (user) {
-        clearAuthCookie(res, user);
-        // if there is a user in a game, we want to get rid of the game
-        const lobbyInfo = checkUserInLobby(user.username);
-        if (lobbyInfo) {
-            delete lobbies[lobbyInfo.key];
-            // send messages to refresh when game is started
-            connections.forEach(con => {
-                con.socket.send(JSON.stringify(getLobbies()));
-            });
-        }
-        // log the user out
-        await DB.updateUser(user);
-    }
-    res.json({ msg: 'Logged out' });
-});
+// // logout a user
+// apiRouter.delete("/auth", async (req, res) => {
+//     const token = req.cookies['token'];
+//     const user = await getUser('token', token);
+//     if (user) {
+//         clearAuthCookie(res, user);
+//         // if there is a user in a game, we want to get rid of the game
+//         const lobbyInfo = checkUserInLobby(user.username);
+//         if (lobbyInfo) {
+//             delete lobbies[lobbyInfo.key];
+//             // send messages to refresh when game is started
+//             connections.forEach(con => {
+//                 con.socket.send(JSON.stringify(getLobbies()));
+//             });
+//         }
+//         // log the user out
+//         await DB.updateUser(user);
+//     }
+//     res.json({ msg: 'Logged out' });
+// });
 
-// creates a new user
-async function createUser(username, password) {
-    // set up hashed password with user
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = {
-        username: username,
-        password: passwordHash
-    }
-    return user;
-}
+// // creates a new user
+// async function createUser(username, password) {
+//     // set up hashed password with user
+//     const passwordHash = await bcrypt.hash(password, 10);
+//     const user = {
+//         username: username,
+//         password: passwordHash
+//     }
+//     return user;
+// }
 
 // check if the user exists
-async function getUser(field, value) {
-    if (!value) return null;
-    // get user from DB
-    if (field === "token") {
-        return DB.getUserByToken(value);
-    }
+// async function getUser(field, value) {
+//     if (!value) return null;
+//     // get user from DB
+//     if (field === "token") {
+//         return DB.getUserByToken(value);
+//     }
 
-    return DB.getUser(value);
-}
+//     return DB.getUser(value);
+// }
 
-// sets the auth cookie
-function setAuthCookie(res, user) {
-    user.token = uuid.v4();
-    res.cookie('token', user.token, { secure: true, httpOnly: true, sameSite: 'strict' });
-}
+// // sets the auth cookie
+// function setAuthCookie(res, user) {
+//     user.token = uuid.v4();
+//     res.cookie('token', user.token, { secure: true, httpOnly: true, sameSite: 'strict' });
+// }
 
-// clears the auth cookie
-function clearAuthCookie(res, user) {
-    delete user.token;
-    res.clearCookie('token');
-}
+// // clears the auth cookie
+// function clearAuthCookie(res, user) {
+//     delete user.token;
+//     res.clearCookie('token');
+// }
 
 // middleware for verifying users are signed in
-const verifyUser = async (req, res, next) => {
-    const user = await getUser('token', req.cookies.token);
-    if (user) {
-        next();
-    }
-    else {
-        res.status(401).send({ msg: "Unauthorized" });
-    }
-}
+// const verifyUser = async (req, res, next) => {
+//     const user = await getUser('token', req.cookies.token);
+//     if (user) {
+//         next();
+//     }
+//     else {
+//         res.status(401).send({ msg: "Unauthorized" });
+//     }
+// }
 
 //////////// Gameplay stuff ////////////////
 
 const lobbies = {};
 
 // Check if the user is already in a lobby/game, return its info if so
-apiRouter.get('/lobby/player/status', verifyUser, async (req, res) => {
+apiRouter.get('/lobbies/player/status', verifyUser, async (req, res) => {
     // get if in lobby
     const user = await getUser('token', req.cookies.token);
     const lobbyInfo = checkUserInLobby(user.username);
