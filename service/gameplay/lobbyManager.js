@@ -133,7 +133,7 @@ module.exports = class LobbyManager {
   }
 
   attemptGuess(guesser, guess) {
-    const { lobbyID, player, room, weapon, nextTurn } = guess
+    const { lobbyID, nextTurn } = guess
     const lobby = this.lobbies[lobbyID];
     // get which is the guessor
     lobby.players.forEach((player) => {
