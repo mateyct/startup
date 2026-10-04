@@ -8,10 +8,10 @@ module.exports = class ConnectionManager {
     this.lobbyManager = lobbyManager;
     this.DB = DB;
     this.setupWSHandlers(socketServer);
+    this.dbActions = dbHelpers(DB);
   }
 
   setupWSHandlers(socketServer) {
-    const { getUser } = dbHelpers(this.DB);
     // set up WebSocket connection
     socketServer.on("connection", (socket, req) => {
       // create new connection for the list
@@ -30,110 +30,29 @@ module.exports = class ConnectionManager {
         this.scopedConnections[lobbyInfo.key][lobbyInfo.playerIndex] =
           connection;
       }
-      // check for socket connections
       socket.on("message", async (data) => {
-        // parse it into JSON
         data = JSON.parse(data);
-        // declare this up here to be used later
-        let players;
-        // Very big, nasty, bad switch statement...
         switch (data.case) {
           case "updatePos":
-            // update player info on the server
-            this.lobbyManager.updatePlayer(data);
-            // updatePlayer(data);
-            // get player info from the server and send it to each person
-            players = this.lobbyManager.getPlayers(data.lobbyID);
-            // players = getGamePlayers(data.lobbyID);
-            this.scopedConnections[data.lobbyID].forEach((con, index) => {
-              players.playerIndex = index;
-              con.socket.send(JSON.stringify(players));
-            });
+            this.updatePos(data);
             break;
           case "update":
-            // get player info from the server and send it to each person
-            players = this.lobbyManager.getPlayers(data.lobbyID);
-            this.scopedConnections[data.lobbyID].forEach((con, index) => {
-              players.playerIndex = index;
-              con.socket.send(JSON.stringify(players));
-            });
+            this.updateGame(data);
             break;
           case "guess":
-            let player = await getUser("username", data.guesser);
-            const result = await this.handleGuess(player, data);
-            players = this.lobbyManager.getPlayers(data.lobbyID);
-            // send result back to player
-            if (result.winner >= 0) {
-              this.scopedConnections[data.lobbyID].forEach((con) => {
-                con.socket.send(JSON.stringify(result));
-              });
-            } else {
-              connection.socket.send(JSON.stringify(result));
-            }
-            // loop to update positions and such
-            this.scopedConnections[data.lobbyID].forEach((con, index) => {
-              players.playerIndex = index;
-              con.socket.send(JSON.stringify(players));
-            });
+            await this.guess(data, connection);
             break;
           case "startGame":
-            // send code to start the game
-            let game = this.lobbyManager.startGame(data.lobbyID);
-            this.scopedConnections[data.lobbyID].forEach((con, index) => {
-              game.playerIndex = index;
-              con.socket.send(JSON.stringify(game));
-            });
-            // send messages to refresh when game is started
-            this.connections.forEach((con) => {
-              con.socket.send(
-                JSON.stringify(this.lobbyManager.getOpenLobbies()),
-              );
-            });
+            this.startGame(data);
             break;
           case "createLobby":
-            // create the new lobby
-            let newLobbyInfo = this.lobbyManager.createLobby(data.username);
-            let lobbyInfo = this.lobbyManager.getOpenLobbies();
-            this.connections.forEach((con) => {
-              con.socket.send(JSON.stringify(lobbyInfo));
-            });
-            // send message to creator to join lobby
-            connection.socket.send(
-              JSON.stringify({
-                case: "creatorJoin",
-                lobbyID: newLobbyInfo.lobbyID,
-              }),
-            );
-            // add the socket connection to the lobby
-            this.scopedConnections[newLobbyInfo.lobbyID] = [connection];
-            // send update to people in lobby that it's been joined
-            this.sendUpdateToPlayers(newLobbyInfo.lobbyID);
+            this.createLobby(data, connection);
             break;
           case "chat":
-            let chat = this.lobbyManager.updateChat(data);
-            // let chat = updateChat(data);
-            this.scopedConnections[data.lobbyID].forEach((con) => {
-              con.socket.send(JSON.stringify(chat));
-            });
+            this.chat(data);
             break;
           case "joinLobby":
-            this.scopedConnections[data.lobbyID].push(connection);
-            this.lobbyManager.joinLobby(data.lobbyID, connection.username);
-            // await joinLobby(data.lobbyID, connection.username);
-            // get the list of lobbies again to remove full lobbies from list
-            let lobbiesToSend = this.lobbyManager.getOpenLobbies();
-            this.connections.forEach((con) => {
-              con.socket.send(JSON.stringify(lobbiesToSend));
-            });
-            // send message to joiner to join lobby
-            connection.socket.send(
-              JSON.stringify({
-                case: "creatorJoin",
-                lobbyID: data.lobbyID,
-              }),
-            );
-            // send update to people in lobby that it's been joined
-            this.sendUpdateToPlayers(data.lobbyID);
+            this.joinLobby(data, connection);
             break;
         }
       });
@@ -163,6 +82,90 @@ module.exports = class ConnectionManager {
         con.socket.ping();
       });
     }, 10000);
+  }
+
+  updatePos(data) {
+    this.lobbyManager.updatePlayer(data);
+    const players = this.lobbyManager.getPlayers(data.lobbyID);
+
+    this.scopedConnections[data.lobbyID].forEach((con, index) => {
+      players.playerIndex = index;
+      con.socket.send(JSON.stringify(players));
+    });
+  }
+
+  updateGame(data) {
+    // get player info from the server and send it to each connection in lobby
+    const players = this.lobbyManager.getPlayers(data.lobbyID);
+    this.scopedConnections[data.lobbyID].forEach((con, index) => {
+      players.playerIndex = index;
+      con.socket.send(JSON.stringify(players));
+    });
+  }
+
+  async guess(data, connection) {
+    let player = await this.dbActions.getUser("username", data.guesser);
+    const result = await this.handleGuess(player, data);
+    const players = this.lobbyManager.getPlayers(data.lobbyID);
+    // send result back to player
+    if (result.winner >= 0) {
+      this.scopedConnections[data.lobbyID].forEach((con) => {
+        con.socket.send(JSON.stringify(result));
+      });
+    } else {
+      connection.socket.send(JSON.stringify(result));
+    }
+    // loop to update positions and such
+    this.scopedConnections[data.lobbyID].forEach((con, index) => {
+      players.playerIndex = index;
+      con.socket.send(JSON.stringify(players));
+    });
+  }
+
+  startGame(data) {
+    let game = this.lobbyManager.startGame(data.lobbyID);
+    this.scopedConnections[data.lobbyID].forEach((con, index) => {
+      game.playerIndex = index;
+      con.socket.send(JSON.stringify(game));
+    });
+    // send messages to refresh when game is started
+    this.broadcastMessage(this.lobbyManager.getOpenLobbies());
+  }
+
+  createLobby(data, connection) {
+    let newLobbyInfo = this.lobbyManager.createLobby(data.username);
+    this.broadcastMessage(this.lobbyManager.getOpenLobbies());
+    // send message to creator to join lobby
+    connection.socket.send(
+      JSON.stringify({
+        case: "creatorJoin",
+        lobbyID: newLobbyInfo.lobbyID,
+      }),
+    );
+    this.scopedConnections[newLobbyInfo.lobbyID] = [connection];
+    this.sendUpdateToPlayers(newLobbyInfo.lobbyID);
+  }
+
+  chat(data) {
+    let chat = this.lobbyManager.updateChat(data);
+    this.scopedConnections[data.lobbyID].forEach((con) => {
+      con.socket.send(JSON.stringify(chat));
+    });
+  }
+
+  joinLobby(data, connection) {
+    this.scopedConnections[data.lobbyID].push(connection);
+    this.lobbyManager.joinLobby(data.lobbyID, connection.username);
+    // get the list of lobbies again to remove full lobbies from list
+    this.broadcastMessage(this.lobbyManager.getOpenLobbies());
+
+    connection.socket.send(
+      JSON.stringify({
+        case: "creatorJoin",
+        lobbyID: data.lobbyID,
+      }),
+    );
+    this.sendUpdateToPlayers(data.lobbyID);
   }
 
   sendUpdateToPlayers(lobbyID) {
