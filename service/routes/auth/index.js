@@ -44,9 +44,9 @@ module.exports = (DB, lobbyManager, connectionManager) => {
       // if there is a user in a game, we want to get rid of the game
       const lobbyInfo = lobbyManager.checkUserInLobby(user.username);
       if (lobbyInfo) {
-        lobbyManager.deleteLobby(lobbyInfo.key)
+        lobbyManager.deleteLobby(lobbyInfo.key);
         // send messages to refresh when game is started
-        connectionManager.broadcastMessage(lobbyManager.getOpenLobbies());
+        connectionManager.broadcastLobbies();
       }
       // log the user out
       await DB.updateUser(user);

@@ -129,12 +129,12 @@ module.exports = class ConnectionManager {
       con.socket.send(JSON.stringify(game));
     });
     // send messages to refresh when game is started
-    this.broadcastMessage(this.lobbyManager.getOpenLobbies());
+    this.broadcastLobbies();
   }
 
   createLobby(data, connection) {
     let newLobbyInfo = this.lobbyManager.createLobby(data.username);
-    this.broadcastMessage(this.lobbyManager.getOpenLobbies());
+    this.broadcastLobbies();
     // send message to creator to join lobby
     connection.socket.send(
       JSON.stringify({
@@ -157,7 +157,7 @@ module.exports = class ConnectionManager {
     this.scopedConnections[data.lobbyID].push(connection);
     this.lobbyManager.joinLobby(data.lobbyID, connection.username);
     // get the list of lobbies again to remove full lobbies from list
-    this.broadcastMessage(this.lobbyManager.getOpenLobbies());
+    this.broadcastLobbies();
 
     connection.socket.send(
       JSON.stringify({
@@ -202,5 +202,9 @@ module.exports = class ConnectionManager {
     this.connections.forEach((con) => {
       con.socket.send(stringMessage);
     });
+  }
+
+  broadcastLobbies() {
+    this.broadcastMessage(this.lobbyManager.getOpenLobbies());
   }
 };
