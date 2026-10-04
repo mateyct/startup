@@ -172,7 +172,7 @@ const updateHistory = async (guesser, person, room, weapon) => {
     // set up the object
     let histItem = {
         date: Date.now(),
-        guesser: guesser.name,
+        guesser: guesser.username,
         person: person,
         room: room,
         weapon: weapon

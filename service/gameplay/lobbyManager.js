@@ -122,7 +122,18 @@ module.exports = class LobbyManager {
     players[index].currentRoom = currentRoom;
   }
 
-  attemptGuess(guesser, { lobbyID, player, room, weapon, nextTurn }) {
+  buildGuess(guesser, guess, fieldName, lobby, response) {
+    if (guess[fieldName] === lobby.solution[fieldName]) {
+      response[fieldName] = true
+      guesser.guesses[guess[fieldName]] = true
+      return 1
+    }
+    guesser.guesses[guess[fieldName]] = false
+    return 0
+  }
+
+  attemptGuess(guesser, guess) {
+    const { lobbyID, player, room, weapon, nextTurn } = guess
     const lobby = this.lobbies[lobbyID];
     // get which is the guessor
     lobby.players.forEach((player) => {
@@ -139,31 +150,9 @@ module.exports = class LobbyManager {
       weapon: false,
       case: "guessResult",
     };
-    // determine player
-    if (player == lobby.solution.player) {
-      response.player = true;
-      guesser.guesses[player] = true;
-      // add info about correct
-      correctFlags++;
-    } else {
-      guesser.guesses[player] = false;
-    }
-    // determine room
-    if (room == lobby.solution.room) {
-      response.room = true;
-      correctFlags++;
-      guesser.guesses[room] = true;
-    } else {
-      guesser.guesses[room] = false;
-    }
-    // determine weapon
-    if (weapon == lobby.solution.weapon) {
-      response.weapon = true;
-      correctFlags++;
-      guesser.guesses[weapon] = true;
-    } else {
-      guesser.guesses[weapon] = false;
-    }
+    correctFlags += this.buildGuess(guesser, guess, 'player', lobby, response)
+    correctFlags += this.buildGuess(guesser, guess, 'room', lobby, response)
+    correctFlags += this.buildGuess(guesser, guess, 'weapon', lobby, response)
     // check if they won
     if (correctFlags >= 3) {
       response.winner = guesser.index;
