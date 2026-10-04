@@ -49,25 +49,9 @@ const Header = (props) => {
 };
 
 const Footer = () => {
-    // set up state for verse stuff
-    const [reference, setReference] = useState("Loading...");
-    const [text, setText] = useState("Loading...");
-    useEffect(() => {
-        fetch('https://book-of-mormon-api.vercel.app/random')
-            .then(response => response.json())
-            .then(json => {
-                setReference(json.reference);
-                setText(json.text);
-            });
-        
-    }, []);
     return (
         <footer className="footer">
             <hr/>
-            <div className="verse">
-                <p className="v-title">{ reference }</p>
-                <p className="v-verse">{ text }</p>
-            </div>
             <p>Mason Tolley<a href="https://github.com/mateyct/startup.git" target="_blank"> GitHub</a></p>
         </footer>
     );
