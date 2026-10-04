@@ -7,7 +7,7 @@ const {
   clearAuthCookie,
 } = require("../../helpers/authHelpers");
 
-module.exports = (DB, lobbyManager, connections) => {
+module.exports = (DB, lobbyManager, connectionManager) => {
   const router = express.Router();
 
   const { getUser } = dbHelpers(DB);
@@ -46,9 +46,7 @@ module.exports = (DB, lobbyManager, connections) => {
       if (lobbyInfo) {
         lobbyManager.deleteLobby(lobbyInfo.key)
         // send messages to refresh when game is started
-        connections.forEach((con) => {
-          con.socket.send(JSON.stringify(lobbyManager.getOpenLobbies()));
-        });
+        connectionManager.broadcastMessage(lobbyManager.getOpenLobbies());
       }
       // log the user out
       await DB.updateUser(user);
