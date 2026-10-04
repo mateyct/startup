@@ -11,6 +11,7 @@ const createGetUser = (DB) => async (field, value) => {
 const createVerifyUser = (DB) => async (req, res, next) => {
   const user = await createGetUser(DB)("token", req.cookies.token);
   if (user) {
+    req.user = user
     next();
   } else {
     res.status(401).send({ msg: "Unauthorized" });
