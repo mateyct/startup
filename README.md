@@ -1,12 +1,9 @@
-<!--# Medical Murder Mystery
+# Medical Murder Mystery Project
 
-## dataFiles Info
-Below is important info about the files in dataFiles
+This is a project that showcases an HTTP API, integration with a MongoDB database, and real-time communication using WebSocket. It was originally a class project
+for CS 260 at Brigham Young University, but my project went above and beyond the requirements, so I've included in my portfolio of projects.
 
-### rooms.json
-For this file, the positions of the doors array in each room is relative to the position of the room, making it easier to add with code.
--->
-# Medical Murder Mystery
+## Product Description
 
 Medical Murder Mystery is a game where players act as characters working in a hospital. Each player will be able to navigate around the simple map, entering rooms one by one. As they do, they will be able to suspect their fellow players of murder by various means in multiple possible locations. It's based off of the popular board game Clue, but with a medical spin on it. Players will also be able to go back and see accusations they have made. *Note: There are differences between this game and Clue. Players do not start with with any information, nor do they share their information with others. Clues are revealed automatically as players make guesses.*
 
